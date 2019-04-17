@@ -11,13 +11,16 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "firebase": "^5.9.4",
+    "firebaseui": "^3.5.2",
     "font-awesome": "^4.7.0",
     "leaflet": "^1.4.0",
     "leaflet-editable": "^1.2.0",
     "mapbox-gl": "^0.53.1",
     "mapbox-gl-leaflet": "^0.0.4",
     "vue-fragment": "^1.5.1",
-    "vuex-map-fields": "^1.3.2"
+    "vuex-map-fields": "^1.3.2",
+    "vuex-persist": "^2.0.0"
   },
   "devDependencies": {
     "@vue/eslint-config-airbnb": "^4.0.0",
