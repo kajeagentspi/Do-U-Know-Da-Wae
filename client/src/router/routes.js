@@ -1,7 +1,24 @@
+import {
+  ContributePanel,
+  ContributeChoice,
+} from '../components';
 
 const routes = [
   {
     path: '/',
+    name: 'search',
+  },
+  {
+    path: '/contribute',
+    name: 'contribute',
+    component: ContributePanel,
+    children: [
+      {
+        path: '',
+        name: 'Contribute Choice',
+        component: ContributeChoice,
+      },
+    ],
   },
 ];
 
