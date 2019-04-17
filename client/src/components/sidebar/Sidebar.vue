@@ -17,6 +17,7 @@
         />
         <q-btn
           label="Favorites"
+          to="/favorites"
         />
       </q-btn-group>
     </q-toolbar>

@@ -5,7 +5,8 @@ module.exports = function (ctx) {
     // app plugins (/src/plugins)
     plugins: [
       'leaflet',
-      'vue-fragment'
+      'vue-fragment',
+      'firebase'
     ],
     css: [
       'app.styl'
@@ -50,6 +51,10 @@ module.exports = function (ctx) {
         'QCardMain',
         'QCardSeparator',
         'QCardActions',
+        'QItem',
+        'QItemMain',
+        'QItemSeparator',
+        'QItemSide',
       ],
       directives: [
         'Ripple'

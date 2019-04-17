@@ -1,6 +1,7 @@
 import {
   ContributePanel,
   ContributeChoice,
+  FavoritesPanel,
 } from '../components';
 
 const routes = [
@@ -19,6 +20,11 @@ const routes = [
         component: ContributeChoice,
       },
     ],
+  },
+  {
+    path: '/favorites',
+    name: 'Favorites',
+    component: FavoritesPanel,
   },
 ];
 
