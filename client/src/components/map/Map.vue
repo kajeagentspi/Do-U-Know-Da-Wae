@@ -3,8 +3,32 @@
 </template>
 
 <script>
+import L from 'leaflet';
+import { mapMutations } from 'vuex';
+import { mapFields } from 'vuex-map-fields';
+import { GET_MAP } from '../../store/types';
+
 export default {
   name: 'Map',
+  computed: {
+    ...mapFields('map', ['mapInstance']),
+  },
+  mounted() {
+    this.getMap();
+    this.mapInstance.on('editable:drawing:end', this.draw);
+  },
+  methods: {
+    ...mapMutations('map', {
+      getMap: GET_MAP,
+    }),
+    draw({ layer }) {
+      if (layer instanceof L.Marker) {
+        console.log(layer);
+      } else if (layer instanceof L.Polyline) {
+        console.log(layer);
+      }
+    },
+  },
 };
 </script>
 

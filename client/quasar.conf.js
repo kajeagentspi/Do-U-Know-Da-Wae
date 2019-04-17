@@ -4,7 +4,8 @@ module.exports = function (ctx) {
   return {
     // app plugins (/src/plugins)
     plugins: [
-      'axios'
+      'leaflet',
+      'vue-fragment'
     ],
     css: [
       'app.styl'
@@ -41,7 +42,14 @@ module.exports = function (ctx) {
     // framework: 'all' --- includes everything; for dev only!
     framework: {
       components: [
-        'QCard'
+        'QCard',
+        'QToolbar',
+        'QBtnGroup',
+        'QBtn',
+        'QCardTitle',
+        'QCardMain',
+        'QCardSeparator',
+        'QCardActions',
       ],
       directives: [
         'Ripple'
