@@ -1,7 +1,11 @@
 {
-   "name": "new-typeorm-project",
+   "name": "douknowdawae-api",
    "version": "0.0.1",
-   "description": "Awesome project developed with TypeORM.",
+   "description": "Crowdsourced UPLB Campus Map",
+   "productName": "Do U Know Da Wae",
+   "cordovaId": "org.cordova.quasar.app",
+   "author": "kajeagentspi <jptagnepis@up.edu.ph>",
+   "private": true,
    "devDependencies": {
       "ts-node": "3.3.0",
       "@types/node": "^8.0.29",
