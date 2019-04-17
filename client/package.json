@@ -1,11 +1,10 @@
 {
-  "name": "douknowdawae",
+  "name": "douknowdawae-client",
   "version": "0.0.1",
   "description": "Crowdsourced UPLB Campus Map",
   "productName": "Do U Know Da Wae",
   "cordovaId": "org.cordova.quasar.app",
   "author": "kajeagentspi <jptagnepis@up.edu.ph>",
-  "private": true,
   "scripts": {
     "lint": "eslint --ext .js,.vue src",
     "test": "echo \"No test specified\" && exit 0"
