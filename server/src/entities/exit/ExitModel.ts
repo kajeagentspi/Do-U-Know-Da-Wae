@@ -1,11 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { Building } from '..';
+import { ChildEntity, Column, ManyToOne } from 'typeorm';
+import { Building, POI } from '..';
 
-@Entity()
-export class Exit {
-
-  @PrimaryGeneratedColumn()
-  id: number;
+@ChildEntity()
+export class Exit extends POI {
 
   @Column()
   lat: 'float';
@@ -17,4 +14,5 @@ export class Exit {
     onDelete: 'CASCADE'
   })
   building: Building;
+  
 }
