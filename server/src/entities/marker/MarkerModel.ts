@@ -7,10 +7,10 @@ export class Marker extends POI {
   @Column({ default: null })
   name: string;
 
-  @Column()
-  lat: 'double';
+  @Column({ type: 'double'})
+  lat: number;
 
-  @Column()
-  lng: 'double';
+  @Column({ type: 'double'})
+  lng: number;
 
 }

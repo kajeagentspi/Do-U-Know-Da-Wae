@@ -13,11 +13,11 @@ export class Stop extends POI {
   @Column()
   name: string;
 
-  @Column()
-  lat: 'double';
+  @Column({ type: 'double'})
+  lat: number;
 
-  @Column()
-  lng: 'double';
+  @Column({ type: 'double'})
+  lng: number;
 
   @Column({ type: 'enum', enum: StopDirection })
   direction: StopDirection

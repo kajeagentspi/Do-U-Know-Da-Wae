@@ -18,6 +18,9 @@ export class Path {
   })
   end: POI;
 
+  @Column()
+  type: 'string';
+  
 }
 
 @ChildEntity()
@@ -26,6 +29,12 @@ export class Walk extends Path {
   @Column('simple-json')
   latLngs: 'double'[][];
 
+  @Column()
+  distance: number;
+
+  @Column()
+  duration: number;
+
 }
 
 @ChildEntity()
@@ -33,6 +42,12 @@ export class Jeep extends Path {
 
   @Column('simple-json')
   latLngs: 'double'[][];
+
+  @Column()
+  distance: number;
+
+  @Column()
+  duration: number;
 
 }
 

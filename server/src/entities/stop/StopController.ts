@@ -26,9 +26,10 @@ export class StopController {
       const { uid } = await admin.auth().verifyIdToken(accessToken);
       const { type } = await this.userRepository.findOne({ uid });
       if (type === 'admin') {
-        if (id) {
-          await this.stopRepository.update(id, { lat, lng });
-          return this.stopRepository.findOne(id);
+        const stop = await this.stopRepository.findOne(id);
+        if (stop) {
+          await this.stopRepository.update(stop.id, { lat, lng });
+          return this.stopRepository.findOne(stop.id);
         } else {
           const stop = await this.stopRepository.save({ lat, lng });
           return this.stopRepository.findOne(stop.id);

@@ -1,6 +1,7 @@
 import { getRepository } from 'typeorm';
-import { Building, Stop, StopDirection } from '../entities';
+import { Building, Stop, StopDirection, User } from '../entities';
 import buildings from './buildings'
+import { UserType } from '../entities/user/UserModel';
 
 const seedData = {
   stops: [
@@ -64,12 +65,30 @@ const seedData = {
     { lat: 14.1676036, lng: 121.2430325, name: 'UP Gate', direction: StopDirection.KANAN },
     { lat: 14.1676533, lng: 121.2413970, name: 'Raymundo', direction: StopDirection.KANAN },
     { lat: 14.1677242, lng: 121.2416524, name: 'Raymundo', direction: StopDirection.KALIWA },
+  ],
+  users: [
+    {
+      name: 'Jake Marbert Tagnepis',
+      email: 'jptagnepis@up.edu.ph',
+      type: UserType.ADMIN,
+      uid: 'sxdtxH1nOiYizjEMFKjK2EtFruk1'
+    }
   ]
 }
 
 class Seeder {
   private buildingRepository = getRepository(Building);
   private stopRepository = getRepository(Stop);
+  private userRepository = getRepository(User);
+
+  async seedUsers() {
+    await Promise.all(
+      seedData.users.map(user => {
+        return this.userRepository.save(user);
+      }),
+    )
+  }
+
   async seedBuildings() {
     await Promise.all(
       buildings.features.map(building => {

@@ -31,9 +31,10 @@ export class RoomController {
       const { type } = await this.userRepository.findOne({ uid });
       
       if (type === 'admin') {
-        if (id) {
-          await this.roomRepository.update(id, { name, level });
-          return this.roomRepository.findOne(id, { relations: ['building'] });
+        const room = await this.roomRepository.findOne(id);
+        if (room) {
+          await this.roomRepository.update(room.id, { name, level });
+          return this.roomRepository.findOne(room.id, { relations: ['building'] });
         } else {
           const building = await this.buildingRepository.findOne(buildingId);
           const room = await this.roomRepository.save({ building, name, level });

@@ -23,9 +23,10 @@ export class ExitController {
       const { uid } = await admin.auth().verifyIdToken(accessToken);
       const { type } = await this.userRepository.findOne({ uid });
       if (type === 'admin') {
-        if (id) {
-          await this.exitRepository.update(id, { lat, lng });
-          return this.exitRepository.findOne(id, { relations: ['building'] });
+        const exit = await this.exitRepository.findOne(id);
+        if (exit) {
+          await this.exitRepository.update(exit.id, { lat, lng });
+          return this.exitRepository.findOne(exit.id, { relations: ['building'] });
         } else {
           const building = await this.buildingRepository.findOne(buildingId);
           const exit = await this.exitRepository.save({ building, lat, lng });

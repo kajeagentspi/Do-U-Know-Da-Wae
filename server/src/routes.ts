@@ -5,7 +5,8 @@ import {
   ExitRoutes,
   StopRoutes,
   MarkerRoutes,
-  PathRoutes
+  PathRoutes,
+  RouteRoutes,
 } from './entities';
 
 export const Routes = [
@@ -16,4 +17,5 @@ export const Routes = [
   ...StopRoutes,
   ...MarkerRoutes,
   ...PathRoutes,
+  ...RouteRoutes,
 ];

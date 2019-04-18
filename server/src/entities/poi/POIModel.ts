@@ -1,4 +1,4 @@
-import { PrimaryGeneratedColumn, OneToMany, Entity, TableInheritance } from 'typeorm';
+import { PrimaryGeneratedColumn, OneToMany, Entity, TableInheritance, Column } from 'typeorm';
 import { Path, Route } from '..';
 
 @Entity()
@@ -27,5 +27,8 @@ export class POI {
     onDelete: 'CASCADE'
   })
   endRoutes: Route[];
+  
+  @Column()
+  type: 'string';
   
 }

@@ -14,6 +14,7 @@ import { MarkerRoutes } from './marker/MarkerRoutes';
 import { Path, Jeep, Walk, Indoor } from './path/PathModel';
 import { PathRoutes } from './path/PathRoutes';
 import { Route } from './route/RouteModel';
+import { RouteRoutes } from './route/RouteRoutes';
 
 export {
   User,
@@ -31,9 +32,10 @@ export {
   Marker,
   MarkerRoutes,
   Path,
+  PathRoutes,
   Jeep,
   Walk,
   Indoor,
-  PathRoutes,
   Route,
+  RouteRoutes
 };

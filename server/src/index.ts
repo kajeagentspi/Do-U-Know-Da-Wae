@@ -7,7 +7,7 @@ import cors from 'cors';
 import firebaseAccountCredentials from './firebase.config.json';
 import { Request, Response } from 'express';
 import { Routes } from './routes';
-import { Building, Stop } from './entities';
+import { Building, Stop, User } from './entities';
 import Seeder from './database/seeder';
 
 createConnection().then(async connection => {
@@ -50,6 +50,12 @@ createConnection().then(async connection => {
   if (stops.length === 0) {
     console.log('Seeding Stops')
     seeder.seedStops();
+  }
+  const userRepository = getRepository(User);
+  const users = await stopRepository.find();
+  if (users.length === 0) {
+    console.log('Seeding Users')
+    seeder.seedUsers();
   }
   // start express server
   app.listen(3000);
