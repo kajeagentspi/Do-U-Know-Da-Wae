@@ -46,7 +46,7 @@ export class RoomController {
       }
     } catch (error) {
       return {
-        message: 'Invalid Credentials',
+        message: 'An Error Occurred',
         type: 'negative'
       }
     }
@@ -71,7 +71,7 @@ export class RoomController {
       }
     } catch (error) {
       return {
-        message: 'Invalid Credentials',
+        message: 'An Error Occurred',
         type: 'negative'
       }
     }

@@ -40,7 +40,7 @@ export class StopController {
       }
     } catch (error) {
       return {
-        message: 'Invalid Credentials',
+        message: 'An Error Occurred',
         type: 'negative'
       }
     }
@@ -65,7 +65,7 @@ export class StopController {
       }
     } catch (error) {
       return {
-        message: 'Invalid Credentials',
+        message: 'An Error Occurred',
         type: 'negative'
       }
     }
