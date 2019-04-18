@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Route } from '..';
 
 export enum UserType {
   VIEWER = 'viewer',
@@ -26,4 +27,10 @@ export class User {
 
   @Column()
   uid: string;
+
+  @OneToMany(type => Route, route => route.contributor, {
+    onDelete: 'CASCADE'
+  })
+  contributions: Route[];
+  
 }
