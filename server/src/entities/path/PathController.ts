@@ -64,7 +64,7 @@ export class PathController {
       }
     } catch (error) {
       return {
-        message: 'Invalid Credentials',
+        message: 'An Error Occurred',
         type: 'negative'
       }
     }

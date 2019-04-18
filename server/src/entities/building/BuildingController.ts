@@ -59,7 +59,7 @@ export class BuildingController {
       };
     } catch (error) {
       return {
-        message: 'Invalid Credentials',
+        message: 'An Error Occurred',
         type: 'negative'
       }
     }
@@ -84,7 +84,7 @@ export class BuildingController {
       };
     } catch (error) {
       return {
-        message: 'Invalid Credentials',
+        message: 'An Error Occurred',
         type: 'negative'
       }
     }

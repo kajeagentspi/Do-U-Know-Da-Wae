@@ -33,7 +33,7 @@ export class RouteController {
       // }
     } catch (error) {
       return {
-        message: 'Invalid Credentials',
+        message: 'An Error Occurred',
         type: 'negative'
       }
     }
@@ -58,7 +58,7 @@ export class RouteController {
       }
     } catch (error) {
       return {
-        message: 'Invalid Credentials',
+        message: 'An Error Occurred',
         type: 'negative'
       }
     }
