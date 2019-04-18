@@ -31,11 +31,16 @@ export class ExitController {
           const exit = await this.exitRepository.save({ building, lat, lng });
           return this.exitRepository.findOne(exit.id, { relations: ['building'] });
         }
-      } else {
-        return [];
+      }
+      return {
+        message: 'Invalid Operation',
+        type: 'negative'
       }
     } catch (error) {
-      return [];
+      return {
+        message: 'Invalid Credentials',
+        type: 'negative'
+      }
     }
   }
 
@@ -47,10 +52,20 @@ export class ExitController {
       if (type === 'admin') {
         let exit = await this.exitRepository.findOne(request.params.id);
         await this.exitRepository.remove(exit);
+        return {
+          message: 'Successfully Deleted Exit',
+          type: 'positive'
+        };
       }
-      return [];
+      return {
+        message: 'Invalid Operation',
+        type: 'negative'
+      }
     } catch (error) {
-      return [];
+      return {
+        message: 'Invalid Credentials',
+        type: 'negative'
+      }
     }
   }
   

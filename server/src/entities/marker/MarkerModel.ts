@@ -8,9 +8,9 @@ export class Marker extends POI {
   name: string;
 
   @Column()
-  lat: number;
+  lat: 'double';
 
   @Column()
-  lng: number;
+  lng: 'double';
 
 }

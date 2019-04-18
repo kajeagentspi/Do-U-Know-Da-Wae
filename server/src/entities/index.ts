@@ -11,7 +11,7 @@ import { Stop, StopDirection } from './stop/StopModel';
 import { StopRoutes } from './stop/StopRoutes';
 import { Marker } from './marker/MarkerModel';
 import { MarkerRoutes } from './marker/MarkerRoutes';
-import { Path } from './path/PathModel';
+import { Path, Jeep, Walk, Indoor } from './path/PathModel';
 import { PathRoutes } from './path/PathRoutes';
 import { Route } from './route/RouteModel';
 
@@ -31,6 +31,9 @@ export {
   Marker,
   MarkerRoutes,
   Path,
+  Jeep,
+  Walk,
+  Indoor,
   PathRoutes,
   Route,
 };
