@@ -25,9 +25,6 @@ export class UserController {
       } else {
         type = 'viewer';
       }
-      if (email === 'jptagnepis@up.edu.ph') {
-        type = 'admin'
-      }
     }
     const user = await this.userRepository.findOne({ uid });
     if (user) {

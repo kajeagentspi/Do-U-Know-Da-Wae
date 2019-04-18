@@ -22,9 +22,10 @@ export class MarkerController {
       const { uid } = await admin.auth().verifyIdToken(accessToken);
       const { type } = await this.userRepository.findOne({ uid });
       if (type === 'admin' || type === 'contributor') {
-        if (id) {
-          await this.markerRepository.update(id, { lat, lng });
-          return this.markerRepository.findOne(id);
+        const marker = await this.markerRepository.findOne(id);
+        if (marker) {
+          await this.markerRepository.update(marker.id, { lat, lng });
+          return this.markerRepository.findOne(marker.id);
         } else {
           const marker = await this.markerRepository.save({ lat, lng });
           return this.markerRepository.findOne(marker.id);
