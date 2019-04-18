@@ -8,5 +8,4 @@ export const AUTH = fireApp.auth();
 
 export default ({ Vue }) => {
   Vue.prototype.$auth = AUTH;
-  console.log(AUTH);
 };

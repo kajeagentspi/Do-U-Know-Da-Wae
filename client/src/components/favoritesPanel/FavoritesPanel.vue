@@ -1,6 +1,6 @@
 <template>
   <q-card-main>
-    <q-card v-if="credential">
+    <q-card v-if="accessToken">
       <q-item>
         <q-item-side :avatar="profile.picture"/>
         <q-item-main :label="`Hello ${profile.given_name}`" label-lines="1" />
@@ -14,31 +14,30 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 import firebase from 'firebase/app';
-import { SET_USER } from '../../store/types';
 
 export default {
   name: 'Favorites',
   computed: {
-    ...mapState('auth', ['credential', 'profile']),
+    ...mapState('auth', ['accessToken', 'profile']),
   },
   methods: {
-    ...mapMutations('auth', {
-      setUser: SET_USER,
-    }),
+    ...mapActions('auth', ['setUser']),
     async login() {
       try {
         const provider = new firebase.auth.GoogleAuthProvider();
         const result = await this.$auth.signInWithPopup(provider);
-        const { additionalUserInfo: { profile }, credential, user } = result;
-        this.setUser({ profile, credential, user });
+        const { additionalUserInfo: { profile }, user } = result;
+        const accessToken = await this.$auth.currentUser.getIdToken(/* forceRefresh */ true);
+        this.setUser({ profile, accessToken, user });
         this.$q.notify({
           message: 'Successfully Logged in',
           color: 'positive',
           position: 'top',
         });
       } catch (error) {
+        console.log(error);
         this.$q.notify({
           message: 'Error Logging in',
           color: 'negative',
@@ -49,7 +48,7 @@ export default {
     async logout() {
       try {
         await this.$auth.signOut();
-        this.setUser({ profile: null, credential: null, user: null });
+        this.setUser({ profile: null, accessToken: null, user: null });
         this.$q.notify({
           message: 'Successfully Logged out',
           color: 'positive',

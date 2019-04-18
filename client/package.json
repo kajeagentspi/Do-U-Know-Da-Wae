@@ -23,6 +23,8 @@
     "vuex-persist": "^2.0.0"
   },
   "devDependencies": {
+    "@firebase/app-types": "0.x",
+    "@firebase/util": "0.x",
     "@vue/eslint-config-airbnb": "^4.0.0",
     "babel-eslint": "^10.0.1",
     "eslint": "^5.10.0",
