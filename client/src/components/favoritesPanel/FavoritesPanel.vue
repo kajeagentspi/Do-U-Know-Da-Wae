@@ -30,6 +30,7 @@ export default {
         const result = await this.$auth.signInWithPopup(provider);
         const { additionalUserInfo: { profile }, user } = result;
         const accessToken = await this.$auth.currentUser.getIdToken(/* forceRefresh */ true);
+        console.log(accessToken);
         this.setUser({ profile, accessToken, user });
         this.$q.notify({
           message: 'Successfully Logged in',
@@ -37,7 +38,6 @@ export default {
           position: 'top',
         });
       } catch (error) {
-        console.log(error);
         this.$q.notify({
           message: 'Error Logging in',
           color: 'negative',
