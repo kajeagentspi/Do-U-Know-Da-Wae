@@ -19,18 +19,13 @@ export class User {
   @Column()
   email: string;
 
-  @Column({
-    type: 'enum',
-    enum: UserType,
-  })
+  @Column({ type: 'enum', enum: UserType })
   type: UserType;
 
   @Column()
   uid: string;
 
-  @OneToMany(type => Route, route => route.contributor, {
-    onDelete: 'CASCADE'
-  })
+  @OneToMany(type => Route, route => route.contributor)
   contributions: Route[];
   
 }

@@ -30,5 +30,5 @@ export const BuildingRoutes = [
     route: '/building/:id',
     controller: BuildingController,
     action: 'remove'
-  }
+  },
 ];

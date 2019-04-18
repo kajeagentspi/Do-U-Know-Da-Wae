@@ -5,10 +5,10 @@ import { Building, POI } from '..';
 export class Exit extends POI {
 
   @Column()
-  lat: 'float';
+  lat: number;
 
   @Column()
-  lng: 'float';
+  lng: number;
 
   @ManyToOne(type => Building, building => building.exits, {
     onDelete: 'CASCADE'

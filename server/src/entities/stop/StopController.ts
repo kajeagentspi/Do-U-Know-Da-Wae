@@ -1,40 +1,37 @@
 import { getRepository } from 'typeorm';
 import { NextFunction, Request, Response } from 'express';
-import { Building, Room, User } from '..';
+import { User, Stop } from '..';
 import * as admin from 'firebase-admin';
 
-export class RoomController {
+export class StopController {
 
-  private buildingRepository = getRepository(Building);
-  private roomRepository = getRepository(Room);
+  private stopRepository = getRepository(Stop);
   private userRepository = getRepository(User);
 
   async all(request: Request, response: Response, next: NextFunction) {
-    return this.roomRepository.find({ ...request.query, relations: ['building']});
+    return this.stopRepository.find(request.query);
   }
 
   async one(request: Request, response: Response, next: NextFunction) {
-    return this.roomRepository.findOne(request.params.id, { relations: ['building'] });
+    return this.stopRepository.findOne(request.params.id);
   }
 
   async save(request: Request, response: Response, next: NextFunction) {
     try {
-      const { buildingId, name, level, accessToken, id } = request.body;
+      const { lat, lng, accessToken, id } = request.body;
       const { uid } = await admin.auth().verifyIdToken(accessToken);
       const { type } = await this.userRepository.findOne({ uid });
-      
       if (type === 'admin') {
         if (id) {
-          await this.roomRepository.update(id, { name, level });
-          return this.roomRepository.findOne(id, { relations: ['building'] });
+          await this.stopRepository.update(id, { lat, lng });
+          return this.stopRepository.findOne(id);
         } else {
-          const building = await this.buildingRepository.findOne(buildingId);
-          const room = await this.roomRepository.save({ building, name, level });
-          return this.roomRepository.findOne(room.id, { relations: ['building'] });
+          const stop = await this.stopRepository.save({ lat, lng });
+          return this.stopRepository.findOne(stop.id);
         }
       } else {
         return [];
-      }  
+      }
     } catch (error) {
       return [];
     }
@@ -46,13 +43,13 @@ export class RoomController {
       const { uid } = await admin.auth().verifyIdToken(accessToken);
       const { type } = await this.userRepository.findOne({ uid });
       if (type === 'admin') {
-        let room = await this.roomRepository.findOne(request.params.id);
-        await this.roomRepository.remove(room);
+        let stop = await this.stopRepository.findOne(request.params.id);
+        await this.stopRepository.remove(stop);
       }
       return [];
     } catch (error) {
       return [];
     }
   }
-
+  
 }

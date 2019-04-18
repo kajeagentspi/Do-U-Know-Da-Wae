@@ -2,8 +2,8 @@ import { Column, ChildEntity } from 'typeorm';
 import { POI } from '..';
 
 export enum Direction {
-  KALIWA = "kaliwa",
-  KANAN = "kanan",
+  KALIWA = 'kaliwa',
+  KANAN = 'kanan',
 }
 
 @ChildEntity()
@@ -15,16 +15,12 @@ export class Stop extends POI {
   @Column()
 
   @Column()
-  lat: 'float';
+  lat: number;
 
   @Column()
-  lng: 'float';
+  lng: number;
 
-  @Column({
-    type: "enum",
-    enum: Direction,
-    default: Direction.KALIWA
-  })
+  @Column({ type: 'enum', enum: Direction })
   direction: Direction
   
 }

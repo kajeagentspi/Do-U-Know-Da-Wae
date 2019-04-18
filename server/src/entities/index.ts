@@ -7,8 +7,12 @@ import { Room } from './room/RoomModel';
 import { RoomRoutes } from './room/RoomRoutes';
 import { Exit } from './exit/ExitModel';
 import { ExitRoutes } from './exit/ExitRoutes';
+import { Stop } from './stop/StopModel';
+import { StopRoutes } from './stop/StopRoutes';
 import { Marker } from './marker/MarkerModel';
+import { MarkerRoutes } from './marker/MarkerRoutes';
 import { Path } from './path/PathModel';
+import { PathRoutes } from './path/PathRoutes';
 import { Route } from './route/RouteModel';
 
 export {
@@ -21,7 +25,11 @@ export {
   RoomRoutes,
   Exit,
   ExitRoutes,
+  Stop,
+  StopRoutes,
   Marker,
+  MarkerRoutes,
   Path,
+  PathRoutes,
   Route,
 };

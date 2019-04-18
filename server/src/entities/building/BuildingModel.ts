@@ -22,14 +22,10 @@ export class Building {
   @Column({ default: false })
   active: boolean;
 
-  @OneToMany(type => Room, room => room.building, {
-    onDelete: 'CASCADE'
-  })
+  @OneToMany(type => Room, room => room.building)
   rooms: Room[];
 
-  @OneToMany(type => Exit, exit => exit.building, {
-    onDelete: 'CASCADE'
-  })
+  @OneToMany(type => Exit, exit => exit.building)
   exits: Exit[];
   
 }

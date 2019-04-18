@@ -24,5 +24,5 @@ export const UserRoutes = [
     route: '/user/:id',
     controller: UserController,
     action: 'remove'
-  }
+  },
 ];

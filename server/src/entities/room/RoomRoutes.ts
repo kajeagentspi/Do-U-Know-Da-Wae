@@ -24,5 +24,5 @@ export const RoomRoutes = [
     route: '/room/:id',
     controller: RoomController,
     action: 'remove'
-  }
+  },
 ];
