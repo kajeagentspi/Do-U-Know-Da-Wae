@@ -1,10 +1,11 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
-export enum Type {
+export enum UserType {
   VIEWER = 'viewer',
   CONTRIBUTOR = 'contributor',
   ADMIN = 'admin'
 }
+
 @Entity()
 export class User {
 
@@ -19,9 +20,9 @@ export class User {
 
   @Column({
     type: 'enum',
-    enum: Type,
+    enum: UserType,
   })
-  type: Type;
+  type: UserType;
 
   @Column()
   uid: string;
