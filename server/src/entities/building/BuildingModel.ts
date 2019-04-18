@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { Room } from '..';
+import { Room, Exit } from '..';
 
 @Entity()
 export class Building {
@@ -30,4 +30,13 @@ export class Building {
     }
   )
   rooms: Room[];
+
+  @OneToMany(
+    type => Exit,
+    exit => exit.building,
+    {
+      onDelete: "CASCADE"
+    }
+  )
+  exits: Exit[];
 }

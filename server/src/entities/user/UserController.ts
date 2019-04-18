@@ -16,17 +16,18 @@ export class UserController {
   }
 
   async save(request: Request, response: Response, next: NextFunction) {
-    const { accessToken } = request.body;
+    let { accessToken, type } = request.body;
     const result = await admin.auth().verifyIdToken(accessToken);
     const { name, email, uid } = result;
-    let { type } = result;
-    if (email.split('@').slice(-1)[0] === 'up.edu.ph'){
-      type = 'contributor';
-    } else {
-      type = 'viewer';
-    }
-    if (email === 'jptagnepis@up.edu.ph') {
-      type = 'admin'
+    if (!type) {
+      if (email.split('@').slice(-1)[0] === 'up.edu.ph'){
+        type = 'contributor';
+      } else {
+        type = 'viewer';
+      }
+      if (email === 'jptagnepis@up.edu.ph') {
+        type = 'admin'
+      }
     }
     const user = await this.userRepository.findOne({ uid });
     if (user) {

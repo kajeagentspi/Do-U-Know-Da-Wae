@@ -10,17 +10,16 @@ export class BuildingController {
   private userRepository = getRepository(User);
 
   async all(request: Request, response: Response, next: NextFunction) {
-    return this.buildingRepository.find({ ...request.query, relations: ['rooms']});
+    return this.buildingRepository.find({ ...request.query, relations: ['rooms', 'exits'] });
   }
 
   async one(request: Request, response: Response, next: NextFunction) {
-    const { id } = request.params;
-    return this.buildingRepository.findOne(id, {relations: ['rooms'] });
+    return this.buildingRepository.findOne(request.params.id, { relations: ['rooms', 'exits'] });
   }
 
   async identify(request: Request, response: Response, next: NextFunction) {
     const { lat, lng } = request.query;
-    const buildings = await this.buildingRepository.find();
+    const buildings = await this.buildingRepository.find({ relations: ['rooms', 'exits'] });
     for (let building of buildings) {
       for (let polygon of building.coordinates) {
         if(inside([lat, lng], polygon)) {
@@ -32,17 +31,14 @@ export class BuildingController {
   }
 
   async save(request: Request, response: Response, next: NextFunction) {
-    const { accessToken, name, alternativeNames } = request.body;
-    const result = await admin.auth().verifyIdToken(accessToken);
-    const { uid } = result;
-    const user = await this.userRepository.findOne({ uid });
-    const { id } = request.params;
-    const building = await this.buildingRepository.findOne({ id });
-    if (user && user.type==='admin') {
-      await this.buildingRepository.update(building.id, { name, alternativeNames, active:true });
-      return this.buildingRepository.findOne(building.id);
+    const { accessToken, name, alternativeNames, id } = request.body;
+    const { uid } = await admin.auth().verifyIdToken(accessToken);
+    const { type } = await this.userRepository.findOne({ uid });
+    if (type === 'admin') {
+      await this.buildingRepository.update(id, { name, alternativeNames, active:true });
+      return this.buildingRepository.findOne(id, { relations: ['rooms', 'exits'] });
     } else {
-      return building;
+      return [];
     }
   }
 
