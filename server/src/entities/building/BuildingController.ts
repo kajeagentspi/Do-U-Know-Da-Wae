@@ -1,4 +1,4 @@
-import { getRepository } from 'typeorm';
+import { getRepository, Like } from 'typeorm';
 import { NextFunction, Request, Response } from 'express';
 import { Building, User } from '..';
 import * as admin from 'firebase-admin';
@@ -10,7 +10,18 @@ export class BuildingController {
   private userRepository = getRepository(User);
 
   async all(request: Request, response: Response, next: NextFunction) {
-    return this.buildingRepository.find({ ...request.query, relations: ['rooms', 'exits'] });
+    let { name, alternativeNames, ...query } = request.query;
+    if (!name) {
+      name = ''
+    }
+    if (!alternativeNames) {
+      alternativeNames = ''
+    }
+    return this.buildingRepository.find({ where: {
+      ...query,
+      name: Like(`%${name}%`),
+      alternativeNames: Like(`%${alternativeNames}%`),
+    }, relations: ['rooms', 'exits'] });
   }
 
   async one(request: Request, response: Response, next: NextFunction) {

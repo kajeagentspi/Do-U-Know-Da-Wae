@@ -12,7 +12,7 @@ export class UserController {
   }
 
   async one(request: Request, response: Response, next: NextFunction) {
-    return this.userRepository.findOne(request.params.id);
+    return this.userRepository.findOne(request.params.id, { relations: ['contributions'] });
   }
 
   async save(request: Request, response: Response, next: NextFunction) {

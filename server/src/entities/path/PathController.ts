@@ -10,11 +10,11 @@ export class PathController {
   private POIRepository = getRepository(POI);
 
   async all(request: Request, response: Response, next: NextFunction) {
-    return this.pathRepository.find(request.query);
+    return this.pathRepository.find({ where: { ...request.query }, relations: ['start', 'end'] });
   }
 
   async one(request: Request, response: Response, next: NextFunction) {
-    return this.pathRepository.findOne(request.params.id);
+    return this.pathRepository.findOne(request.params.id, { relations: ['start', 'end'] });
   }
   
   async save(request: Request, response: Response, next: NextFunction) {

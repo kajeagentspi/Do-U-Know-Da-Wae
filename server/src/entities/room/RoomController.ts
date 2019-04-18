@@ -1,4 +1,4 @@
-import { getRepository } from 'typeorm';
+import { getRepository, Like } from 'typeorm';
 import { NextFunction, Request, Response } from 'express';
 import { Building, Room, User } from '..';
 import * as admin from 'firebase-admin';
@@ -10,7 +10,14 @@ export class RoomController {
   private userRepository = getRepository(User);
 
   async all(request: Request, response: Response, next: NextFunction) {
-    return this.roomRepository.find({ ...request.query, relations: ['building']});
+    let { name, ...query} = request.query;
+    if(!name){
+      name = '';
+    }
+    return this.roomRepository.find({ where: {
+      name: Like(`${name}`),
+      ...query
+    }, relations: ['building']});
   }
 
   async one(request: Request, response: Response, next: NextFunction) {

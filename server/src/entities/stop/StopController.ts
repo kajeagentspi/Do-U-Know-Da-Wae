@@ -1,4 +1,4 @@
-import { getRepository } from 'typeorm';
+import { getRepository, Like } from 'typeorm';
 import { NextFunction, Request, Response } from 'express';
 import { User, Stop } from '..';
 import * as admin from 'firebase-admin';
@@ -9,7 +9,11 @@ export class StopController {
   private userRepository = getRepository(User);
 
   async all(request: Request, response: Response, next: NextFunction) {
-    return this.stopRepository.find(request.query);
+    let { direction, ...query } = request.query;
+    if (!direction) {
+      direction = ''
+    }
+    return this.stopRepository.find({ where: { ...query, direction: Like(`%${direction}%`) } });
   }
 
   async one(request: Request, response: Response, next: NextFunction) {
