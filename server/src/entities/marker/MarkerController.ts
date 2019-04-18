@@ -29,11 +29,16 @@ export class MarkerController {
           const marker = await this.markerRepository.save({ lat, lng });
           return this.markerRepository.findOne(marker.id);
         }
-      } else {
-        return [];
+      }
+      return {
+        message: 'Invalid Operation',
+        type: 'negative'
       }
     } catch (error) {
-      return [];
+      return {
+        message: 'Invalid Credentials',
+        type: 'negative'
+      }
     }
   }
 
@@ -45,11 +50,20 @@ export class MarkerController {
       if (type === 'admin') {
         let marker = await this.markerRepository.findOne(request.params.id);
         await this.markerRepository.remove(marker);
-        return [];
+        return {
+          message: 'Successfully Deleted Marker',
+          type: 'positive'
+        };
       }
-      return [];
+      return {
+        message: 'Invalid Operation',
+        type: 'negative'
+      }
     } catch (error) {
-      return [];
+      return {
+        message: 'Invalid Credentials',
+        type: 'negative'
+      }
     }
   }
 

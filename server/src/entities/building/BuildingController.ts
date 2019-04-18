@@ -38,7 +38,10 @@ export class BuildingController {
         }
       }
     }
-    return [];
+    return {
+      message: 'Building not found',
+      type: 'negative'
+    };
   }
 
   async save(request: Request, response: Response, next: NextFunction) {
@@ -49,11 +52,16 @@ export class BuildingController {
       if (type === 'admin') {
         await this.buildingRepository.update(id, { name, alternativeNames, active:true });
         return this.buildingRepository.findOne(id, { relations: ['rooms', 'exits'] });
-      } else {
-        return [];
-      }  
+      }
+      return {
+        message: 'Invalid Operation',
+        type: 'negative'
+      };
     } catch (error) {
-      return [];
+      return {
+        message: 'Invalid Credentials',
+        type: 'negative'
+      }
     }
   }
 
@@ -65,10 +73,20 @@ export class BuildingController {
       if (type === 'admin') {
         let building = await this.buildingRepository.findOne(request.params.id);
         await this.buildingRepository.remove(building);
+        return {
+          message: 'Successfully Deleted Building',
+          type: 'positive'
+        };
       }
-      return [];
+      return {
+        message: 'Invalid Operation',
+        type: 'negative'
+      };
     } catch (error) {
-      return [];
+      return {
+        message: 'Invalid Credentials',
+        type: 'negative'
+      }
     }
   }
 

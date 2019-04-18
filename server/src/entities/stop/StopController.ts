@@ -33,11 +33,16 @@ export class StopController {
           const stop = await this.stopRepository.save({ lat, lng });
           return this.stopRepository.findOne(stop.id);
         }
-      } else {
-        return [];
+      }
+      return {
+        message: 'Invalid Operation',
+        type: 'negative'
       }
     } catch (error) {
-      return [];
+      return {
+        message: 'Invalid Credentials',
+        type: 'negative'
+      }
     }
   }
 
@@ -49,10 +54,20 @@ export class StopController {
       if (type === 'admin') {
         let stop = await this.stopRepository.findOne(request.params.id);
         await this.stopRepository.remove(stop);
+        return {
+          message: 'Successfully Deleted Stop',
+          type: 'positive'
+        };
       }
-      return [];
+      return {
+        message: 'Invalid Operation',
+        type: 'negative'
+      }
     } catch (error) {
-      return [];
+      return {
+        message: 'Invalid Credentials',
+        type: 'negative'
+      }
     }
   }
   

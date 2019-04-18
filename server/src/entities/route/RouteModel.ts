@@ -17,9 +17,9 @@ export class Route {
   })
   end: POI;
 
-  @ManyToMany(type => Path)
-  @JoinTable()
-  paths: Path[];
+  // @ManyToMany(type => Path)
+  // @JoinTable()
+  // paths: Path[];
 
   @ManyToOne(type => User, user => user.contributions, {
     onDelete: 'CASCADE'

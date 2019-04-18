@@ -39,11 +39,16 @@ export class RoomController {
           const room = await this.roomRepository.save({ building, name, level });
           return this.roomRepository.findOne(room.id, { relations: ['building'] });
         }
-      } else {
-        return [];
-      }  
+      }
+      return {
+        message: 'Operation not permitted',
+        type: 'negative'
+      }
     } catch (error) {
-      return [];
+      return {
+        message: 'Invalid Credentials',
+        type: 'negative'
+      }
     }
   }
 
@@ -55,10 +60,20 @@ export class RoomController {
       if (type === 'admin') {
         let room = await this.roomRepository.findOne(request.params.id);
         await this.roomRepository.remove(room);
+        return {
+          message: 'Successfully Deleted Room',
+          type: 'positive'
+        };
       }
-      return [];
+      return {
+        message: 'Operation not permitted',
+        type: 'negative'
+      }
     } catch (error) {
-      return [];
+      return {
+        message: 'Invalid Credentials',
+        type: 'negative'
+      }
     }
   }
 

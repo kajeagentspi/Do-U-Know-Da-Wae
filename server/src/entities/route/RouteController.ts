@@ -30,11 +30,12 @@ export class RouteController {
       //     const marker = await this.routeRepository.save({ lat, lng });
       //     return this.routeRepository.findOne(marker.id);
       //   }
-      // } else {
-      //   return [];
       // }
     } catch (error) {
-      return [];
+      return {
+        message: 'Invalid Credentials',
+        type: 'negative'
+      }
     }
   }
 
@@ -46,10 +47,20 @@ export class RouteController {
       let route = await this.routeRepository.findOne(request.params.id);
       if (user.type === 'admin' || user.id === route.contributor.id) {
         await this.routeRepository.remove(route);
+        return {
+          message: 'Successfully Deleted Route',
+          type: 'positive'
+        };
       }
-      return [];
+      return {
+        message: 'Operation not permitted',
+        type: 'negative'
+      }
     } catch (error) {
-      return [];
+      return {
+        message: 'Invalid Credentials',
+        type: 'negative'
+      }
     }
   }
 

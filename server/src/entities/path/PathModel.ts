@@ -1,12 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ChildEntity, TableInheritance } from 'typeorm';
 import { POI } from '..';
 
-export enum PathType {
-  JEEP = 'jeep',
-  WALK = 'walk',
-}
-
 @Entity()
+@TableInheritance({ column: { type: 'varchar', name: 'type' } })
 export class Path {
 
   @PrimaryGeneratedColumn()
@@ -22,10 +18,28 @@ export class Path {
   })
   end: POI;
 
-  @Column({ type: 'enum', enum: PathType })
-  type: PathType;
+}
+
+@ChildEntity()
+export class Walk extends Path {
 
   @Column('simple-json')
-  latLngs: number[][];
-  
+  latLngs: 'double'[][];
+
+}
+
+@ChildEntity()
+export class Jeep extends Path {
+
+  @Column('simple-json')
+  latLngs: 'double'[][];
+
+}
+
+@ChildEntity()
+export class Indoor extends Path {
+
+  @Column('simple-json')
+  instructions: string[];
+
 }

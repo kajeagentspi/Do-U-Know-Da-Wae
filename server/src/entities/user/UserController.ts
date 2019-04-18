@@ -46,10 +46,20 @@ export class UserController {
       if (type === 'admin') {
         let user = await this.userRepository.findOne(request.params.id);
         await this.userRepository.remove(user);
+        return {
+          message: 'Successfully Deleted User',
+          type: 'positive'
+        };
       }
-      return [];
+      return {
+        message: 'Invalid Operation',
+        type: 'negative'
+      }
     } catch (error) {
-      return [];
+      return {
+        message: 'Invalid Credentials',
+        type: 'negative'
+      }
     }
   }
 

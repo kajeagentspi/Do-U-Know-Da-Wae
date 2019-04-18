@@ -25,7 +25,9 @@ export class User {
   @Column()
   uid: string;
 
-  @OneToMany(type => Route, route => route.contributor)
+  @OneToMany(type => Route, route => route.contributor, {
+    onDelete: 'CASCADE'
+  })
   contributions: Route[];
   
 }
