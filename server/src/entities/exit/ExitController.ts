@@ -10,7 +10,7 @@ export class ExitController {
   private userRepository = getRepository(User);
 
   async all(request: Request, response: Response, next: NextFunction) {
-    return this.exitRepository.find({ ...request.query, relations: ['building']});
+    return this.exitRepository.find({ where: { ...request.query }, relations: ['building']});
   }
 
   async one(request: Request, response: Response, next: NextFunction) {

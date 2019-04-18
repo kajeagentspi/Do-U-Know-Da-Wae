@@ -9,11 +9,11 @@ export class RouteController {
   private userRepository = getRepository(User);
 
   async all(request: Request, response: Response, next: NextFunction) {
-    return this.routeRepository.find(request.query);
+    return this.routeRepository.find({ where: { ...request.query }, relations: ['start', 'end', 'paths'] });
   }
 
   async one(request: Request, response: Response, next: NextFunction) {
-    return this.routeRepository.findOne(request.params.id);
+    return this.routeRepository.findOne(request.params.id, { relations: ['start', 'end', 'paths'] });
   }
 
   async save(request: Request, response: Response, next: NextFunction) {
