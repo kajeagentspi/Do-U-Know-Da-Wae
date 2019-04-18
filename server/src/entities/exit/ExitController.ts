@@ -18,26 +18,40 @@ export class ExitController {
   }
 
   async save(request: Request, response: Response, next: NextFunction) {
-    const { buildingId, lat, lng, accessToken, id } = request.body;
-    const { uid } = await admin.auth().verifyIdToken(accessToken);
-    const { type } = await this.userRepository.findOne({ uid });
-    if (type === 'admin') {
-      if (id) {
-        await this.exitRepository.update(id, { lat, lng });
-        return this.exitRepository.findOne(id, { relations: ['building'] });
+    try {
+      const { buildingId, lat, lng, accessToken, id } = request.body;
+      const { uid } = await admin.auth().verifyIdToken(accessToken);
+      const { type } = await this.userRepository.findOne({ uid });
+      if (type === 'admin') {
+        if (id) {
+          await this.exitRepository.update(id, { lat, lng });
+          return this.exitRepository.findOne(id, { relations: ['building'] });
+        } else {
+          const building = await this.buildingRepository.findOne(buildingId);
+          const exit = await this.exitRepository.save({ building, lat, lng });
+          return this.exitRepository.findOne(exit.id, { relations: ['building'] });
+        }
       } else {
-        const building = await this.buildingRepository.findOne(buildingId);
-        await this.exitRepository.save({ building, lat, lng });
-        return this.exitRepository.findOne(id, { relations: ['building'] });
+        return [];
       }
-    } else {
-      return []
+    } catch (error) {
+      return [];
     }
   }
 
   async remove(request: Request, response: Response, next: NextFunction) {
-    let exit = await this.exitRepository.findOne(request.params.id);
-    await this.exitRepository.remove(exit);
+    try {
+      const { accessToken } = request.body;
+      const { uid } = await admin.auth().verifyIdToken(accessToken);
+      const { type } = await this.userRepository.findOne({ uid });
+      if (type === 'admin') {
+        let exit = await this.exitRepository.findOne(request.params.id);
+        await this.exitRepository.remove(exit);
+      }
+      return [];
+    } catch (error) {
+      return [];
+    }
   }
-
+  
 }

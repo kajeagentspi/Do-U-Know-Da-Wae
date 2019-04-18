@@ -1,6 +1,11 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 import { POI } from '..';
 
+export enum PathType {
+  JEEP = 'jeep',
+  WALK = 'walk',
+}
+
 @Entity()
 export class Path {
 
@@ -17,10 +22,10 @@ export class Path {
   })
   end: POI;
 
-  @Column()
-  name: string;
+  @Column({ type: 'enum', enum: PathType })
+  type: PathType;
 
-  @Column({ default: 1 })
-  level: Number;
+  @Column('simple-json')
+  latLngs: number[][];
   
 }

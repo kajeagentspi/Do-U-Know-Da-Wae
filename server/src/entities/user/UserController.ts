@@ -39,8 +39,18 @@ export class UserController {
   }
 
   async remove(request: Request, response: Response, next: NextFunction) {
-    let user = await this.userRepository.findOne(request.params.id);
-    await this.userRepository.remove(user);
+    try {
+      const { accessToken } = request.body;
+      const { uid } = await admin.auth().verifyIdToken(accessToken);
+      const { type } = await this.userRepository.findOne({ uid });
+      if (type === 'admin') {
+        let user = await this.userRepository.findOne(request.params.id);
+        await this.userRepository.remove(user);
+      }
+      return [];
+    } catch (error) {
+      return [];
+    }
   }
 
 }

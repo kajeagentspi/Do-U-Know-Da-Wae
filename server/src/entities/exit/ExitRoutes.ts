@@ -24,5 +24,5 @@ export const ExitRoutes = [
     route: '/room/:id',
     controller: ExitController,
     action: 'remove'
-  }
+  },
 ];

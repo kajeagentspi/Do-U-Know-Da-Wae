@@ -31,20 +31,34 @@ export class BuildingController {
   }
 
   async save(request: Request, response: Response, next: NextFunction) {
-    const { accessToken, name, alternativeNames, id } = request.body;
-    const { uid } = await admin.auth().verifyIdToken(accessToken);
-    const { type } = await this.userRepository.findOne({ uid });
-    if (type === 'admin') {
-      await this.buildingRepository.update(id, { name, alternativeNames, active:true });
-      return this.buildingRepository.findOne(id, { relations: ['rooms', 'exits'] });
-    } else {
+    try {
+      const { accessToken, name, alternativeNames, id } = request.body;
+      const { uid } = await admin.auth().verifyIdToken(accessToken);
+      const { type } = await this.userRepository.findOne({ uid });
+      if (type === 'admin') {
+        await this.buildingRepository.update(id, { name, alternativeNames, active:true });
+        return this.buildingRepository.findOne(id, { relations: ['rooms', 'exits'] });
+      } else {
+        return [];
+      }  
+    } catch (error) {
       return [];
     }
   }
 
   async remove(request: Request, response: Response, next: NextFunction) {
-    let building = await this.buildingRepository.findOne(request.params.id);
-    await this.buildingRepository.remove(building);
+    try {
+      const { accessToken } = request.body;
+      const { uid } = await admin.auth().verifyIdToken(accessToken);
+      const { type } = await this.userRepository.findOne({ uid });
+      if (type === 'admin') {
+        let building = await this.buildingRepository.findOne(request.params.id);
+        await this.buildingRepository.remove(building);
+      }
+      return [];
+    } catch (error) {
+      return [];
+    }
   }
 
 }
