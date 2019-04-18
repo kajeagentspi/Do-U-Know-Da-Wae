@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { createConnection } from 'typeorm';
+import { createConnection, getRepository } from 'typeorm';
 import express from 'express';
 import bodyParser from 'body-parser';
 import * as admin from 'firebase-admin';
@@ -7,6 +7,8 @@ import cors from 'cors';
 import firebaseAccountCredentials from './firebase.config.json';
 import { Request, Response } from 'express';
 import { Routes } from './routes';
+import { Building } from './entities';
+import Seeder from './database/seeder';
 
 createConnection().then(async connection => {
 
@@ -36,26 +38,16 @@ createConnection().then(async connection => {
 
   // setup express app here
   // ...
-
+  const seeder = new Seeder();
+  const buildingRepository = getRepository(Building);
+  const buildings = await buildingRepository.find();
+  if (buildings.length === 0) {
+    console.log('Seeding Buildings')
+    seeder.seedBuildings();
+  }
+  
   // start express server
   app.listen(3000);
 
-  // insert new users for test
-  // await connection.manager.save(connection.manager.create(User, {
-  //     firstName: 'Timber',
-  //     lastName: 'Saw',
-  //     age: 27
-  // }));
-  // await connection.manager.save(connection.manager.create(User, {
-  //     firstName: 'Phantom',
-  //     lastName: 'Assassin',
-  //     age: 24
-  // }));
-  // await connection.manager.save(connection.manager.create(User, {
-  //     firstName: 'Phantsssom',
-  //     lastName: 'Assassin',
-  //     age: 992
-  // }));
   console.log('Successdully Started Server');
-
 }).catch(error => console.log(error));
