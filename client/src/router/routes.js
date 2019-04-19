@@ -1,4 +1,6 @@
 import {
+  SearchPanel,
+  SearchScreen,
   ContributePanel,
   ContributeChoice,
   FavoritesPanel,
@@ -7,11 +9,17 @@ import {
 const routes = [
   {
     path: '/',
-    name: 'search',
+    component: SearchPanel,
+    children: [
+      {
+        path: '',
+        name: 'Search Screen',
+        component: SearchScreen,
+      },
+    ],
   },
   {
     path: '/contribute',
-    name: 'contribute',
     component: ContributePanel,
     children: [
       {
@@ -23,7 +31,6 @@ const routes = [
   },
   {
     path: '/favorites',
-    name: 'Favorites',
     component: FavoritesPanel,
   },
 ];
