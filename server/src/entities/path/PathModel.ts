@@ -35,6 +35,9 @@ export class Walk extends Path {
   @Column()
   duration: number;
 
+  @Column()
+  geometry: string;
+
 }
 
 @ChildEntity()
@@ -48,6 +51,9 @@ export class Jeep extends Path {
 
   @Column()
   duration: number;
+  
+  @Column()
+  geometry: string;
 
 }
 

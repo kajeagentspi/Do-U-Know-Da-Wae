@@ -46,6 +46,7 @@ export class RoomController {
         type: 'negative'
       }
     } catch (error) {
+      console.log(error);
       return {
         message: 'An Error Occurred',
         type: 'negative'
@@ -71,6 +72,7 @@ export class RoomController {
         type: 'negative'
       }
     } catch (error) {
+      console.log(error);
       return {
         message: 'An Error Occurred',
         type: 'negative'

@@ -1,7 +1,7 @@
 import { getRepository } from 'typeorm';
 import { NextFunction, Request, Response } from 'express';
 import { User, Path, POI, Stop, Exit, Jeep, Walk, Indoor, Room, Marker, Route } from '..';
-import { walking, driving } from './config';
+import { walking, driving } from '../config';
 import * as admin from 'firebase-admin';
 import * as polyline from '@mapbox/polyline'
 import axios from 'axios';
@@ -44,20 +44,28 @@ export class PathController {
         if (type === 'Walk') {
           searchString = `${start.lng},${start.lat};${end.lng},${end.lat}?alternatives=true`
           const { data: { routes } } = await axios.get(`${walking}/${searchString}`)
+          for(let route of routes){
+            const { geometry, distance, duration } = route;
+            const latLngs = polyline.decode(geometry);
+            const walkingPath = await this.walkRepository.save({ start, end, latLngs, geometry, distance, duration });
+            const contributor = await this.userRepository.findOne(1);
+            await this.routeRepository.save({ start, end, paths: [walkingPath], contributor })
+          }
         } else if (type === 'Jeep') {
           searchString = `${start.lng},${start.lat};${end.lng},${end.lat}?alternatives=true`
           const { data: { routes } } = await axios.get(`${walking}/${searchString}`)
+          for(let route of routes){
+            const { geometry, distance, duration } = route;
+            const latLngs = polyline.decode(geometry);
+            const walkingPath = await this.jeepRepository.save({ start, end, latLngs, geometry, distance, duration});
+            const contributor = await this.userRepository.findOne(1);
+            await this.routeRepository.save({ start, end, paths: [walkingPath], contributor })
+          }
         }
-        for(let route of routes){
-          const { geometry, distance, duration } = route;
-          const latLngs = polyline.decode(geometry);
-          const walkingPath = await this.walkRepository.save({ start, end, type, latLngs, distance, duration});
-          const contributor = await this.userRepository.findOne(1);
-          await this.routeRepository.save({ start, end, paths: [walkingPath], contributor })
-          paths = await this.pathRepository.find({ where: { ...request.query }, relations: ['start', 'end'] });
-        }
+        paths = await this.pathRepository.find({ where: { ...request.query }, relations: ['start', 'end'] });
       }  
     } catch (error) {
+      console.log(error)
       return {
         message: 'An Error Occured',
         type: 'negative'

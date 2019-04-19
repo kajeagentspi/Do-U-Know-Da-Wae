@@ -31,4 +31,10 @@ export class POI {
   @Column()
   type: 'string';
   
+  @Column({ type: 'double', nullable: true })
+  lat: number;
+
+  @Column({ type: 'double', nullable: true })
+  lng: number;
+
 }

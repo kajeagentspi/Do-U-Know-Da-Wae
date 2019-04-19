@@ -1,7 +1,10 @@
 import { getRepository } from 'typeorm';
 import { NextFunction, Request, Response } from 'express';
-import { User, Route, Walk, Jeep, Indoor, POI, Path } from '..';
+import { User, Route, Walk, Jeep, Indoor, POI, Path, Marker, Stop, Exit } from '..';
+import { walking, driving } from '../config';
 import * as admin from 'firebase-admin';
+import * as polyline from '@mapbox/polyline'
+import axios from 'axios';
 
 export class RouteController {
 
@@ -11,9 +14,83 @@ export class RouteController {
   private jeepRepository = getRepository(Jeep);
   private indoorRepository = getRepository(Indoor);
   private POIRepository = getRepository(POI);
+  private markerRepository = getRepository(Marker);
+  private stopRepository = getRepository(Stop);
+  private exitRepository = getRepository(Exit);
+
+  typeCast(poi: POI) {
+    switch (String(poi.type)) {
+      case 'Stop':
+        return this.stopRepository.findOne(poi.id);
+      case 'Marker':
+        return this.markerRepository.findOne(poi.id);
+      case 'Exit':
+        return this.exitRepository.findOne(poi.id);
+    }
+  }
   
   async all(request: Request, response: Response, next: NextFunction) {
-    return this.routeRepository.find({ where: { ...request.query }, relations: ['start', 'end', 'paths'] });
+    let { startLat, startLng, endLat, endLng, startId, endId } = request.query;
+    let start;
+    let end;
+    if (startId) {
+      start = await this.POIRepository.findOne(startId);
+      start = await this.typeCast(start);
+    } else if (startLat && startLng) {
+      start = await this.markerRepository.save({ lat: startLat, lng: startLng });
+    }
+
+    if (endId) {
+      end = await this.POIRepository.findOne(endId);
+      end = await this.typeCast(end);
+    } else if (endLat && endLng) {
+      end = await this.markerRepository.save({ lat: endLat, lng: endLng });
+    }
+    let routes = await this.routeRepository.find({ where: { start, end }, relations: ['start', 'end', 'paths'] });
+    try {
+      if (!routes.length) {
+        switch (start.type) {
+          case 'Stop':
+          case 'Marker':
+          case 'Exit':
+            switch (end.type) {
+              case 'Stop':
+              case 'Marker':
+              case 'Exit':
+                const searchString = `${start.lng},${start.lat};${end.lng},${end.lat}?alternatives=true`;
+                const { data: { routes: paths } } = await axios.get(`${walking}/${searchString}`);
+                for(let path of paths){
+                  const { geometry, distance, duration } = path;
+                  const latLngs = polyline.decode(geometry);
+                  const walkingPath = await this.walkRepository.save({ start, end, latLngs, geometry, distance, duration});
+                  const contributor = await this.userRepository.findOne(1);
+                  await this.routeRepository.save({ start, end, paths: [walkingPath], contributor })
+                }
+                routes = await this.routeRepository.find({ where: { start, end }, relations: ['start', 'end', 'paths'] });
+              break;
+              case 'Room':
+                // add later
+                return {
+                  message: 'No routes found',
+                  type: 'negative'
+                }          
+            }            
+            break;
+          case 'Room':
+            return {
+              message: 'No routes found',
+              type: 'negative'
+            }
+        }
+      }
+    } catch (error) {
+      console.log(error)
+      return {
+        message: 'An Error Occured',
+        type: 'negative'
+      }
+    }
+    return routes;
   }
 
   async one(request: Request, response: Response, next: NextFunction) {
@@ -28,20 +105,25 @@ export class RouteController {
       if (user.type === 'admin' || user.type === 'contributor') {
         const newPaths: Path[] = []
         for (let path of paths) {
-          if(path.hasOwnProperty('id')){
+          const { start, end, latLngs, type, id } = path;
+          // path contains latLngs and type
+          if(id){
             newPaths.push(path)
           } else {
             let newPath;
-            switch (path.type) {
-              case 'Walk':
-                newPath = await this.walkRepository.save(path);
-                break;
-              case 'Jeep':
-                newPath = await this.jeepRepository.save(path);
-                break;
-              case 'Indoor':
-                newPath = await this.indoorRepository.save(path);
-                break;
+            const geometry = polyline.encode(path.latLngs);
+            if (type === 'Walk') {
+              const searchString = `polyline(${geometry})`;
+              const { data: { routes: paths } } = await axios.get(`${walking}/${searchString}`);
+              const { distance, duration } = paths[0];
+              newPath = await this.walkRepository.save({ start, end, latLngs, distance, duration });
+            } else if (type === 'Jeep') {
+              const searchString = `polyline(${geometry})`;
+              const { data: { routes: paths } } = await axios.get(`${driving}/${searchString}`);
+              const { distance, duration } = paths[0];
+              newPath = await this.jeepRepository.save({ start, end, latLngs, distance, duration });
+            } else if (type === 'Indoor') {
+              newPath = await this.indoorRepository.save(path);
             }
             newPaths.push(newPath)
           }
@@ -87,6 +169,7 @@ export class RouteController {
         type: 'negative'
       }
     } catch (error) {
+      console.log(error);
       return {
         message: 'An Error Occurred',
         type: 'negative'
