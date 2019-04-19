@@ -1,9 +1,9 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
-import VuexPersistence from 'vuex-persist';
+import Vue from "vue";
+import Vuex from "vuex";
+import VuexPersistence from "vuex-persist";
 
-import map from './map';
-import auth from './auth';
+import map from "./map";
+import auth from "./auth";
 
 Vue.use(Vuex);
 
@@ -12,21 +12,21 @@ Vue.use(Vuex);
  * directly export the Store instantiation
  */
 
-export default function (/* { ssrContext } */) {
+export default function(/* { ssrContext } */) {
   const vuexLocal = new VuexPersistence({
     storage: window.localStorage,
-    key: 'dukdw',
+    key: "dukdw",
     reducer: state => ({
-      auth: state.auth,
-    }),
+      auth: state.auth
+    })
   });
 
   const Store = new Vuex.Store({
     modules: {
       map,
-      auth,
+      auth
     },
-    plugins: [vuexLocal.plugin],
+    plugins: [vuexLocal.plugin]
   });
 
   return Store;
