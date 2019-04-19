@@ -3,22 +3,55 @@
 module.exports = function (ctx) {
   return {
     // app plugins (/src/plugins)
-    plugins: [
+    boot: [
       'leaflet',
       'vue-fragment',
       'firebase'
     ],
+
     css: [
       'app.styl'
     ],
+    
     extras: [
-      ctx.theme.mat ? 'roboto-font' : null,
+      'roboto-font',
       'material-icons' // optional, you are not bound to it
       // 'ionicons',
       // 'mdi',
       // 'fontawesome'
     ],
+
+    framework: {
+      // all: true, // --- includes everything; for dev only!
+
+      components: [
+        'QCard',
+        'QCardSection',
+        'QCardActions',
+        'QToolbar',
+        'QBtnGroup',
+        'QBtn',
+        'QSeparator',
+        'QItem',
+        'QItemSection',
+        'QScrollArea',
+      ],
+
+      directives: [
+        'Ripple'
+      ],
+
+      // Quasar plugins
+      plugins: [
+        'Notify'
+      ]
+
+      // iconSet: ctx.theme.mat ? 'material-icons' : 'ionicons'
+      // i18n: 'de' // Quasar language
+    },
+    
     supportIE: false,
+
     build: {
       scopeHoisting: true,
       vueRouterMode: 'history',
@@ -35,43 +68,20 @@ module.exports = function (ctx) {
         })
       }
     },
+
     devServer: {
       // https: true,
       // port: 8080,
       open: true // opens browser window automatically
     },
-    // framework: 'all' --- includes everything; for dev only!
-    framework: {
-      components: [
-        'QCard',
-        'QToolbar',
-        'QBtnGroup',
-        'QBtn',
-        'QCardTitle',
-        'QCardMain',
-        'QCardSeparator',
-        'QCardActions',
-        'QItem',
-        'QItemMain',
-        'QItemSeparator',
-        'QItemSide',
-        'QScrollArea',
-      ],
-      directives: [
-        'Ripple'
-      ],
-      // Quasar plugins
-      plugins: [
-        'Notify'
-      ]
-      // iconSet: ctx.theme.mat ? 'material-icons' : 'ionicons'
-      // i18n: 'de' // Quasar language
-    },
+
     // animations: 'all' --- includes all animations
     animations: [],
+
     ssr: {
       pwa: false
     },
+
     pwa: {
       // workboxPluginMode: 'InjectManifest',
       // workboxOptions: {},
@@ -112,9 +122,11 @@ module.exports = function (ctx) {
         ]
       }
     },
+
     cordova: {
       // id: 'org.cordova.quasar.app'
     },
+
     electron: {
       // bundler: 'builder', // or 'packager'
       extendWebpack (cfg) {
@@ -138,5 +150,6 @@ module.exports = function (ctx) {
         // appId: 'quasar-app'
       }
     }
+    
   }
 }

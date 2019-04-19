@@ -1,26 +1,26 @@
 <template>
   <div id="q-app">
-    <Map/>
-    <Sidebar/>
+    <Map />
+    <Sidebar />
   </div>
 </template>
 
 <script>
-import { Map, Sidebar } from './components';
+import { Map, Sidebar } from "./components";
 
 export default {
-  name: 'App',
+  name: "App",
   components: {
     Map,
-    Sidebar,
-  },
+    Sidebar
+  }
 };
 </script>
 
 <style>
 .q-card {
-  -webkit-border-radius: .8rem;
-  border-radius: .8rem;
+  -webkit-border-radius: 0.8rem;
+  border-radius: 0.8rem;
 }
 .sub-card {
   margin-bottom: 1rem;

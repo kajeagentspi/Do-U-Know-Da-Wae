@@ -1,15 +1,13 @@
 <template>
-  <q-card-main>
-    <router-view/>
-  </q-card-main>
+  <q-separator>
+    <router-view />
+  </q-separator>
 </template>
 
 <script>
 export default {
-  name: 'SearchPanel',
+  name: "SearchPanel"
 };
 </script>
 
-<style>
-
-</style>
+<style></style>

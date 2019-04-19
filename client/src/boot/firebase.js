@@ -1,6 +1,6 @@
-import firebase from 'firebase/app';
-import 'firebase/auth';
-import config from '../firebase.config.json';
+import firebase from "firebase/app";
+import "firebase/auth";
+import config from "../firebase.config.json";
 
 export const fireApp = firebase.initializeApp(config);
 

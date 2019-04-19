@@ -3,43 +3,43 @@ import {
   SearchScreen,
   ContributePanel,
   ContributeChoice,
-  FavoritesPanel,
-} from '../components';
+  FavoritesPanel
+} from "../components";
 
 const routes = [
   {
-    path: '/',
+    path: "/",
     component: SearchPanel,
     children: [
       {
-        path: '',
-        name: 'Search Screen',
-        component: SearchScreen,
-      },
-    ],
+        path: "",
+        name: "Search Screen",
+        component: SearchScreen
+      }
+    ]
   },
   {
-    path: '/contribute',
+    path: "/contribute",
     component: ContributePanel,
     children: [
       {
-        path: '',
-        name: 'Contribute Choice',
-        component: ContributeChoice,
-      },
-    ],
+        path: "",
+        name: "Contribute Choice",
+        component: ContributeChoice
+      }
+    ]
   },
   {
-    path: '/favorites',
-    component: FavoritesPanel,
-  },
+    path: "/favorites",
+    component: FavoritesPanel
+  }
 ];
 
 // Always leave this as last one
-if (process.env.MODE !== 'ssr') {
+if (process.env.MODE !== "ssr") {
   routes.push({
-    path: '*',
-    component: () => import('pages/Error404.vue'),
+    path: "*",
+    component: () => import("pages/Error404.vue")
   });
 }
 
