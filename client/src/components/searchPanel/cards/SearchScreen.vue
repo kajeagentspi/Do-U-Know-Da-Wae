@@ -29,7 +29,7 @@
     </q-card>
     <q-card-section inset />
     <q-scroll-area class="scrollbox">
-      <q-card v-for="index in 10" :key="index">
+      <!-- <q-card v-for="index in 10" :key="index">
         <q-card-section class="row">
           <div class="col-10">
             <q-btn
@@ -47,7 +47,7 @@
           </div>
           <q-btn icon="autorenew" class="col-2" />
         </q-card-section>
-      </q-card>
+      </q-card>-->
     </q-scroll-area>
   </fragment>
 </template>
