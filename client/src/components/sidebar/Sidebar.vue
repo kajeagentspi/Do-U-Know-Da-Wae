@@ -1,6 +1,10 @@
 <template>
   <q-card inline color="white" text-color="black" class="navigation">
-    <q-toolbar color="white" text-color="black" class="full-width">
+    <q-toolbar
+      color="white"
+      text-color="black"
+      class="full-width center"
+    >
       <q-btn
         disabled
         flat
@@ -22,7 +26,7 @@
       </q-btn-group>
     </q-toolbar>
     <q-card-separator />
-    <router-view />
+    <router-view class="center"/>
   </q-card>
 </template>
 
@@ -36,10 +40,15 @@ export default {
   @media (max-width: 640px) {
     .navigation {
       width: 100%;
-      height: 60%;
+      height: 60vh;
       bottom: 0px;
       z-index: 0;
       position: absolute;
+      text-align: center;
+    }
+    .center {
+      width: 380px;
+      display: inline-block;
     }
   }
   @media (min-width: 641px) {
@@ -49,6 +58,7 @@ export default {
       bottom: 1vh;
       left: 1vh;
       z-index: 0;
+      height: calc(100% - 2vh);
       position: absolute;
     }
   }
