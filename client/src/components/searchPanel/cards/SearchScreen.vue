@@ -1,23 +1,30 @@
 <template>
   <fragment>
     <q-card>
-      <q-separator class="row">
+      <q-card-section class="row">
         <div class="col-10">
-          <q-btn class="full-width" label="Select Origin" no-ripple size="l" />
+          <q-btn
+            class="full-width"
+            label="Select Origin"
+            no-ripple
+            size="l"
+            to="/from"
+          />
           <q-btn
             class="full-width"
             label="Select Destination"
             no-ripple
             size="l"
+            to="/to"
           />
         </div>
         <q-btn icon="autorenew" class="col-2" />
-      </q-separator>
+      </q-card-section>
     </q-card>
-    <q-separator inset />
+    <q-card-section inset />
     <q-scroll-area class="scrollbox">
       <q-card v-for="index in 10" :key="index">
-        <q-separator class="row">
+        <q-card-section class="row">
           <div class="col-10">
             <q-btn
               class="full-width"
@@ -33,7 +40,7 @@
             />
           </div>
           <q-btn icon="autorenew" class="col-2" />
-        </q-separator>
+        </q-card-section>
       </q-card>
     </q-scroll-area>
   </fragment>
@@ -48,12 +55,12 @@ export default {
 <style lang="scss" scoped>
 @media (min-width: 641px) {
   .scrollbox {
-    height: calc(96vh - 170px);
+    height: calc(93vh - 170px);
   }
 }
 @media (max-width: 640px) {
   .scrollbox {
-    height: calc(57vh - 170px);
+    height: calc(54vh - 170px);
   }
 }
 </style>

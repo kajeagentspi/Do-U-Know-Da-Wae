@@ -1,7 +1,7 @@
 <template>
-  <q-separator>
+  <q-card-section>
     <router-view />
-  </q-separator>
+  </q-card-section>
 </template>
 
 <script>

@@ -1,11 +1,12 @@
 import { getField, updateField } from "vuex-map-fields";
 import L from "leaflet";
-import { GET_MAP, REMOVE_LAYER, ADD_LAYER } from "./types";
+import { GET_MAP, REMOVE_LAYER, ADD_LAYER, UPDATE_POSITION } from "./types";
 
 const map = {
   namespaced: true,
   state: {
-    mapInstance: null
+    mapInstance: null,
+    userMarker: null
   },
   getters: {
     getField
@@ -39,8 +40,32 @@ const map = {
     [ADD_LAYER]: (state, payload) => {
       const { layer } = payload;
       layer.addTo(state.mapInstance);
+    },
+    [UPDATE_POSITION]: (state, payload) => {
+      const { lat, lng } = payload;
+      if (state.userMarker) {
+        state.userMarker.setLatLng({ lat, lng });
+      } else {
+        const userIcon = L.divIcon({
+          html: '<i class="fa fa-dot-circle" style="color: green"></i>',
+          iconSize: [20, 20],
+          className: "icon"
+        });
+        state.userMarker = L.marker(
+          {
+            lat: 14.16734,
+            lng: 121.24331
+          },
+          { icon: userIcon }
+        ).addTo(state.mapInstance);
+      }
     }
   },
-  actions: {}
+  actions: {
+    locate: context => {
+      const { mapInstance } = context.state;
+      mapInstance.locate({});
+    }
+  }
 };
 export default map;

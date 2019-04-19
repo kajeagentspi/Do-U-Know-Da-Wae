@@ -2,11 +2,12 @@
   <q-card-section>
     <q-card v-if="accessToken">
       <q-item>
-        <q-item-section :avatar="profile.picture" />
-        <q-item-section
-          :label="`Hello ${profile.given_name}`"
-          label-lines="1"
-        />
+        <q-item-section avatar>
+          <q-avatar>
+            <img :src="profile.picture" />
+          </q-avatar>
+        </q-item-section>
+        <q-item-section>{{ `Hello ${profile.given_name}` }}</q-item-section>
         <q-btn color="red" @click="logout">Logout</q-btn>
       </q-item>
     </q-card>
