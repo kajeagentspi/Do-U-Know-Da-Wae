@@ -3,7 +3,8 @@ import {
   SearchScreen,
   ContributePanel,
   ContributeChoice,
-  FavoritesPanel
+  FavoritesPanel,
+  SelectSearchMethod
 } from "../components";
 
 const routes = [
@@ -15,6 +16,16 @@ const routes = [
         path: "",
         name: "Search Screen",
         component: SearchScreen
+      },
+      {
+        path: "from",
+        name: "Select Search Method",
+        component: SelectSearchMethod
+      },
+      {
+        path: "to",
+        name: "Select Search Method",
+        component: SelectSearchMethod
       }
     ]
   },

@@ -1,7 +1,7 @@
 export { default as Map } from "./map/Map";
 export { default as Sidebar } from "./sidebar/Sidebar";
 export { default as SearchPanel } from "./searchPanel/SearchPanel";
-export { default as SearchScreen } from "./searchPanel/cards/SearchScreen";
+export { SelectSearchMethod, SearchScreen } from "./searchPanel/cards";
 export { default as ContributePanel } from "./contributePanel/ContributePanel";
 export {
   default as ContributeChoice
