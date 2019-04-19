@@ -4,54 +4,76 @@
 
 <script>
 import L from "leaflet";
-import { mapMutations } from "vuex";
+import { mapMutations, mapActions } from "vuex";
 import { mapFields } from "vuex-map-fields";
 import { GET_MAP, UPDATE_POSITION } from "../../store/types";
 
 export default {
   name: "Map",
   computed: {
-    ...mapFields("map", ["mapInstance", "userMarker"])
+    ...mapFields("map", [
+      "mapInstance",
+      "userMarker",
+      "GPSOrigin",
+      "GPSDestination",
+      "MarkerOrigin",
+      "MarkerDestination"
+    ])
   },
   mounted() {
-    // this.getMap();
-    this.mapInstance = L.map("map", {
-      zoomControl: false,
-      minZoom: 15,
-      maxZoom: 21,
-      maxBounds: [
-        { lat: 14.171030846860607, lng: 121.26183271408082 },
-        { lat: 14.150870198219486, lng: 121.22063398361207 }
-      ],
-      editable: true
-    });
-    this.mapInstance.setView([14.1648, 121.2413], 19);
-    L.mapboxGL({
-      attribution:
-        '<a href="https://www.maptiler.com/copyright/" target="_blank">© MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">© OpenStreetMap contributors</a>',
-      accessToken: "not-needed",
-      style:
-        "https://maps.tilehosting.com/styles/bright/style.json?key=4krAogjdNdbE796RetO6"
-    }).addTo(this.mapInstance);
+    this.getMap();
     this.mapInstance.on("editable:drawing:end", this.draw);
     this.mapInstance.on("locationfound", this.located);
-    this.mapInstance.on("click", this.click);
+    // this.mapInstance.on("click", this.click);
   },
   methods: {
     ...mapMutations("map", {
       getMap: GET_MAP,
       updatePosition: UPDATE_POSITION
     }),
+    ...mapActions("map", ["reverseGeocode"]),
     draw({ layer }) {
       if (layer instanceof L.Marker) {
-        console.log(layer);
+        const latLng = layer.getLatLng();
+        if (this.MarkerOrigin) {
+          this.MarkerOrigin = false;
+          this.reverseGeocode({ latLng, endType: "Origin", type: "Marker" });
+        } else if (this.MarkerDestination) {
+          this.MarkerDestination = false;
+          this.reverseGeocode({
+            latLng,
+            endType: "Destination",
+            type: "Marker"
+          });
+        }
       } else if (layer instanceof L.Polyline) {
         console.log(layer);
       }
     },
     located({ latlng }) {
-      console.log(this.userMarker);
-      this.updatePosition(latlng);
+      if (this.userMarker) {
+        this.userMarker.setLatLng(latlng);
+      } else {
+        const userIcon = L.divIcon({
+          html: '<i class="fa fa-circle" style="color: green"></i>',
+          iconSize: [20, 20],
+          className: "icon"
+        });
+        this.userMarker = new L.Marker(latlng, { icon: userIcon }).addTo(
+          this.mapInstance
+        );
+      }
+      if (this.GPSOrigin) {
+        this.GPSOrigin = false;
+        this.reverseGeocode({ latLng: latlng, endType: "Origin", type: "GPS" });
+      } else if (this.GPSDestination) {
+        this.GPSDestination = false;
+        this.reverseGeocode({
+          latLng: latlng,
+          endType: "Destination",
+          type: "GPS"
+        });
+      }
     },
     click(e) {
       const marker = new L.Marker(e.latlng, { draggable: true }).on(

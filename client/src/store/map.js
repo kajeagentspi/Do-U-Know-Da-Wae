@@ -1,12 +1,29 @@
 import { getField, updateField } from "vuex-map-fields";
 import L from "leaflet";
-import { GET_MAP, REMOVE_LAYER, ADD_LAYER, UPDATE_POSITION } from "./types";
+import router from "../router";
+import {
+  GET_MAP,
+  REMOVE_LAYER,
+  ADD_LAYER,
+  UPDATE_POSITION,
+  SET_ORIGIN_DESTINATION_POSITION
+} from "./types";
+import * as Api from "../api";
+import { Notify } from "quasar";
 
 const map = {
   namespaced: true,
   state: {
     mapInstance: null,
-    userMarker: null
+    userMarker: null,
+    GPSOrigin: false,
+    GPSDestination: false,
+    MarkerOrigin: false,
+    MarkerDestination: false,
+    originMarker: null,
+    origin: null,
+    destinationMarker: null,
+    destination: null
   },
   getters: {
     getField
@@ -32,6 +49,7 @@ const map = {
         style:
           "https://maps.tilehosting.com/styles/bright/style.json?key=4krAogjdNdbE796RetO6"
       }).addTo(state.mapInstance);
+      state.mapInstance.locate({ setView: true, maxZoom: 21 });
     },
     [REMOVE_LAYER]: (state, payload) => {
       const { layer } = payload;
@@ -45,26 +63,78 @@ const map = {
       const { lat, lng } = payload;
       if (state.userMarker) {
         state.userMarker.setLatLng({ lat, lng });
-      } else {
-        const userIcon = L.divIcon({
-          html: '<i class="fa fa-dot-circle" style="color: green"></i>',
-          iconSize: [20, 20],
-          className: "icon"
-        });
-        state.userMarker = L.marker(
-          {
-            lat: 14.16734,
-            lng: 121.24331
-          },
-          { icon: userIcon }
-        ).addTo(state.mapInstance);
       }
+    },
+    [SET_ORIGIN_DESTINATION_POSITION]: (state, payload) => {
+      const { endType, ...marker } = payload;
+      switch (endType) {
+        case "Origin":
+          if (state.originMarker) {
+            state.originMarker.setLatLng({
+              lat: marker.lat,
+              lng: marker.lng
+            });
+          } else {
+            state.originMarker = new L.Marker({
+              lat: marker.lat,
+              lng: marker.lng
+            }).addTo(state.mapInstance);
+          }
+          state.origin = marker;
+          break;
+        case "Destination":
+          if (state.destinationMarker) {
+            state.destinationMarker.setLatLng({
+              lat: marker.lat,
+              lng: marker.lng
+            });
+          } else {
+            state.destinationMarker = new L.Marker({
+              lat: marker.lat,
+              lng: marker.lng
+            }).addTo(state.mapInstance);
+          }
+          state.destination = marker;
+          break;
+      }
+      router.push({
+        name: "Search Screen"
+      });
     }
   },
   actions: {
-    locate: context => {
+    locateUser: context => {
       const { mapInstance } = context.state;
-      mapInstance.locate({});
+      mapInstance.locate({ setView: true, maxZoom: 21 });
+    },
+    placeMarker: context => {
+      const { mapInstance } = context.state;
+      mapInstance.editTools.startMarker();
+    },
+    reverseGeocode: async (context, payload) => {
+      const { latLng, endType, type } = payload;
+      try {
+        const {
+          data: { display_name }
+        } = await Api.reverseGeocode({ ...latLng });
+        const name = display_name
+          .split(", ")
+          .slice(0, 2)
+          .join(", ");
+        context.commit(SET_ORIGIN_DESTINATION_POSITION, {
+          ...latLng,
+          name,
+          endType,
+          type
+        });
+      } catch (error) {
+        console.log(error);
+        Notify.create({
+          message: "An error occured",
+          color: "negative",
+          position: "top"
+        });
+      }
     }
   }
 };

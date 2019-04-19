@@ -1,11 +1,7 @@
 <template>
   <q-card>
     <q-card-section>
-      <div class="text-h6">
-        {{
-          `Selecting ${this.$route.path === "/from" ? "Origin" : "Destination"}`
-        }}
-      </div>
+      <div class="text-h6">{{ `Selecting ${this.type}` }}</div>
 
       <q-separator inset />
 
@@ -23,6 +19,7 @@
           color="green"
           icon="place"
           label="Place A Marker"
+          @click="mark"
         />
         <q-btn
           class="full-width"
@@ -49,13 +46,46 @@
 
 <script>
 import { mapActions } from "vuex";
-
+import { mapFields } from "vuex-map-fields";
 export default {
   name: "SelectSearchMethod",
+  data() {
+    return {
+      type: null
+    };
+  },
+  computed: {
+    ...mapFields("map", [
+      "GPSOrigin",
+      "GPSDestination",
+      "MarkerOrigin",
+      "MarkerDestination"
+    ])
+  },
+  mounted() {
+    if (this.$route.path === "/from") {
+      this.type = "Origin";
+    } else {
+      this.type = "Destination";
+    }
+  },
   methods: {
-    ...mapActions("map", ["locate"]),
-    checkRoute() {
-      console.log(this.$route.path);
+    ...mapActions("map", ["locateUser", "placeMarker"]),
+    locate() {
+      if (this.type === "Origin") {
+        this.GPSOrigin = true;
+      } else {
+        this.GPSDestination = true;
+      }
+      this.locateUser();
+    },
+    mark() {
+      if (this.type === "Origin") {
+        this.MarkerOrigin = true;
+      } else {
+        this.MarkerDestination = true;
+      }
+      this.placeMarker();
     }
   }
 };

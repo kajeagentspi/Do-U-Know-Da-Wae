@@ -4,15 +4,21 @@
       <q-card-section class="row">
         <div class="col-10">
           <q-btn
-            class="full-width"
-            label="Select Origin"
+            class="full-width ellipsis"
+            :label="
+              origin ? `[${origin.type}] ${origin.name}` : 'Select Origin'
+            "
             no-ripple
             size="l"
             to="/from"
           />
           <q-btn
-            class="full-width"
-            label="Select Destination"
+            class="full-width ellipsis"
+            :label="
+              destination
+                ? `[${destination.type}] ${destination.name}`
+                : 'Select Destination'
+            "
             no-ripple
             size="l"
             to="/to"
@@ -47,8 +53,12 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 export default {
-  name: "SearchScreen"
+  name: "SearchScreen",
+  computed: {
+    ...mapState("map", ["origin", "destination"])
+  }
 };
 </script>
 
