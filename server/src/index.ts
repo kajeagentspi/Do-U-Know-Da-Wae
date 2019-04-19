@@ -24,6 +24,7 @@ createConnection().then(async connection => {
     credential: admin.credential.cert(serviceAccount),
     databaseURL: 'https://do-u-know-da-wae-78800.firebaseio.com'
   });
+
   // register express routes from defined application routes
   Routes.forEach(route => {
     (app as any)[route.method](`/api${route.route}`, (req: Request, res: Response, next: Function) => {
@@ -52,7 +53,7 @@ createConnection().then(async connection => {
     seeder.seedStops();
   }
   const userRepository = getRepository(User);
-  const users = await stopRepository.find();
+  const users = await userRepository.find();
   if (users.length === 0) {
     console.log('Seeding Users')
     seeder.seedUsers();

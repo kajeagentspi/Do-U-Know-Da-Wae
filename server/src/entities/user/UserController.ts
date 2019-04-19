@@ -28,6 +28,9 @@ export class UserController {
     }
     const user = await this.userRepository.findOne({ uid });
     if (user) {
+      if (user.type === 'admin') {
+        type = 'admin'
+      }
       await this.userRepository.update(user.id, { name, type });
       return this.userRepository.findOne(user.id);
     } else {
@@ -53,6 +56,7 @@ export class UserController {
         type: 'negative'
       }
     } catch (error) {
+      console.log(error);
       return {
         message: 'An Error Occurred',
         type: 'negative'

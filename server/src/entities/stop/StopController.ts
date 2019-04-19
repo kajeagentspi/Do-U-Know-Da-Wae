@@ -40,6 +40,7 @@ export class StopController {
         type: 'negative'
       }
     } catch (error) {
+      console.log(error);
       return {
         message: 'An Error Occurred',
         type: 'negative'
@@ -65,6 +66,7 @@ export class StopController {
         type: 'negative'
       }
     } catch (error) {
+      console.log(error);
       return {
         message: 'An Error Occurred',
         type: 'negative'
