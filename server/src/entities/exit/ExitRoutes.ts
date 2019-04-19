@@ -1,28 +1,28 @@
-import { ExitController } from './ExitController';
+import { ExitController } from "./ExitController";
 
 export const ExitRoutes = [
   {
-    method: 'get',
-    route: '/room',
+    method: "get",
+    route: "/exit",
     controller: ExitController,
-    action: 'all'
+    action: "all"
   },
   {
-    method: 'get',
-    route: '/room/:id',
+    method: "get",
+    route: "/exit/:id",
     controller: ExitController,
-    action: 'one'
+    action: "one"
   },
   {
-    method: 'post',
-    route: '/room',
+    method: "post",
+    route: "/exit",
     controller: ExitController,
-    action: 'save'
+    action: "save"
   },
   {
-    method: 'delete',
-    route: '/room/:id',
+    method: "delete",
+    route: "/exit/:id",
     controller: ExitController,
-    action: 'remove'
-  },
+    action: "remove"
+  }
 ];
