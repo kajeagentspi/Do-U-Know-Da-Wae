@@ -1,5 +1,14 @@
 <template>
   <div>
+    <q-page-sticky position="top-right" :offset="[18, 18]" class="front">
+      <q-btn
+        round
+        color="primary"
+        :disable="!GPSEnabled"
+        :icon="GPSEnabled ? 'gps_fixed' : 'gps_not_fixed'"
+        @click="locateUser"
+      />
+    </q-page-sticky>
     <div id="map"></div>
     <div
       :class="
@@ -9,9 +18,13 @@
           ? 'activeorigindestination'
           : $route.path === '/destination'
           ? 'activeorigindestination'
-          : $route.path === '/origin/mark'
+          : $route.path === '/origin/marker'
           ? 'activemark'
-          : $route.path === '/destination/mark'
+          : $route.path === '/destination/marker'
+          ? 'activemark'
+          : $route.path === '/origin/selected'
+          ? 'activemark'
+          : $route.path === '/destination/selected'
           ? 'activemark'
           : ''
       "
@@ -22,10 +35,9 @@
 
 <script>
 import L from "leaflet";
-import { mapMutations, mapActions } from "vuex";
+import { mapActions, mapMutations } from "vuex";
 import { mapFields } from "vuex-map-fields";
-import { GET_MAP, UPDATE_POSITION, REMOVE_LAYER } from "../../store/types";
-
+import { REMOVE_LAYER } from "../../store/types";
 export default {
   name: "Map",
   computed: {
@@ -36,50 +48,36 @@ export default {
       "GPSDestination",
       "MarkerOrigin",
       "MarkerDestination",
-      "glMap",
       "mapTop",
       "mapLeft",
       "mapRight",
-      "mapBottom"
+      "mapBottom",
+      "GPSEnabled"
     ])
   },
-  mounted() {
-    const {
-      top,
-      left,
-      bottom,
-      right
-    } = this.$refs.visibleMap.getBoundingClientRect();
-    this.mapTop = top;
-    this.mapLeft = left;
-    this.mapRight = right;
-    this.mapBottom = bottom;
-    this.getMap();
-    this.mapInstance.on("editable:drawing:end", this.draw);
-    this.mapInstance.on("locationfound", this.located);
-    this.mapInstance.on("locationerror", this.onLocationError);
-    this.mapInstance.on("click", this.click);
-    this.mapInstance.locate({ watch: true });
-  },
   methods: {
+    ...mapActions("map", ["initializeMap", "locateUser", "reverseGeocode"]),
     ...mapMutations("map", {
-      getMap: GET_MAP,
-      removeLayer: REMOVE_LAYER,
-      updatePosition: UPDATE_POSITION
+      removeLayer: REMOVE_LAYER
     }),
-    ...mapActions("map", ["reverseGeocode"]),
     draw({ layer }) {
       if (layer instanceof L.Marker) {
-        const latLng = layer.getLatLng();
+        const { lat, lng } = layer.getLatLng();
         this.removeLayer({ layer });
         if (this.MarkerOrigin) {
           this.MarkerOrigin = false;
-          this.reverseGeocode({ latLng, endType: "Origin", type: "Marker" });
+          this.reverseGeocode({
+            lat,
+            lng,
+            locationType: "origin",
+            type: "Marker"
+          });
         } else if (this.MarkerDestination) {
           this.MarkerDestination = false;
           this.reverseGeocode({
-            latLng,
-            endType: "Destination",
+            lat,
+            lng,
+            locationType: "destination",
             type: "Marker"
           });
         }
@@ -88,6 +86,9 @@ export default {
       }
     },
     located({ latlng }) {
+      if (!this.GPSEnabled) {
+        this.GPSEnabled = true;
+      }
       if (this.userMarker) {
         this.userMarker.setLatLng(latlng);
       } else {
@@ -112,35 +113,51 @@ export default {
         });
       }
     },
-    click(e) {
-      const marker = new L.Marker(e.latlng, { draggable: true }).on(
-        "drag",
-        e => {
-          console.log(e.latlng);
-        }
-      );
-      marker.addTo(this.mapInstance);
-      this.mapInstance.fitBounds([{ ...e.latlng }], {
-        paddingTopLeft: [0, 360]
-      });
-    },
     onLocationError() {
-      if (this.GPSOrigin) {
-        this.GPSOrigin = false;
-        this.$q.notify({
-          message: "I'm sorry but I can't find you",
-          color: "negative",
-          position: "top"
-        });
-      } else if (this.GPSDestination) {
-        this.GPSDestination = false;
-        this.$q.notify({
-          message: "I'm sorry but I can't find you",
-          color: "negative",
-          position: "top"
-        });
-      }
+      this.GPSEnabled = false;
+      this.$q.notify({
+        message: "I'm sorry but I can't find you. GPS Search would be disabled",
+        color: "negative",
+        position: "top"
+      });
     }
+    // removeLayer: REMOVE_LAYER,
+    // updatePosition: UPDATE_POSITION
+    // })
+    // ...mapActions("map", ["reverseGeocode"]),
+    //
+
+    // click(e) {
+    //   const marker = new L.Marker(e.latlng, { draggable: true }).on(
+    //     "drag",
+    //     e => {
+    //       console.log(e.latlng);
+    //     }
+    //   );
+    //   marker.addTo(this.mapInstance);
+    //   this.mapInstance.fitBounds([{ ...e.latlng }], {
+    //     paddingTopLeft: [0, 360]
+    //   });
+    // },
+    // }
+    // }
+  },
+  mounted() {
+    const {
+      top,
+      left,
+      bottom,
+      right
+    } = this.$refs.visibleMap.getBoundingClientRect();
+    this.mapTop = top;
+    this.mapLeft = left;
+    this.mapRight = right;
+    this.mapBottom = bottom;
+    this.initializeMap();
+    this.mapInstance.on("locationfound", this.located);
+    this.mapInstance.on("locationerror", this.onLocationError);
+    this.mapInstance.on("editable:drawing:end", this.draw);
+    // this.mapInstance.on("click", this.click);
   },
   watch: {
     "$q.screen.width"() {
@@ -189,7 +206,8 @@ export default {
     right: 0px;
     height: 100%;
     position: absolute;
-    z-index: -10;
+    z-index: 10;
+    pointer-events: none;
     border-style: solid;
   }
 }
@@ -200,8 +218,9 @@ export default {
     right: 0px;
     bottom: calc(60%);
     position: absolute;
-    z-index: -10;
+    z-index: 10;
     border-style: solid;
+    pointer-events: none;
   }
   .activeorigindestination {
     top: 0px;
@@ -209,8 +228,9 @@ export default {
     right: 0px;
     bottom: calc(80%);
     position: absolute;
-    z-index: -10;
+    z-index: 10;
     border-style: solid;
+    pointer-events: none;
   }
   .activemark {
     top: 0px;
@@ -218,8 +238,13 @@ export default {
     right: 0px;
     bottom: calc(20%);
     position: absolute;
-    z-index: -10;
+    z-index: 10;
     border-style: solid;
+    pointer-events: none;
   }
+}
+
+.front {
+  z-index: 10;
 }
 </style>

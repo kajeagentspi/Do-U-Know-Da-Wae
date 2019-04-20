@@ -1,18 +1,22 @@
 <template>
   <q-card>
-    <q-card-section>
-      <q-card-actions>
-        <q-btn round icon="navigate_before" :to="`/${this.type}`" />
-        <q-space />
-        <div class="text-h6">{{ `Mark ${this.type}` }}</div>
-      </q-card-actions>
-      <q-separator spaced />
-      <q-card-section>Choose wisely</q-card-section>
+    <q-card-actions class="navbar">
+      <q-btn-group flat>
+        <q-btn icon="navigate_before" to="/"/>
+      </q-btn-group>
+      <q-space/>
+      <div class="text-h6 capitalize">{{ `Mark ${this.type}` }}</div>
+    </q-card-actions>
+    <q-card-section class="center">
+      <q-icon name="fas fa-map-marker-alt" size="50px"/>
+      <q-separator spaced/>
+      <q-item-label>Where would you like to go?</q-item-label>
     </q-card-section>
   </q-card>
 </template>
 
 <script>
+import { mapFields } from "vuex-map-fields";
 export default {
   name: "PlaceMarkerCard",
   mounted() {
@@ -22,12 +26,29 @@ export default {
       this.type = "destination";
     }
   },
+  computed: {
+    ...mapFields("map", ["MarkerOrigin", "MarkerDestination"])
+  },
   data() {
     return {
       type: ""
     };
+  },
+  methods: {
+    print() {
+      console.log(this.MarkerOrigin);
+      console.log(this.MarkerDestination);
+    }
   }
 };
 </script>
 
-<style></style>
+<style lang="scss" scoped>
+.navbar {
+  background-color: red;
+  color: white;
+}
+.center {
+  text-align: center;
+}
+</style>

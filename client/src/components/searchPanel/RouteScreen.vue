@@ -2,10 +2,10 @@
   <q-card>
     <q-card-actions class="navbar">
       <q-btn-group flat>
-        <q-btn disabled flat icon="explore" />
-        <q-btn label="Search" to="/" />
-        <q-btn label="Contribute" to="/contribute" />
-        <q-btn label="Favorites" to="/favorites" />
+        <q-btn disabled flat icon="explore"/>
+        <q-btn label="Search" to="/"/>
+        <q-btn label="Contribute" to="/contribute"/>
+        <q-btn label="Favorites" to="/favorites"/>
       </q-btn-group>
     </q-card-actions>
     <div class="body">
@@ -36,31 +36,24 @@
                 to="/destination"
               />
             </div>
-            <q-space />
-            <q-btn round icon="autorenew" class="col-3 swap" />
+            <q-space/>
+            <q-btn round icon="autorenew" class="col-3 swap"/>
           </q-card-section>
         </q-card>
       </q-card-section>
-      <q-separator spaced />
-      <ItineraryCard />
+      <q-separator spaced/>
+      <!-- put results here -->
     </div>
   </q-card>
 </template>
 
 <script>
-import { ItineraryCard } from "../";
 import { mapState } from "vuex";
-import { mapFields } from "vuex-map-fields";
 export default {
   name: "RouteScreen",
   computed: {
-    ...mapState("map", ["origin", "destination"]),
-    ...mapFields("map", ["mapInstance"])
-  },
-  components: {
-    ItineraryCard
-  },
-  methods: {}
+    ...mapState("map", ["origin", "destination", "routes"])
+  }
 };
 </script>
 

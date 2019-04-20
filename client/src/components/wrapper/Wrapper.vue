@@ -12,6 +12,10 @@
         ? 'mark'
         : $route.path === '/destination/marker'
         ? 'mark'
+        : $route.path === '/origin/selected'
+        ? 'mark'
+        : $route.path === '/destination/selected'
+        ? 'mark'
         : ''
     "
   />
