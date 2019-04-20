@@ -2,9 +2,9 @@
   <q-card>
     <q-card-actions class="navbar">
       <q-btn-group flat>
-        <q-btn icon="navigate_before" to="/" />
+        <q-btn icon="navigate_before" to="/"/>
       </q-btn-group>
-      <q-space />
+      <q-space/>
       <div class="text-h6 capitalize">{{ `Select ${this.type}` }}</div>
     </q-card-actions>
     <q-card-section>
@@ -17,13 +17,14 @@
       />
     </q-card-section>
     <div class="body">
-      <q-card-actions class="row" v-if="name === ''">
+      <q-card-actions class="row" v-if="name === '' || pois.length===0">
         <q-btn
           class="full-width godown"
           color="green"
           icon="gps_fixed"
           label="Use Current Location"
-          @click="locate"
+          :disable="!GPSEnabled"
+          @click="user"
         />
         <q-btn
           class="full-width"
@@ -35,11 +36,7 @@
         />
       </q-card-actions>
       <div v-else>
-        <SearchCard
-          v-for="(result, index) in searchResults"
-          :result="result"
-          :key="index"
-        />
+        <SearchResultCard v-for="(result, index) in pois" :result="result" :key="index"/>
       </div>
     </div>
   </q-card>
@@ -48,22 +45,26 @@
 <script>
 import { mapActions } from "vuex";
 import { mapFields } from "vuex-map-fields";
-import { SearchCard } from "..";
+import { SearchResultCard } from "..";
 export default {
   name: "SelectSearchMethod",
   data() {
     return {
-      type: "",
-      name: ""
+      type: ""
     };
+  },
+  components: {
+    SearchResultCard
   },
   computed: {
     ...mapFields("map", [
-      "GPSOrigin",
-      "GPSDestination",
       "MarkerOrigin",
       "MarkerDestination",
-      "searchResults"
+      "GPSEnabled",
+      "userMarker",
+      "name",
+      "pois",
+      "mapInstance"
     ])
   },
   mounted() {
@@ -74,14 +75,19 @@ export default {
     }
   },
   methods: {
-    ...mapActions("map", ["locateUser", "placeMarker", "allSearch"]),
-    locate() {
+    ...mapActions("map", ["reverseGeocode", "placeMarker", "allSearch"]),
+    user() {
+      const { lat, lng } = this.userMarker.getLatLng();
       if (this.type === "origin") {
-        this.GPSOrigin = true;
+        this.reverseGeocode({ lat, lng, locationType: "origin", type: "GPS" });
       } else {
-        this.GPSDestination = true;
+        this.reverseGeocode({
+          lat,
+          lng,
+          locationType: "destination",
+          type: "GPS"
+        });
       }
-      this.locateUser();
     },
     mark() {
       if (this.type === "origin") {
@@ -89,7 +95,7 @@ export default {
       } else {
         this.MarkerDestination = true;
       }
-      this.placeMarker();
+      this.mapInstance.editTools.startMarker();
     },
     searchRoom() {
       this.page = "room";
@@ -97,9 +103,6 @@ export default {
     back() {
       this.page = "select";
     }
-  },
-  components: {
-    SearchCard
   }
 };
 </script>

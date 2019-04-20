@@ -2,7 +2,7 @@ export { default as Map } from "./map/Map";
 export { default as Wrapper } from "./wrapper/Wrapper";
 export { default as ItineraryCard } from "./cards/ItineraryCard";
 export { default as PlaceMarkerCard } from "./cards/PlaceMarkerCard";
-export { default as SearchCard } from "./cards/SearchCard";
+export { default as SearchResultCard } from "./cards/SearchResultCard";
 export { default as RouteScreen } from "./searchPanel/RouteScreen";
 export {
   default as SelectSearchMethod

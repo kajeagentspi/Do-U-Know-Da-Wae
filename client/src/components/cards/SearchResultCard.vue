@@ -1,5 +1,5 @@
 <template>
-  <q-item clickable @click="setView">
+  <q-item clickable @click="pick">
     <q-item-section avatar>
       <q-avatar
         color="teal"
@@ -20,18 +20,26 @@
 </template>
 
 <script>
-import { mapMutations } from "vuex";
-import { CHANGE_VIEW } from "../../store/types";
+import { mapActions } from "vuex";
 export default {
-  name: "SearchCard",
+  name: "SearchResultCard",
   props: ["result"],
+  data() {
+    return {
+      type: ""
+    };
+  },
   methods: {
-    ...mapMutations("map", {
-      changeView: CHANGE_VIEW
-    }),
-    setView() {
-      const { coordinates, lat, lng } = this.result;
-      this.changeView({ coordinates, lat, lng });
+    ...mapActions("map", ["viewSearch"]),
+    pick() {
+      this.viewSearch({ ...this.result, locationType: this.type });
+    }
+  },
+  mounted() {
+    if (this.$route.path === "/origin") {
+      this.type = "origin";
+    } else {
+      this.type = "destination";
     }
   }
 };

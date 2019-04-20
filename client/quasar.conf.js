@@ -34,7 +34,9 @@ module.exports = function(ctx) {
         "QInput",
         "QSpace",
         "QPageContainer",
-        "QLayout"
+        "QLayout",
+        "QPageSticky",
+        "QIcon"
       ],
 
       directives: ["Ripple"],
@@ -79,8 +81,8 @@ module.exports = function(ctx) {
     },
 
     pwa: {
-      // workboxPluginMode: 'InjectManifest',
-      // workboxOptions: {},
+      workboxPluginMode: "InjectManifest",
+      workboxOptions: {},
       manifest: {
         // name: 'Quasar App',
         // short_name: 'Quasar-PWA',

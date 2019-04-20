@@ -1,205 +1,212 @@
-import { getField, updateField } from "vuex-map-fields";
 import L from "leaflet";
-import router from "../router";
+import { Notify } from "quasar";
+import { getField, updateField } from "vuex-map-fields";
 import {
-  GET_MAP,
+  INITIALIZE_MAP,
+  CHANGE_VIEW,
+  SET_LOCATION,
   REMOVE_LAYER,
-  ADD_LAYER,
-  UPDATE_POSITION,
-  SET_ORIGIN_DESTINATION_POSITION,
-  SET_SEARCH_RESULTS,
-  CHANGE_VIEW
+  SET_MAP_PROPERTY
 } from "./types";
 import * as Api from "../api";
-import { Notify } from "quasar";
+import router from "../router";
 
 const map = {
   namespaced: true,
   state: {
+    mapTop: 0,
+    mapLeft: 0,
+    mapRight: 0,
+    mapBottom: 0,
+
     mapInstance: null,
+
+    origin: null,
+    originMarker: null,
+    destination: null,
+    destinationMarker: null,
+
     userMarker: null,
+    GPSEnabled: false,
     GPSOrigin: false,
     GPSDestination: false,
     MarkerOrigin: false,
     MarkerDestination: false,
-    originMarker: null,
-    origin: null,
-    destinationMarker: null,
-    destination: null,
-    rooms: [],
-    glMap: null,
-    searchResults: [],
-    searchMarker: null,
-    searchPolygon: null,
-    mapTop: 0,
-    mapLeft: 0,
-    mapRight: 0,
-    mapBottom: 0
+
+    name: "",
+    routes: [],
+    pois: []
   },
   getters: {
     getField
   },
   mutations: {
     updateField,
-    [GET_MAP]: state => {
+    [INITIALIZE_MAP]: state => {
       state.mapInstance = L.map("map", {
         zoomControl: false,
         minZoom: 17,
         maxZoom: 21,
-        maxBounds: [
-          { lat: 14.171030846860607, lng: 121.26183271408082 },
-          { lat: 14.150870198219486, lng: 121.22063398361207 }
-        ],
-        editable: true,
-        trackResize: true
+        // maxBounds: [
+        //   { lat: 14.171030846860607, lng: 121.26183271408082 },
+        //   { lat: 14.150870198219486, lng: 121.22063398361207 }
+        // ],
+        center: { lat: 14.1648, lng: 121.2413 },
+        zoom: 16,
+        editable: true
       });
-      state.glMap = L.mapboxGL({
+      L.mapboxGL({
         attribution:
           '<a href="https://www.maptiler.com/copyright/" target="_blank">© MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">© OpenStreetMap contributors</a>',
         accessToken: "not-needed",
         style:
           "https://maps.tilehosting.com/styles/bright/style.json?key=4krAogjdNdbE796RetO6"
       }).addTo(state.mapInstance);
-      state.mapInstance.setView([14.1648, 121.2413], 17);
-      new L.Marker(state.mapInstance.getCenter()).addTo(state.mapInstance);
+      state.mapInstance.locate({ watch: true });
     },
-    [REMOVE_LAYER]: (state, payload) => {
-      const { layer } = payload;
-      state.mapInstance.removeLayer(layer);
-    },
-    [ADD_LAYER]: (state, payload) => {
-      const { layer } = payload;
-      layer.addTo(state.mapInstance);
-    },
-    [UPDATE_POSITION]: (state, payload) => {
-      const { lat, lng } = payload;
-      if (state.userMarker) {
-        state.userMarker.setLatLng({ lat, lng });
+
+    [SET_MAP_PROPERTY]: (state, payload) => {
+      const { pairs, key, value } = payload;
+      if (pairs) {
+        pairs.forEach(pair => {
+          state[pair.key] = pair.value;
+        });
+      } else {
+        state[key] = value;
       }
     },
-    [SET_ORIGIN_DESTINATION_POSITION]: (state, payload) => {
-      const { endType, ...marker } = payload;
-      switch (endType) {
-        case "Origin":
-          if (state.originMarker) {
-            state.originMarker.setLatLng({
-              lat: marker.lat,
-              lng: marker.lng
-            });
-          } else {
-            state.originMarker = new L.Marker({
-              lat: marker.lat,
-              lng: marker.lng
-            }).addTo(state.mapInstance);
-            state.originMarker.dragging.disable();
-          }
-          state.origin = marker;
-          break;
-        case "Destination":
-          if (state.destinationMarker) {
-            state.destinationMarker.setLatLng({
-              lat: marker.lat,
-              lng: marker.lng
-            });
-          } else {
-            state.destinationMarker = new L.Marker({
-              lat: marker.lat,
-              lng: marker.lng
-            }).addTo(state.mapInstance);
-            state.destinationMarker.dragging.disable();
-          }
-          state.destination = marker;
-          break;
-      }
-      const { origin, destination } = state;
-      const latLngs = [];
-      if (origin) {
-        latLngs.push([origin.lat, origin.lng]);
-      }
-      if (destination) {
-        latLngs.push([destination.lat, destination.lng]);
-      }
-      router.push({
-        name: "RouteScreen"
-      });
-    },
-    [SET_SEARCH_RESULTS]: (state, payload) => {
-      if (state.searchMarker) {
-        state.mapInstance.removeLayer(state.searchMarker);
-        state.searchMarker = null;
-      }
-      if (state.searchPolygon) {
-        state.mapInstance.removeLayer(state.searchPolygon);
-        state.searchPolygon = null;
-      }
-      state.searchResults = [...payload];
-    },
+
     [CHANGE_VIEW]: (state, payload) => {
-      const { coordinates, lat, lng } = payload;
-      if (state.searchMarker) {
-        state.mapInstance.removeLayer(state.searchMarker);
-        state.searchMarker = null;
-      }
-      if (state.searchPolygon) {
-        state.mapInstance.removeLayer(state.searchPolygon);
-        state.searchPolygon = null;
-      }
-      state.searchMarker = new L.Marker(
-        { lat, lng },
-        { draggable: false }
-      ).addTo(state.mapInstance);
-      const { x, y } = state.mapInstance.getSize();
+      let { coordinates, type } = payload;
       const { mapTop, mapLeft, mapRight, mapBottom } = state;
-      console.log({ x, y });
-      console.log({
-        mapTop,
-        mapLeft,
-        mapBottom,
-        mapRight
-      });
+      const { x, y } = state.mapInstance.getSize();
       const padding = {
         paddingTopLeft: [mapLeft, mapTop],
         paddingBottomRight: [x - mapRight, y - mapBottom]
       };
-      if (coordinates) {
-        state.searchPolygon = L.polygon(coordinates, {
-          color: "red"
-        }).addTo(state.mapInstance);
-        state.mapInstance.flyToBounds(coordinates, {
-          ...padding
-        });
-      } else {
-        state.mapInstance.flyToBounds([{ lat, lng }], {
+      if (type === "marker") {
+        console.log(coordinates);
+        state.mapInstance.fitBounds(coordinates, {
           ...padding
         });
       }
+    },
+
+    [REMOVE_LAYER]: (state, payload) => {
+      const { layers, layer } = payload;
+      if (layers) {
+        layers.forEach(layer => {
+          state.mapInstance.removeLayer(layer);
+        });
+      } else {
+        state.mapInstance.removeLayer(layer);
+      }
+    },
+
+    [SET_LOCATION]: (state, payload) => {
+      const { locationType, type, ...data } = payload;
+      let lat;
+      let lng;
+      if (type !== "Room") {
+        lat = data.lat;
+        lng = data.lng;
+      } else if (type === "Room") {
+        lat = data.building.lat;
+        lng = data.building.lng;
+      }
+      if (locationType === "origin") {
+        if (state.originMarker) {
+          state.originMarker.setLatLng({
+            lat,
+            lng
+          });
+        } else {
+          state.originMarker = new L.Marker({
+            lat,
+            lng
+          }).addTo(state.mapInstance);
+        }
+        state.origin = { ...payload };
+      } else if (locationType === "destination") {
+        if (state.destinationMarker) {
+          state.destinationMarker.setLatLng({
+            lat,
+            lng
+          });
+        } else {
+          state.destinationMarker = new L.Marker({
+            lat,
+            lng
+          }).addTo(state.mapInstance);
+        }
+        state.destination = { ...payload, lat, lng };
+      }
+      router.push({
+        name: "RouteScreen"
+      });
     }
   },
   actions: {
-    locateUser: context => {
-      const { mapInstance } = context.state;
-      mapInstance.locate();
-      console.log("test");
+    allSearch: async (context, payload) => {
+      context.commit(SET_MAP_PROPERTY, { key: "pois", value: [] });
+      return Api.getAll({ name: payload })
+        .then(result => {
+          context.commit(SET_MAP_PROPERTY, {
+            key: "pois",
+            value: result.data
+          });
+        })
+        .catch(error => {
+          console.log(error);
+          Notify.create({
+            message: "An error occured",
+            color: "negative",
+            position: "top"
+          });
+        });
     },
-    placeMarker: context => {
-      const { mapInstance } = context.state;
-      mapInstance.editTools.startMarker();
+    initializeMap: context => {
+      context.commit(INITIALIZE_MAP);
+    },
+    locateUser: context => {
+      const { userMarker } = context.state;
+      context.commit(CHANGE_VIEW, { ...userMarker.getLatLng() });
     },
     reverseGeocode: async (context, payload) => {
-      const { latLng, endType, type } = payload;
+      const { lat, lng, locationType } = payload;
+      const { origin, destination } = context.state;
       try {
         const {
           data: { display_name }
-        } = await Api.reverseGeocode({ ...latLng });
+        } = await Api.reverseGeocode({ lat, lng });
         const name = display_name
           .split(", ")
           .slice(0, 2)
           .join(", ");
-        context.commit(SET_ORIGIN_DESTINATION_POSITION, {
-          ...latLng,
-          name,
-          endType,
-          type
+
+        if (locationType === "origin" && destination) {
+          context.commit(CHANGE_VIEW, {
+            coordinates: [
+              { lat: destination.lat, lng: destination.lng },
+              { lat, lng }
+            ],
+            type: "marker"
+          });
+        } else if (locationType === "destination" && origin) {
+          context.commit(CHANGE_VIEW, {
+            coordinates: [{ lat: origin.lat, lng: origin.lng }, { lat, lng }],
+            type: "marker"
+          });
+        } else {
+          context.commit(CHANGE_VIEW, {
+            coordinates: [{ lat, lng }],
+            type: "marker"
+          });
+        }
+
+        context.commit(SET_LOCATION, {
+          ...payload,
+          name
         });
       } catch (error) {
         console.log(error);
@@ -210,21 +217,43 @@ const map = {
         });
       }
     },
-    allSearch: async (context, payload) => {
-      context.commit(SET_SEARCH_RESULTS, []);
-      return Api.getAll({ name: payload })
-        .then(result => {
-          context.commit(SET_SEARCH_RESULTS, result.data);
-        })
-        .catch(error => {
-          console.log(error);
-          Notify.create({
-            message: "An error occured",
-            color: "negative",
-            position: "top"
-          });
+    viewSearch: async (context, payload) => {
+      const { origin, destination } = context.state;
+      let { locationType, type } = payload;
+      if (!type) {
+        type = "Building";
+      }
+      let lat;
+      let lng;
+      if (type !== "Room") {
+        lat = payload.lat;
+        lng = payload.lng;
+      } else if (type === "Room") {
+        lat = payload.building.lat;
+        lng = payload.building.lng;
+      }
+      if (locationType === "origin" && destination) {
+        context.commit(CHANGE_VIEW, {
+          coordinates: [
+            { lat: destination.lat, lng: destination.lng },
+            { lat, lng }
+          ],
+          type: "marker"
         });
+      } else if (locationType === "destination" && origin) {
+        context.commit(CHANGE_VIEW, {
+          coordinates: [{ lat: origin.lat, lng: origin.lng }, { lat, lng }],
+          type: "marker"
+        });
+      } else {
+        context.commit(CHANGE_VIEW, {
+          coordinates: [{ lat, lng }],
+          type: "marker"
+        });
+      }
+      context.commit(SET_LOCATION, { ...payload, type });
     }
   }
 };
+
 export default map;
