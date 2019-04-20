@@ -1,15 +1,5 @@
 <template>
-  <div>
-    <div
-      id="map"
-      :class="
-    $route.path === '/' ? 'activeroute' :
-    $route.path === '/origin' ? 'activeoriginDestination' :
-    $route.path === '/destination' ? 'activeoriginDestination' :
-    $route.path === '/origin/marker' ? 'activemark' :
-    $route.path === '/destination/marker' ? 'activemark' : ''"
-    ></div>
-  </div>
+  <div id="map"></div>
 </template>
 
 <script>
@@ -35,6 +25,7 @@ export default {
     this.getMap();
     this.mapInstance.on("editable:drawing:end", this.draw);
     this.mapInstance.on("locationfound", this.located);
+    this.mapInstance.on("locationerror", this.onLocationError);
     this.mapInstance.on("click", this.click);
     this.mapInstance.locate({ watch: true });
   },
@@ -100,6 +91,23 @@ export default {
       this.mapInstance.fitBounds([{ ...e.latlng }], {
         paddingTopLeft: [0, 360]
       });
+    },
+    onLocationError() {
+      if (this.GPSOrigin) {
+        this.GPSOrigin = false;
+        this.$q.notify({
+          message: "I'm sorry but I can't find you",
+          color: "negative",
+          position: "top"
+        });
+      } else if (this.GPSDestination) {
+        this.GPSDestination = false;
+        this.$q.notify({
+          message: "I'm sorry but I can't find you",
+          color: "negative",
+          position: "top"
+        });
+      }
     }
   },
   watch: {}
@@ -109,10 +117,13 @@ export default {
 <style>
 #map {
   top: 0px;
+  left: 0px;
+  right: 0px;
+  height: 100%;
   position: absolute;
   z-index: 0;
 }
-@media (min-width: 641px) {
+/* @media (min-width: 641px) {
   .activeroute,
   .activeoriginDestination,
   .activemark {
@@ -149,5 +160,5 @@ export default {
     position: absolute;
     z-index: -10;
   }
-}
+} */
 </style>

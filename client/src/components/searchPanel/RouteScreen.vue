@@ -2,10 +2,10 @@
   <q-card>
     <q-card-actions class="navbar">
       <q-btn-group flat>
-        <q-btn disabled flat icon="explore"/>
-        <q-btn label="Search" to="/"/>
-        <q-btn label="Contribute" to="/contribute"/>
-        <q-btn label="Favorites" to="/favorites"/>
+        <q-btn disabled flat icon="explore" />
+        <q-btn label="Search" to="/" />
+        <q-btn label="Contribute" to="/contribute" />
+        <q-btn label="Favorites" to="/favorites" />
       </q-btn-group>
     </q-card-actions>
     <div class="body">
@@ -36,14 +36,13 @@
                 to="/destination"
               />
             </div>
-            <q-space/>
-            <q-btn round icon="autorenew" class="col-3 swap"/>
+            <q-space />
+            <q-btn round icon="autorenew" class="col-3 swap" />
           </q-card-section>
         </q-card>
       </q-card-section>
-      <q-separator spaced/>
-      <q-btn label="test" @click="pan"/>
-      <ItineraryCard v-for="index in 5" :key="index"/>
+      <q-separator spaced />
+      <ItineraryCard />
     </div>
   </q-card>
 </template>
@@ -84,7 +83,6 @@ export default {
   width: 74px;
   height: 72px;
 }
-
 @media (min-width: 641px) {
   .scrollbox {
     height: calc(93vh - 170px);

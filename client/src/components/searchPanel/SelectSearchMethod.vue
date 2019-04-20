@@ -1,14 +1,21 @@
 <template>
   <q-card>
+    <q-card-actions class="navbar">
+      <q-btn-group flat>
+        <q-btn icon="navigate_before" to="/" />
+      </q-btn-group>
+      <q-space />
+      <div class="text-h6 capitalize">{{ `Select ${this.type}` }}</div>
+    </q-card-actions>
     <q-card-section>
-      <q-card-actions>
-        <q-btn round icon="navigate_before" to="/"/>
-        <q-space/>
-        <div class="text-h6 capitalize">{{ `Select ${this.type}` }}</div>
-      </q-card-actions>
-      <q-separator spaced/>
-      <q-card-actions vertical>
-        <q-input v-model="name" outlined label="Search for a Room, Building, Jeepney Stop"/>
+      <q-input
+        v-model="name"
+        outlined
+        label="Search for a Room, Building, Jeepney Stop"
+      />
+    </q-card-section>
+    <div class="body">
+      <q-card-actions class="row" v-if="name === ''">
         <q-btn
           class="full-width"
           color="green"
@@ -25,14 +32,17 @@
           :to="`/${this.type}/marker`"
         />
       </q-card-actions>
-    </q-card-section>
+      <div v-else>
+        <SearchCard />
+      </div>
+    </div>
   </q-card>
 </template>
 
 <script>
 import { mapActions } from "vuex";
 import { mapFields } from "vuex-map-fields";
-
+import { SearchCard } from "..";
 export default {
   name: "SelectSearchMethod",
   data() {
@@ -80,9 +90,29 @@ export default {
     back() {
       this.page = "select";
     }
+  },
+  components: {
+    SearchCard
   }
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+.body {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  position: absolute;
+  top: 140px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+.navbar {
+  background-color: red;
+  color: white;
+}
+.swap {
+  width: 74px;
+  height: 72px;
+}
 </style>

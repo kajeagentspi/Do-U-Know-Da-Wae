@@ -29,7 +29,11 @@ module.exports = function(ctx) {
         "QItem",
         "QItemSection",
         "QScrollArea",
-        "QAvatar"
+        "QAvatar",
+        "QInput",
+        "QSpace",
+        "QPageContainer",
+        "QLayout"
       ],
 
       directives: ["Ripple"],

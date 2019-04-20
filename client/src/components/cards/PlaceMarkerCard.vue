@@ -2,11 +2,11 @@
   <q-card>
     <q-card-section>
       <q-card-actions>
-        <q-btn round icon="navigate_before" :to="`/${this.type}`"/>
-        <q-space/>
+        <q-btn round icon="navigate_before" :to="`/${this.type}`" />
+        <q-space />
         <div class="text-h6">{{ `Mark ${this.type}` }}</div>
       </q-card-actions>
-      <q-separator spaced/>
+      <q-separator spaced />
       <q-card-section>Choose wisely</q-card-section>
     </q-card-section>
   </q-card>
@@ -30,5 +30,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

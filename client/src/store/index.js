@@ -4,7 +4,6 @@ import VuexPersistence from "vuex-persist";
 
 import map from "./map";
 import auth from "./auth";
-
 Vue.use(Vuex);
 
 /*

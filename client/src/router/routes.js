@@ -1,48 +1,53 @@
 import {
-  SearchPanel,
-  SearchScreen,
-  ContributePanel,
-  ContributeChoice,
-  FavoritesPanel,
-  SelectSearchMethod
+  RouteScreen,
+  Wrapper,
+  SelectSearchMethod,
+  PlaceMarkerCard
 } from "../components";
 
 const routes = [
   {
     path: "/",
-    component: SearchPanel,
+    component: Wrapper,
     children: [
       {
         path: "",
-        name: "Search Screen",
-        component: SearchScreen
+        name: "RouteScreen",
+        component: RouteScreen,
+        meta: { bodyClass: "route" }
       },
       {
-        path: "from",
-        name: "Select Search Method",
+        path: "origin",
+        name: "Origin",
         component: SelectSearchMethod
       },
       {
-        path: "to",
-        name: "Select Search Method",
-        component: SelectSearchMethod
-      }
-    ]
-  },
-  {
-    path: "/contribute",
-    component: ContributePanel,
-    children: [
+        path: "/origin/marker",
+        name: "OriginMarker",
+        component: PlaceMarkerCard
+      },
       {
-        path: "",
-        name: "Contribute Choice",
-        component: ContributeChoice
+        path: "destination",
+        name: "Destination",
+        component: SelectSearchMethod
+      },
+      {
+        path: "/destination/marker",
+        name: "DestinationMarker",
+        component: PlaceMarkerCard
       }
+      // ,
+      // {
+      //   path: "from",
+      //   name: "SearchMethodOrigin",
+      //   component: SelectSearchMethod
+      // },
+      // {
+      //   path: "to",
+      //   name: "SearchMethodDestination",
+      //   component: SelectSearchMethod
+      // }
     ]
-  },
-  {
-    path: "/favorites",
-    component: FavoritesPanel
   }
 ];
 
