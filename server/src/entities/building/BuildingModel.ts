@@ -1,9 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { Room, Exit } from '..';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
+import { Room, Exit } from "..";
 
 @Entity()
 export class Building {
-
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -16,20 +15,25 @@ export class Building {
   @Column({ default: null })
   alternativeNames: string;
 
-  @Column('simple-json', { default: null })
+  @Column("simple-json", { default: null })
   coordinates: number[][][];
 
   @Column({ default: false })
   active: boolean;
 
   @OneToMany(type => Room, room => room.building, {
-    onDelete: 'CASCADE'
+    onDelete: "CASCADE"
   })
   rooms: Room[];
 
   @OneToMany(type => Exit, exit => exit.building, {
-    onDelete: 'CASCADE'
+    onDelete: "CASCADE"
   })
   exits: Exit[];
-  
+
+  @Column({ type: "double", nullable: true })
+  lat: number;
+
+  @Column({ type: "double", nullable: true })
+  lng: number;
 }

@@ -1,10 +1,9 @@
-import { getRepository } from 'typeorm';
-import { NextFunction, Request, Response } from 'express';
-import { User } from './UserModel';
-import * as admin from 'firebase-admin';
+import { getRepository } from "typeorm";
+import { NextFunction, Request, Response } from "express";
+import { User } from "./UserModel";
+import * as admin from "firebase-admin";
 
 export class UserController {
-
   private userRepository = getRepository(User);
 
   async all(request: Request, response: Response, next: NextFunction) {
@@ -12,7 +11,9 @@ export class UserController {
   }
 
   async one(request: Request, response: Response, next: NextFunction) {
-    return this.userRepository.findOne(request.params.id, { relations: ['contributions'] });
+    return this.userRepository.findOne(request.params.id, {
+      relations: ["contributions"]
+    });
   }
 
   async save(request: Request, response: Response, next: NextFunction) {
@@ -20,16 +21,16 @@ export class UserController {
     const result = await admin.auth().verifyIdToken(accessToken);
     const { name, email, uid } = result;
     if (!type) {
-      if (email.split('@').slice(-1)[0] === 'up.edu.ph'){
-        type = 'contributor';
+      if (email.split("@").slice(-1)[0] === "up.edu.ph") {
+        type = "contributor";
       } else {
-        type = 'viewer';
+        type = "viewer";
       }
     }
     const user = await this.userRepository.findOne({ uid });
     if (user) {
-      if (user.type === 'admin') {
-        type = 'admin'
+      if (user.type === "admin") {
+        type = "admin";
       }
       await this.userRepository.update(user.id, { name, type });
       return this.userRepository.findOne(user.id);
@@ -43,25 +44,24 @@ export class UserController {
       const { accessToken } = request.body;
       const { uid } = await admin.auth().verifyIdToken(accessToken);
       const { type } = await this.userRepository.findOne({ uid });
-      if (type === 'admin') {
+      if (type === "admin") {
         let user = await this.userRepository.findOne(request.params.id);
         await this.userRepository.remove(user);
         return {
-          message: 'Successfully Deleted User',
-          type: 'positive'
+          message: "Successfully Deleted User",
+          type: "positive"
         };
       }
       return {
-        message: 'Invalid Operation',
-        type: 'negative'
-      }
+        message: "Invalid Operation",
+        type: "negative"
+      };
     } catch (error) {
       console.log(error);
       return {
-        message: 'An Error Occurred',
-        type: 'negative'
-      }
+        message: "An Error Occurred",
+        type: "negative"
+      };
     }
   }
-
 }

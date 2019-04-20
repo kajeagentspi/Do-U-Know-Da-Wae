@@ -1,27 +1,31 @@
-import { getRepository, Like } from 'typeorm';
-import { NextFunction, Request, Response } from 'express';
-import { Building, Room, User } from '..';
-import * as admin from 'firebase-admin';
+import { getRepository, Like } from "typeorm";
+import { NextFunction, Request, Response } from "express";
+import { Building, Room, User } from "..";
+import * as admin from "firebase-admin";
 
 export class RoomController {
-
   private buildingRepository = getRepository(Building);
   private roomRepository = getRepository(Room);
   private userRepository = getRepository(User);
 
   async all(request: Request, response: Response, next: NextFunction) {
-    let { name, ...query} = request.query;
-    if(!name){
-      name = '';
+    let { name, ...query } = request.query;
+    if (!name) {
+      name = "";
     }
-    return this.roomRepository.find({ where: {
-      name: Like(`${name}`),
-      ...query
-    }, relations: ['building']});
+    return this.roomRepository.find({
+      where: {
+        name: Like(`${name}`),
+        ...query
+      },
+      relations: ["building"]
+    });
   }
 
   async one(request: Request, response: Response, next: NextFunction) {
-    return this.roomRepository.findOne(request.params.id, { relations: ['building'] });
+    return this.roomRepository.findOne(request.params.id, {
+      relations: ["building"]
+    });
   }
 
   async save(request: Request, response: Response, next: NextFunction) {
@@ -29,28 +33,36 @@ export class RoomController {
       const { buildingId, name, level, accessToken, id } = request.body;
       const { uid } = await admin.auth().verifyIdToken(accessToken);
       const { type } = await this.userRepository.findOne({ uid });
-      
-      if (type === 'admin') {
+
+      if (type === "admin") {
         const room = await this.roomRepository.findOne(id);
         if (room) {
           await this.roomRepository.update(room.id, { name, level });
-          return this.roomRepository.findOne(room.id, { relations: ['building'] });
+          return this.roomRepository.findOne(room.id, {
+            relations: ["building"]
+          });
         } else {
           const building = await this.buildingRepository.findOne(buildingId);
-          const room = await this.roomRepository.save({ building, name, level });
-          return this.roomRepository.findOne(room.id, { relations: ['building'] });
+          const room = await this.roomRepository.save({
+            building,
+            name,
+            level
+          });
+          return this.roomRepository.findOne(room.id, {
+            relations: ["building"]
+          });
         }
       }
       return {
-        message: 'Operation not permitted',
-        type: 'negative'
-      }
+        message: "Operation not permitted",
+        type: "negative"
+      };
     } catch (error) {
       console.log(error);
       return {
-        message: 'An Error Occurred',
-        type: 'negative'
-      }
+        message: "An Error Occurred",
+        type: "negative"
+      };
     }
   }
 
@@ -59,25 +71,24 @@ export class RoomController {
       const { accessToken } = request.body;
       const { uid } = await admin.auth().verifyIdToken(accessToken);
       const { type } = await this.userRepository.findOne({ uid });
-      if (type === 'admin') {
+      if (type === "admin") {
         let room = await this.roomRepository.findOne(request.params.id);
         await this.roomRepository.remove(room);
         return {
-          message: 'Successfully Deleted Room',
-          type: 'positive'
+          message: "Successfully Deleted Room",
+          type: "positive"
         };
       }
       return {
-        message: 'Operation not permitted',
-        type: 'negative'
-      }
+        message: "Operation not permitted",
+        type: "negative"
+      };
     } catch (error) {
       console.log(error);
       return {
-        message: 'An Error Occurred',
-        type: 'negative'
-      }
+        message: "An Error Occurred",
+        type: "negative"
+      };
     }
   }
-
 }

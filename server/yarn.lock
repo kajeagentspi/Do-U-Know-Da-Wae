@@ -1130,6 +1130,11 @@ gcs-resumable-upload@^1.0.0:
     pumpify "^1.5.1"
     stream-events "^1.0.4"
 
+geojson-polygon-center@^0.0.0:
+  version "0.0.0"
+  resolved "https://registry.yarnpkg.com/geojson-polygon-center/-/geojson-polygon-center-0.0.0.tgz#f97b839ac996654bffd30abacbd728cb0f8bd305"
+  integrity sha1-+XuDmsmWZUv/0wq6y9coyw+L0wU=
+
 get-caller-file@^1.0.1:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/get-caller-file/-/get-caller-file-1.0.3.tgz#f978fa4c90d1dfe7ff2d6beda2a515e713bdcf4a"

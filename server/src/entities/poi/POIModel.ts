@@ -1,40 +1,44 @@
-import { PrimaryGeneratedColumn, OneToMany, Entity, TableInheritance, Column } from 'typeorm';
-import { Path, Route } from '..';
+import {
+  PrimaryGeneratedColumn,
+  OneToMany,
+  Entity,
+  TableInheritance,
+  Column
+} from "typeorm";
+import { Path, Route } from "..";
 
 @Entity()
-@TableInheritance({ column: { type: 'varchar', name: 'type' } })
+@TableInheritance({ column: { type: "varchar", name: "type" } })
 export class POI {
-  
   @PrimaryGeneratedColumn()
   id: number;
-  
+
   @OneToMany(type => Path, path => path.start, {
-    onDelete: 'CASCADE'
+    onDelete: "CASCADE"
   })
   startPaths: Path[];
 
   @OneToMany(type => Path, path => path.end, {
-    onDelete: 'CASCADE'
+    onDelete: "CASCADE"
   })
   endPaths: Path[];
 
   @OneToMany(type => Route, route => route.start, {
-    onDelete: 'CASCADE'
+    onDelete: "CASCADE"
   })
   startRoutes: Route[];
 
   @OneToMany(type => Route, route => route.end, {
-    onDelete: 'CASCADE'
+    onDelete: "CASCADE"
   })
   endRoutes: Route[];
-  
+
   @Column()
-  type: 'string';
-  
-  @Column({ type: 'double', nullable: true })
+  type: "string";
+
+  @Column({ type: "double", nullable: true })
   lat: number;
 
-  @Column({ type: 'double', nullable: true })
+  @Column({ type: "double", nullable: true })
   lng: number;
-
 }

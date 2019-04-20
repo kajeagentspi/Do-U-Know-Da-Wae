@@ -1,28 +1,28 @@
-import { StopController } from './StopController';
+import { StopController } from "./StopController";
 
 export const StopRoutes = [
   {
-    method: 'get',
-    route: '/stop',
+    method: "get",
+    route: "/stop",
     controller: StopController,
-    action: 'all'
+    action: "all"
   },
   {
-    method: 'get',
-    route: '/stop/:id',
+    method: "get",
+    route: "/stop/:id",
     controller: StopController,
-    action: 'one'
+    action: "one"
   },
   {
-    method: 'post',
-    route: '/stop',
+    method: "post",
+    route: "/stop",
     controller: StopController,
-    action: 'save'
+    action: "save"
   },
   {
-    method: 'delete',
-    route: '/stop/:id',
+    method: "delete",
+    route: "/stop/:id",
     controller: StopController,
-    action: 'remove'
+    action: "remove"
   }
 ];
