@@ -1,12 +1,22 @@
 <template>
-  <q-card id="map"></q-card>
+  <div>
+    <div
+      id="map"
+      :class="
+    $route.path === '/' ? 'activeroute' :
+    $route.path === '/origin' ? 'activeoriginDestination' :
+    $route.path === '/destination' ? 'activeoriginDestination' :
+    $route.path === '/origin/marker' ? 'activemark' :
+    $route.path === '/destination/marker' ? 'activemark' : ''"
+    ></div>
+  </div>
 </template>
 
 <script>
 import L from "leaflet";
 import { mapMutations, mapActions } from "vuex";
 import { mapFields } from "vuex-map-fields";
-import { GET_MAP, UPDATE_POSITION } from "../../store/types";
+import { GET_MAP, UPDATE_POSITION, REMOVE_LAYER } from "../../store/types";
 
 export default {
   name: "Map",
@@ -17,24 +27,28 @@ export default {
       "GPSOrigin",
       "GPSDestination",
       "MarkerOrigin",
-      "MarkerDestination"
+      "MarkerDestination",
+      "glMap"
     ])
   },
   mounted() {
     this.getMap();
     this.mapInstance.on("editable:drawing:end", this.draw);
     this.mapInstance.on("locationfound", this.located);
-    // this.mapInstance.on("click", this.click);
+    this.mapInstance.on("click", this.click);
+    this.mapInstance.locate({ watch: true });
   },
   methods: {
     ...mapMutations("map", {
       getMap: GET_MAP,
+      removeLayer: REMOVE_LAYER,
       updatePosition: UPDATE_POSITION
     }),
     ...mapActions("map", ["reverseGeocode"]),
     draw({ layer }) {
       if (layer instanceof L.Marker) {
         const latLng = layer.getLatLng();
+        this.removeLayer({ layer });
         if (this.MarkerOrigin) {
           this.MarkerOrigin = false;
           this.reverseGeocode({ latLng, endType: "Origin", type: "Marker" });
@@ -83,29 +97,57 @@ export default {
         }
       );
       marker.addTo(this.mapInstance);
+      this.mapInstance.fitBounds([{ ...e.latlng }], {
+        paddingTopLeft: [0, 360]
+      });
     }
-  }
+  },
+  watch: {}
 };
 </script>
 
 <style>
-@media (max-width: 640px) {
-  #map {
-    width: 100%;
-    height: 40%;
-    top: 0px;
-    position: absolute;
-    z-index: 0;
-  }
+#map {
+  top: 0px;
+  position: absolute;
+  z-index: 0;
 }
 @media (min-width: 641px) {
-  #map {
-    width: calc(100% - 380px - 3vh);
-    top: 1vh;
-    right: 1vh;
-    bottom: 1vh;
+  .activeroute,
+  .activeoriginDestination,
+  .activemark {
+    top: 0px;
+    left: 360px;
+    right: 0px;
+    bottom: 0px;
     position: absolute;
-    z-index: 0;
+    z-index: -10;
+  }
+}
+@media (max-width: 640px) {
+  .activeroute {
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: calc(60%);
+    position: absolute;
+    z-index: -10;
+  }
+  .activeoriginDestination {
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: calc(80%);
+    position: absolute;
+    z-index: -10;
+  }
+  .activemark {
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: calc(20%);
+    position: absolute;
+    z-index: -10;
   }
 }
 </style>

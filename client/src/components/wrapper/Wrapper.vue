@@ -1,0 +1,52 @@
+<template>
+  <router-view
+    class="wrapper"
+    :class="
+    $route.path === '/' ? 'route' :
+    $route.path === '/origin' ? 'originDestination' :
+    $route.path === '/destination' ? 'originDestination' :
+    $route.path === '/origin/marker' ? 'mark' :
+    $route.path === '/destination/marker' ? 'mark' : ''"
+  />
+</template>
+<script>
+export default {
+  name: "Wrapper"
+};
+</script>
+
+<style lang="scss">
+@media (max-width: 640px) {
+  .wrapper {
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    width: 100vw;
+    position: absolute;
+    overflow: hidden;
+    z-index: 0;
+  }
+  .route {
+    height: 60%;
+  }
+  .originDestination {
+    height: 80%;
+  }
+  .mark {
+    height: 20%;
+  }
+}
+
+@media (min-width: 641px) {
+  .wrapper {
+    width: 360px;
+    overflow: hidden;
+    z-index: 0;
+  }
+  .route,
+  .originDestination,
+  .mark {
+    height: 100vh;
+  }
+}
+</style>
