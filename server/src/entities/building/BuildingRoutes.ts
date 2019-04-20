@@ -1,34 +1,34 @@
-import { BuildingController } from './BuildingController';
+import { BuildingController } from "./BuildingController";
 
 export const BuildingRoutes = [
   {
-    method: 'get',
-    route: '/building',
+    method: "get",
+    route: "/building",
     controller: BuildingController,
-    action: 'all'
+    action: "all"
   },
   {
-    method: 'get',
-    route: '/building/:id',
+    method: "get",
+    route: "/building/:id",
     controller: BuildingController,
-    action: 'one'
+    action: "one"
   },
   {
-    method: 'get',
-    route: '/building/identify',
+    method: "get",
+    route: "/building/identify",
     controller: BuildingController,
-    action: 'identify'
+    action: "identify"
   },
   {
-    method: 'post',
-    route: '/building',
+    method: "post",
+    route: "/building",
     controller: BuildingController,
-    action: 'save'
+    action: "save"
   },
   {
-    method: 'delete',
-    route: '/building/:id',
+    method: "delete",
+    route: "/building/:id",
     controller: BuildingController,
-    action: 'remove'
-  },
+    action: "remove"
+  }
 ];

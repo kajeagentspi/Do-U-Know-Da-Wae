@@ -1,9 +1,8 @@
-import { ChildEntity, Column, ManyToOne } from 'typeorm';
-import { Building, POI } from '..';
+import { ChildEntity, Column, ManyToOne } from "typeorm";
+import { Building, POI } from "..";
 
 @ChildEntity()
 export class Room extends POI {
-
   @Column()
   name: string;
 
@@ -11,8 +10,7 @@ export class Room extends POI {
   level: Number;
 
   @ManyToOne(type => Building, building => building.rooms, {
-    onDelete: 'CASCADE'
+    onDelete: "CASCADE"
   })
   building: Building;
-
 }

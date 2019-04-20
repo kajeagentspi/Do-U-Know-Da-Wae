@@ -1,28 +1,28 @@
-import { MarkerController } from './MarkerController';
+import { MarkerController } from "./MarkerController";
 
 export const MarkerRoutes = [
   {
-    method: 'get',
-    route: '/marker',
+    method: "get",
+    route: "/marker",
     controller: MarkerController,
-    action: 'all'
+    action: "all"
   },
   {
-    method: 'get',
-    route: '/marker/:id',
+    method: "get",
+    route: "/marker/:id",
     controller: MarkerController,
-    action: 'one'
+    action: "one"
   },
   {
-    method: 'post',
-    route: '/marker',
+    method: "post",
+    route: "/marker",
     controller: MarkerController,
-    action: 'save'
+    action: "save"
   },
   {
-    method: 'delete',
-    route: '/marker/:id',
+    method: "delete",
+    route: "/marker/:id",
     controller: MarkerController,
-    action: 'remove'
+    action: "remove"
   }
 ];

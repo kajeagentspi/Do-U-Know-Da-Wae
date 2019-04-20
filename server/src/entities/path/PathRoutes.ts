@@ -1,22 +1,22 @@
-import { PathController } from './PathController';
+import { PathController } from "./PathController";
 
 export const PathRoutes = [
   {
-    method: 'get',
-    route: '/path',
+    method: "get",
+    route: "/path",
     controller: PathController,
-    action: 'all'
+    action: "all"
   },
   {
-    method: 'get',
-    route: '/path/:id',
+    method: "get",
+    route: "/path/:id",
     controller: PathController,
-    action: 'one'
+    action: "one"
   },
   {
-    method: 'post',
-    route: '/path',
+    method: "post",
+    route: "/path",
     controller: PathController,
-    action: 'save',
-  },
+    action: "save"
+  }
 ];

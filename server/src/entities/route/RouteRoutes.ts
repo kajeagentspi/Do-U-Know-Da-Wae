@@ -1,22 +1,22 @@
-import { RouteController } from './RouteController';
+import { RouteController } from "./RouteController";
 
 export const RouteRoutes = [
   {
-    method: 'get',
-    route: '/route',
+    method: "get",
+    route: "/route",
     controller: RouteController,
-    action: 'all'
+    action: "all"
   },
   {
-    method: 'get',
-    route: '/route/:id',
+    method: "get",
+    route: "/route/:id",
     controller: RouteController,
-    action: 'one'
+    action: "one"
   },
   {
-    method: 'post',
-    route: '/route',
+    method: "post",
+    route: "/route",
     controller: RouteController,
-    action: 'save',
-  },
+    action: "save"
+  }
 ];

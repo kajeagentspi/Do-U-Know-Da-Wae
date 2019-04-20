@@ -1,10 +1,9 @@
-import { getRepository } from 'typeorm';
-import { NextFunction, Request, Response } from 'express';
-import { User, Marker } from '..';
-import * as admin from 'firebase-admin';
+import { getRepository } from "typeorm";
+import { NextFunction, Request, Response } from "express";
+import { User, Marker } from "..";
+import * as admin from "firebase-admin";
 
 export class MarkerController {
-
   private markerRepository = getRepository(Marker);
   private userRepository = getRepository(User);
 
@@ -21,7 +20,7 @@ export class MarkerController {
       const { lat, lng, accessToken, id } = request.body;
       const { uid } = await admin.auth().verifyIdToken(accessToken);
       const { type } = await this.userRepository.findOne({ uid });
-      if (type === 'admin' || type === 'contributor') {
+      if (type === "admin" || type === "contributor") {
         const marker = await this.markerRepository.findOne(id);
         if (marker) {
           await this.markerRepository.update(marker.id, { lat, lng });
@@ -32,15 +31,15 @@ export class MarkerController {
         }
       }
       return {
-        message: 'Invalid Operation',
-        type: 'negative'
-      }
+        message: "Invalid Operation",
+        type: "negative"
+      };
     } catch (error) {
       console.log(error);
       return {
-        message: 'An Error Occurred',
-        type: 'negative'
-      }
+        message: "An Error Occurred",
+        type: "negative"
+      };
     }
   }
 
@@ -49,25 +48,24 @@ export class MarkerController {
       const { accessToken } = request.body;
       const { uid } = await admin.auth().verifyIdToken(accessToken);
       const { type } = await this.userRepository.findOne({ uid });
-      if (type === 'admin') {
+      if (type === "admin") {
         let marker = await this.markerRepository.findOne(request.params.id);
         await this.markerRepository.remove(marker);
         return {
-          message: 'Successfully Deleted Marker',
-          type: 'positive'
+          message: "Successfully Deleted Marker",
+          type: "positive"
         };
       }
       return {
-        message: 'Invalid Operation',
-        type: 'negative'
-      }
+        message: "Invalid Operation",
+        type: "negative"
+      };
     } catch (error) {
       console.log(error);
       return {
-        message: 'An Error Occurred',
-        type: 'negative'
-      }
+        message: "An Error Occurred",
+        type: "negative"
+      };
     }
   }
-
 }

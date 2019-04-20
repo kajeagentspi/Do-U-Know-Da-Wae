@@ -1,28 +1,28 @@
-import { RoomController } from './RoomController';
+import { RoomController } from "./RoomController";
 
 export const RoomRoutes = [
   {
-    method: 'get',
-    route: '/room',
+    method: "get",
+    route: "/room",
     controller: RoomController,
-    action: 'all'
+    action: "all"
   },
   {
-    method: 'get',
-    route: '/room/:id',
+    method: "get",
+    route: "/room/:id",
     controller: RoomController,
-    action: 'one'
+    action: "one"
   },
   {
-    method: 'post',
-    route: '/room',
+    method: "post",
+    route: "/room",
     controller: RoomController,
-    action: 'save'
+    action: "save"
   },
   {
-    method: 'delete',
-    route: '/room/:id',
+    method: "delete",
+    route: "/room/:id",
     controller: RoomController,
-    action: 'remove'
-  },
+    action: "remove"
+  }
 ];
