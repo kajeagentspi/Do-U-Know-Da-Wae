@@ -48,7 +48,6 @@
 </template>
 
 <script>
-import L from "leaflet";
 import { ItineraryCard } from "../";
 import { mapState } from "vuex";
 import { mapFields } from "vuex-map-fields";
@@ -61,16 +60,7 @@ export default {
   components: {
     ItineraryCard
   },
-  methods: {
-    pan() {
-      const latLng = { lat: 14.158184881919258, lng: 121.24726429581644 };
-      const marker = new L.Marker(latLng, { draggable: true }).on("drag", e => {
-        console.log(e.latlng);
-      });
-      marker.addTo(this.mapInstance);
-      this.mapInstance.invalidateSize();
-    }
-  }
+  methods: {}
 };
 </script>
 

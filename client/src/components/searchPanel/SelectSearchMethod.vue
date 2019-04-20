@@ -11,13 +11,15 @@
       <q-input
         v-model="name"
         outlined
-        label="Search for a Room, Building, Jeepney Stop"
+        label="Search for a Room, Building, Stop"
+        :rules="[allSearch]"
+        debounce="500"
       />
     </q-card-section>
     <div class="body">
       <q-card-actions class="row" v-if="name === ''">
         <q-btn
-          class="full-width"
+          class="full-width godown"
           color="green"
           icon="gps_fixed"
           label="Use Current Location"
@@ -33,7 +35,11 @@
         />
       </q-card-actions>
       <div v-else>
-        <SearchCard />
+        <SearchCard
+          v-for="(result, index) in searchResults"
+          :result="result"
+          :key="index"
+        />
       </div>
     </div>
   </q-card>
@@ -56,7 +62,8 @@ export default {
       "GPSOrigin",
       "GPSDestination",
       "MarkerOrigin",
-      "MarkerDestination"
+      "MarkerDestination",
+      "searchResults"
     ])
   },
   mounted() {
@@ -67,7 +74,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions("map", ["locateUser", "placeMarker"]),
+    ...mapActions("map", ["locateUser", "placeMarker", "allSearch"]),
     locate() {
       if (this.type === "origin") {
         this.GPSOrigin = true;
@@ -114,5 +121,8 @@ export default {
 .swap {
   width: 74px;
   height: 72px;
+}
+.godown {
+  margin-bottom: 15px;
 }
 </style>
