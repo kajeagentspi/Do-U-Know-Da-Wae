@@ -39,7 +39,13 @@
               />
             </div>
             <q-space />
-            <q-btn round icon="autorenew" class="col-3 swap" />
+            <q-btn
+              round
+              icon="search"
+              class="col-3 swap"
+              :disable="!origin && !destination"
+              @click="searchRoutes"
+            />
           </q-card-section>
         </q-card>
       </q-card-section>
@@ -50,7 +56,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from "vuex";
+import { mapState, mapMutations, mapActions } from "vuex";
 import { SET_LOCATION } from "../../store/types";
 export default {
   name: "RouteScreen",
@@ -61,6 +67,7 @@ export default {
     ...mapMutations("map", {
       setLocation: SET_LOCATION
     }),
+    ...mapActions("map", ["searchRoutes"]),
     change(type) {
       if (type === "origin") {
         this.setLocation({ locationType: "origin", type: "null" });

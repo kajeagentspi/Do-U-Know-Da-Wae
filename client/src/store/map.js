@@ -85,8 +85,7 @@ const map = {
         paddingBottomRight: [x - mapRight, y - mapBottom]
       };
       if (type === "marker") {
-        console.log(coordinates);
-        state.mapInstance.fitBounds(coordinates, {
+        state.mapInstance.flyToBounds(coordinates, {
           ...padding
         });
       }
@@ -182,12 +181,27 @@ const map = {
           });
         });
     },
-    initializeMap: context => {
+    initializeMap: async context => {
       context.commit(INITIALIZE_MAP);
+      // const { mapInstance } = context.state;
+      // const { data } = await Api.getExits();
+      // const exitIcon = L.divIcon({
+      //   html: '<i class="fa fa-circle" style="color: red"></i>',
+      //   iconSize: [20, 20],
+      //   className: "icon"
+      // });
+      // data.forEach(exit => {
+      //   new L.Marker(exit, { icon: exitIcon })
+      //     .addTo(mapInstance)
+      //     .on("click", e => {});
+      // });
     },
     locateUser: context => {
       const { userMarker } = context.state;
-      context.commit(CHANGE_VIEW, { ...userMarker.getLatLng() });
+      context.commit(CHANGE_VIEW, {
+        coordinates: [userMarker.getLatLng()],
+        type: "marker"
+      });
     },
     reverseGeocode: async (context, payload) => {
       const { lat, lng, locationType } = payload;
@@ -269,6 +283,20 @@ const map = {
         });
       }
       context.commit(SET_LOCATION, { ...payload, type, lat, lng });
+    },
+    searchRoutes: async context => {
+      const { origin, destination } = context.state;
+      try {
+        const routes = await Api.getRoutes({ origin, destination });
+        context.commit(SET_MAP_PROPERTY, { key: "routes", value: routes });
+      } catch (error) {
+        console.log(error);
+        Notify.create({
+          message: "An error occured",
+          color: "negative",
+          position: "top"
+        });
+      }
     }
   }
 };
