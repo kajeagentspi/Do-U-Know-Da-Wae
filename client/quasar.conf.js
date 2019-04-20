@@ -9,10 +9,10 @@ module.exports = function(ctx) {
 
     extras: [
       "roboto-font",
-      "material-icons" // optional, you are not bound to it
+      "material-icons", // optional, you are not bound to it
       // 'ionicons',
       // 'mdi',
-      // 'fontawesome'
+      "fontawesome-v5"
     ],
 
     framework: {
@@ -28,6 +28,7 @@ module.exports = function(ctx) {
         "QSeparator",
         "QItem",
         "QItemSection",
+        "QItemLabel",
         "QScrollArea",
         "QAvatar",
         "QInput",

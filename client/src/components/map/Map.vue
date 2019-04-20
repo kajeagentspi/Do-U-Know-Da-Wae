@@ -1,5 +1,23 @@
 <template>
-  <div id="map"></div>
+  <div>
+    <div id="map"></div>
+    <div
+      :class="
+        $route.path === '/'
+          ? 'activeroute'
+          : $route.path === '/origin'
+          ? 'activeorigindestination'
+          : $route.path === '/destination'
+          ? 'activeorigindestination'
+          : $route.path === '/origin/mark'
+          ? 'activemark'
+          : $route.path === '/destination/mark'
+          ? 'activemark'
+          : ''
+      "
+      ref="visibleMap"
+    ></div>
+  </div>
 </template>
 
 <script>
@@ -18,10 +36,24 @@ export default {
       "GPSDestination",
       "MarkerOrigin",
       "MarkerDestination",
-      "glMap"
+      "glMap",
+      "mapTop",
+      "mapLeft",
+      "mapRight",
+      "mapBottom"
     ])
   },
   mounted() {
+    const {
+      top,
+      left,
+      bottom,
+      right
+    } = this.$refs.visibleMap.getBoundingClientRect();
+    this.mapTop = top;
+    this.mapLeft = left;
+    this.mapRight = right;
+    this.mapBottom = bottom;
     this.getMap();
     this.mapInstance.on("editable:drawing:end", this.draw);
     this.mapInstance.on("locationfound", this.located);
@@ -110,7 +142,32 @@ export default {
       }
     }
   },
-  watch: {}
+  watch: {
+    "$q.screen.width"() {
+      const {
+        top,
+        left,
+        bottom,
+        right
+      } = this.$refs.visibleMap.getBoundingClientRect();
+      this.mapTop = top;
+      this.mapLeft = left;
+      this.mapRight = right;
+      this.mapBottom = bottom;
+    },
+    "$q.screen.height"() {
+      const {
+        top,
+        left,
+        bottom,
+        right
+      } = this.$refs.visibleMap.getBoundingClientRect();
+      this.mapTop = top;
+      this.mapLeft = left;
+      this.mapRight = right;
+      this.mapBottom = bottom;
+    }
+  }
 };
 </script>
 
@@ -123,16 +180,17 @@ export default {
   position: absolute;
   z-index: 0;
 }
-/* @media (min-width: 641px) {
+@media (min-width: 641px) {
   .activeroute,
-  .activeoriginDestination,
+  .activeorigindestination,
   .activemark {
     top: 0px;
-    left: 360px;
+    left: calc(360px + 1vw);
     right: 0px;
-    bottom: 0px;
+    height: 100%;
     position: absolute;
     z-index: -10;
+    border-style: solid;
   }
 }
 @media (max-width: 640px) {
@@ -143,14 +201,16 @@ export default {
     bottom: calc(60%);
     position: absolute;
     z-index: -10;
+    border-style: solid;
   }
-  .activeoriginDestination {
+  .activeorigindestination {
     top: 0px;
     left: 0px;
     right: 0px;
     bottom: calc(80%);
     position: absolute;
     z-index: -10;
+    border-style: solid;
   }
   .activemark {
     top: 0px;
@@ -159,6 +219,7 @@ export default {
     bottom: calc(20%);
     position: absolute;
     z-index: -10;
+    border-style: solid;
   }
-} */
+}
 </style>

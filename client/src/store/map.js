@@ -6,7 +6,9 @@ import {
   REMOVE_LAYER,
   ADD_LAYER,
   UPDATE_POSITION,
-  SET_ORIGIN_DESTINATION_POSITION
+  SET_ORIGIN_DESTINATION_POSITION,
+  SET_SEARCH_RESULTS,
+  CHANGE_VIEW
 } from "./types";
 import * as Api from "../api";
 import { Notify } from "quasar";
@@ -25,7 +27,14 @@ const map = {
     destinationMarker: null,
     destination: null,
     rooms: [],
-    glMap: null
+    glMap: null,
+    searchResults: [],
+    searchMarker: null,
+    searchPolygon: null,
+    mapTop: 0,
+    mapLeft: 0,
+    mapRight: 0,
+    mapBottom: 0
   },
   getters: {
     getField
@@ -52,11 +61,10 @@ const map = {
           "https://maps.tilehosting.com/styles/bright/style.json?key=4krAogjdNdbE796RetO6"
       }).addTo(state.mapInstance);
       state.mapInstance.setView([14.1648, 121.2413], 17);
-      new L.Marker([14.1648, 121.2413]).addTo(state.mapInstance);
+      new L.Marker(state.mapInstance.getCenter()).addTo(state.mapInstance);
     },
     [REMOVE_LAYER]: (state, payload) => {
       const { layer } = payload;
-      console.log(layer);
       state.mapInstance.removeLayer(layer);
     },
     [ADD_LAYER]: (state, payload) => {
@@ -114,6 +122,57 @@ const map = {
       router.push({
         name: "RouteScreen"
       });
+    },
+    [SET_SEARCH_RESULTS]: (state, payload) => {
+      if (state.searchMarker) {
+        state.mapInstance.removeLayer(state.searchMarker);
+        state.searchMarker = null;
+      }
+      if (state.searchPolygon) {
+        state.mapInstance.removeLayer(state.searchPolygon);
+        state.searchPolygon = null;
+      }
+      state.searchResults = [...payload];
+    },
+    [CHANGE_VIEW]: (state, payload) => {
+      const { coordinates, lat, lng } = payload;
+      if (state.searchMarker) {
+        state.mapInstance.removeLayer(state.searchMarker);
+        state.searchMarker = null;
+      }
+      if (state.searchPolygon) {
+        state.mapInstance.removeLayer(state.searchPolygon);
+        state.searchPolygon = null;
+      }
+      state.searchMarker = new L.Marker(
+        { lat, lng },
+        { draggable: false }
+      ).addTo(state.mapInstance);
+      const { x, y } = state.mapInstance.getSize();
+      const { mapTop, mapLeft, mapRight, mapBottom } = state;
+      console.log({ x, y });
+      console.log({
+        mapTop,
+        mapLeft,
+        mapBottom,
+        mapRight
+      });
+      const padding = {
+        paddingTopLeft: [mapLeft, mapTop],
+        paddingBottomRight: [x - mapRight, y - mapBottom]
+      };
+      if (coordinates) {
+        state.searchPolygon = L.polygon(coordinates, {
+          color: "red"
+        }).addTo(state.mapInstance);
+        state.mapInstance.flyToBounds(coordinates, {
+          ...padding
+        });
+      } else {
+        state.mapInstance.flyToBounds([{ lat, lng }], {
+          ...padding
+        });
+      }
     }
   },
   actions: {
@@ -150,6 +209,21 @@ const map = {
           position: "top"
         });
       }
+    },
+    allSearch: async (context, payload) => {
+      context.commit(SET_SEARCH_RESULTS, []);
+      return Api.getAll({ name: payload })
+        .then(result => {
+          context.commit(SET_SEARCH_RESULTS, result.data);
+        })
+        .catch(error => {
+          console.log(error);
+          Notify.create({
+            message: "An error occured",
+            color: "negative",
+            position: "top"
+          });
+        });
     }
   }
 };
