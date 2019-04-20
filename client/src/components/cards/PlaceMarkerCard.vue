@@ -2,14 +2,14 @@
   <q-card>
     <q-card-actions class="navbar">
       <q-btn-group flat>
-        <q-btn icon="navigate_before" to="/"/>
+        <q-btn icon="navigate_before" to="/" />
       </q-btn-group>
-      <q-space/>
+      <q-space />
       <div class="text-h6 capitalize">{{ `Mark ${this.type}` }}</div>
     </q-card-actions>
     <q-card-section class="center">
-      <q-icon name="fas fa-map-marker-alt" size="50px"/>
-      <q-separator spaced/>
+      <q-icon name="fas fa-map-marker-alt" size="50px" />
+      <q-separator spaced />
       <q-item-label>Where would you like to go?</q-item-label>
     </q-card-section>
   </q-card>

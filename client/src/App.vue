@@ -2,8 +2,8 @@
   <div id="q-app">
     <q-layout>
       <q-page-container :style="pageStyle">
-        <Map/>
-        <Wrapper/>
+        <Map />
+        <Wrapper />
       </q-page-container>
     </q-layout>
   </div>
