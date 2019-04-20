@@ -23,7 +23,9 @@ const map = {
     originMarker: null,
     origin: null,
     destinationMarker: null,
-    destination: null
+    destination: null,
+    rooms: [],
+    glMap: null
   },
   getters: {
     getField
@@ -33,26 +35,28 @@ const map = {
     [GET_MAP]: state => {
       state.mapInstance = L.map("map", {
         zoomControl: false,
-        minZoom: 15,
+        minZoom: 17,
         maxZoom: 21,
         maxBounds: [
           { lat: 14.171030846860607, lng: 121.26183271408082 },
           { lat: 14.150870198219486, lng: 121.22063398361207 }
         ],
-        editable: true
+        editable: true,
+        trackResize: true
       });
-      state.mapInstance.setView([14.1648, 121.2413], 19);
-      L.mapboxGL({
+      state.glMap = L.mapboxGL({
         attribution:
           '<a href="https://www.maptiler.com/copyright/" target="_blank">© MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">© OpenStreetMap contributors</a>',
         accessToken: "not-needed",
         style:
           "https://maps.tilehosting.com/styles/bright/style.json?key=4krAogjdNdbE796RetO6"
       }).addTo(state.mapInstance);
-      state.mapInstance.locate({ setView: true, maxZoom: 21 });
+      state.mapInstance.setView([14.1648, 121.2413], 17);
+      new L.Marker([14.1648, 121.2413]).addTo(state.mapInstance);
     },
     [REMOVE_LAYER]: (state, payload) => {
       const { layer } = payload;
+      console.log(layer);
       state.mapInstance.removeLayer(layer);
     },
     [ADD_LAYER]: (state, payload) => {
@@ -79,6 +83,7 @@ const map = {
               lat: marker.lat,
               lng: marker.lng
             }).addTo(state.mapInstance);
+            state.originMarker.dragging.disable();
           }
           state.origin = marker;
           break;
@@ -93,19 +98,29 @@ const map = {
               lat: marker.lat,
               lng: marker.lng
             }).addTo(state.mapInstance);
+            state.destinationMarker.dragging.disable();
           }
           state.destination = marker;
           break;
       }
+      const { origin, destination } = state;
+      const latLngs = [];
+      if (origin) {
+        latLngs.push([origin.lat, origin.lng]);
+      }
+      if (destination) {
+        latLngs.push([destination.lat, destination.lng]);
+      }
       router.push({
-        name: "Search Screen"
+        name: "RouteScreen"
       });
     }
   },
   actions: {
     locateUser: context => {
       const { mapInstance } = context.state;
-      mapInstance.locate({ setView: true, maxZoom: 21 });
+      mapInstance.locate();
+      console.log("test");
     },
     placeMarker: context => {
       const { mapInstance } = context.state;

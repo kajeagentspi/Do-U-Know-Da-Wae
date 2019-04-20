@@ -4,6 +4,8 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-editable/src/Leaflet.Editable";
 import "mapbox-gl/dist/mapbox-gl.css";
 import "mapbox-gl-leaflet";
+import "leaflet-sidebar-v2";
+import "leaflet-sidebar-v2/css/leaflet-sidebar.min.css";
 // leave the export, even if you don't use it
 export default () => {
   delete L.Icon.Default.prototype._getIconUrl;
