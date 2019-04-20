@@ -105,45 +105,62 @@ const map = {
 
     [SET_LOCATION]: (state, payload) => {
       const { locationType, type, ...data } = payload;
-      let lat;
-      let lng;
-      if (type !== "Room") {
-        lat = data.lat;
-        lng = data.lng;
-      } else if (type === "Room") {
-        lat = data.building.lat;
-        lng = data.building.lng;
-      }
-      if (locationType === "origin") {
-        if (state.originMarker) {
-          state.originMarker.setLatLng({
-            lat,
-            lng
-          });
+      if (type === "null") {
+        if (locationType === "origin") {
+          if (state.originMarker) {
+            state.mapInstance.removeLayer(state.originMarker);
+          }
+          state.originMarker = null;
+          state.origin = null;
         } else {
-          state.originMarker = new L.Marker({
-            lat,
-            lng
-          }).addTo(state.mapInstance);
+          if (state.destinationMarker) {
+            state.mapInstance.removeLayer(state.destinationMarker);
+          }
+          state.destinationMarker = null;
+          state.destination = null;
         }
-        state.origin = { ...payload };
-      } else if (locationType === "destination") {
-        if (state.destinationMarker) {
-          state.destinationMarker.setLatLng({
-            lat,
-            lng
-          });
-        } else {
-          state.destinationMarker = new L.Marker({
-            lat,
-            lng
-          }).addTo(state.mapInstance);
+      } else {
+        let lat;
+        let lng;
+        if (type !== "Room") {
+          lat = data.lat;
+          lng = data.lng;
+        } else if (type === "Room") {
+          lat = data.building.lat;
+          lng = data.building.lng;
         }
-        state.destination = { ...payload, lat, lng };
+
+        if (locationType === "origin") {
+          if (state.originMarker) {
+            state.originMarker.setLatLng({
+              lat,
+              lng
+            });
+          } else {
+            state.originMarker = new L.Marker({
+              lat,
+              lng
+            }).addTo(state.mapInstance);
+          }
+          state.origin = { ...payload };
+        } else if (locationType === "destination") {
+          if (state.destinationMarker) {
+            state.destinationMarker.setLatLng({
+              lat,
+              lng
+            });
+          } else {
+            state.destinationMarker = new L.Marker({
+              lat,
+              lng
+            }).addTo(state.mapInstance);
+          }
+          state.destination = { ...payload, lat, lng };
+        }
+        router.push({
+          name: "RouteScreen"
+        });
       }
-      router.push({
-        name: "RouteScreen"
-      });
     }
   },
   actions: {
@@ -251,7 +268,7 @@ const map = {
           type: "marker"
         });
       }
-      context.commit(SET_LOCATION, { ...payload, type });
+      context.commit(SET_LOCATION, { ...payload, type, lat, lng });
     }
   }
 };

@@ -2,9 +2,9 @@
   <q-card>
     <q-card-actions class="navbar">
       <q-btn-group flat>
-        <q-btn icon="navigate_before" to="/"/>
+        <q-btn icon="navigate_before" to="/" />
       </q-btn-group>
-      <q-space/>
+      <q-space />
       <div class="text-h6 capitalize">{{ `Select ${this.type}` }}</div>
     </q-card-actions>
     <q-card-section>
@@ -17,7 +17,7 @@
       />
     </q-card-section>
     <div class="body">
-      <q-card-actions class="row" v-if="name === '' || pois.length===0">
+      <q-card-actions class="row" v-if="name === '' || pois.length === 0">
         <q-btn
           class="full-width godown"
           color="green"
@@ -36,7 +36,11 @@
         />
       </q-card-actions>
       <div v-else>
-        <SearchResultCard v-for="(result, index) in pois" :result="result" :key="index"/>
+        <SearchResultCard
+          v-for="(result, index) in pois"
+          :result="result"
+          :key="index"
+        />
       </div>
     </div>
   </q-card>

@@ -2,10 +2,10 @@
   <q-card>
     <q-card-actions class="navbar">
       <q-btn-group flat>
-        <q-btn disabled flat icon="explore"/>
-        <q-btn label="Search" to="/"/>
-        <q-btn label="Contribute" to="/contribute"/>
-        <q-btn label="Favorites" to="/favorites"/>
+        <q-btn disabled flat icon="explore" />
+        <q-btn label="Search" to="/" />
+        <q-btn label="Contribute" to="/contribute" />
+        <q-btn label="Favorites" to="/favorites" />
       </q-btn-group>
     </q-card-actions>
     <div class="body">
@@ -21,6 +21,7 @@
                 no-ripple
                 flat
                 size="l"
+                @click="change('origin')"
                 to="/origin"
               />
               <q-btn
@@ -33,26 +34,40 @@
                 no-ripple
                 flat
                 size="l"
+                @click="change('destination')"
                 to="/destination"
               />
             </div>
-            <q-space/>
-            <q-btn round icon="autorenew" class="col-3 swap"/>
+            <q-space />
+            <q-btn round icon="autorenew" class="col-3 swap" />
           </q-card-section>
         </q-card>
       </q-card-section>
-      <q-separator spaced/>
+      <q-separator spaced />
       <!-- put results here -->
     </div>
   </q-card>
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapMutations } from "vuex";
+import { SET_LOCATION } from "../../store/types";
 export default {
   name: "RouteScreen",
   computed: {
     ...mapState("map", ["origin", "destination", "routes"])
+  },
+  methods: {
+    ...mapMutations("map", {
+      setLocation: SET_LOCATION
+    }),
+    change(type) {
+      if (type === "origin") {
+        this.setLocation({ locationType: "origin", type: "null" });
+      } else {
+        this.setLocation({ locationType: "destination", type: "null" });
+      }
+    }
   }
 };
 </script>
