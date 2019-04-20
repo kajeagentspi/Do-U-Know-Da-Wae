@@ -7,7 +7,8 @@ import {
   MarkerRoutes,
   PathRoutes,
   RouteRoutes,
-} from './entities';
+  AllRoutes
+} from "./entities";
 
 export const Routes = [
   ...UserRoutes,
@@ -18,4 +19,5 @@ export const Routes = [
   ...MarkerRoutes,
   ...PathRoutes,
   ...RouteRoutes,
+  ...AllRoutes
 ];
