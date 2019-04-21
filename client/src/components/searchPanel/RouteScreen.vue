@@ -50,7 +50,12 @@
         </q-card>
       </q-card-section>
       <q-separator spaced />
-      <!-- put results here -->
+      <RouteCard
+        v-for="(route, index) in routes"
+        :route="route"
+        :key="index"
+        :index="index"
+      />
     </div>
   </q-card>
 </template>
@@ -58,10 +63,14 @@
 <script>
 import { mapState, mapMutations, mapActions } from "vuex";
 import { SET_LOCATION } from "../../store/types";
+import { RouteCard } from "..";
 export default {
   name: "RouteScreen",
   computed: {
     ...mapState("map", ["origin", "destination", "routes"])
+  },
+  components: {
+    RouteCard
   },
   methods: {
     ...mapMutations("map", {

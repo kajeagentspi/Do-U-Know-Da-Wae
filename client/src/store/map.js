@@ -6,8 +6,10 @@ import {
   CHANGE_VIEW,
   SET_LOCATION,
   REMOVE_LAYER,
-  SET_MAP_PROPERTY
+  SET_MAP_PROPERTY,
+  ADD_LAYER
 } from "./types";
+import randomColor from "random-color";
 import * as Api from "../api";
 import router from "../router";
 
@@ -33,9 +35,16 @@ const map = {
     MarkerOrigin: false,
     MarkerDestination: false,
 
+    MarkerPathOrigin: false,
+    MarkerPathDestination: false,
+
     name: "",
     routes: [],
-    pois: []
+    pois: [],
+    buildings: [],
+    rooms: [],
+    paths: [],
+    stops: []
   },
   getters: {
     getField
@@ -102,8 +111,25 @@ const map = {
       }
     },
 
+    [ADD_LAYER]: (state, payload) => {
+      const { layers, layer } = payload;
+      if (layers) {
+        layers.forEach(layer => {
+          layer.addTo(state.mapInstance);
+        });
+      } else {
+        layer.addTo(state.mapInstance);
+      }
+    },
+
     [SET_LOCATION]: (state, payload) => {
       const { locationType, type, ...data } = payload;
+      state.routes.forEach(route => {
+        route.paths.forEach(path => {
+          state.mapInstance.removeLayer(path.polyLine);
+        });
+      });
+      state.routes = [];
       if (type === "null") {
         if (locationType === "origin") {
           if (state.originMarker) {
@@ -173,6 +199,23 @@ const map = {
           });
         })
         .catch(error => {
+          Notify.create({
+            message: "An error occured",
+            color: "negative",
+            position: "top"
+          });
+        });
+    },
+    buildingSearch: async (context, payload) => {
+      context.commit(SET_MAP_PROPERTY, { key: "buildings", value: [] });
+      return Api.getBuildings({ name: payload })
+        .then(result => {
+          context.commit(SET_MAP_PROPERTY, {
+            key: "buildings",
+            value: result.data
+          });
+        })
+        .catch(error => {
           console.log(error);
           Notify.create({
             message: "An error occured",
@@ -181,20 +224,59 @@ const map = {
           });
         });
     },
+    createRoom: async (context, data) => {
+      try {
+        const { name, buildingName } = data;
+        const { accessToken } = context.rootState.auth;
+        await Api.addRoom({ ...data, accessToken });
+        Notify.create({
+          message: `Successfully created room ${name} on ${buildingName}`,
+          color: "positive",
+          position: "top"
+        });
+      } catch (error) {
+        console.log(error);
+        Notify.create({
+          message: "An error occured",
+          color: "negative",
+          position: "top"
+        });
+      }
+    },
     initializeMap: async context => {
       context.commit(INITIALIZE_MAP);
-      // const { mapInstance } = context.state;
-      // const { data } = await Api.getExits();
-      // const exitIcon = L.divIcon({
-      //   html: '<i class="fa fa-circle" style="color: red"></i>',
-      //   iconSize: [20, 20],
-      //   className: "icon"
-      // });
-      // data.forEach(exit => {
-      //   new L.Marker(exit, { icon: exitIcon })
-      //     .addTo(mapInstance)
-      //     .on("click", e => {});
-      // });
+      const { mapInstance } = context.state;
+      const jeepIcon = L.divIcon({
+        html: '<i class="fas fa-bus" style="color: red"></i>',
+        iconSize: [20, 20],
+        className: "icon"
+      });
+      const { data } = await Api.getStops();
+      data.forEach(stop => {
+        const { lat, lng } = stop;
+        stop.marker = new L.Marker(
+          { lat, lng },
+          { icon: jeepIcon, data: JSON.stringify(stop) }
+        )
+          .addTo(mapInstance)
+          .on("click", e => {
+            const { data } = e.target.options;
+            if (context.state.MarkerPathOrigin) {
+              console.log({ ...context.state });
+              console.log(data);
+              context.commit(SET_MAP_PROPERTY, {
+                key: "MarkerPathOrigin",
+                value: false
+              });
+            } else if (context.state.MarkerPathDestination) {
+              context.commit(SET_MAP_PROPERTY, {
+                key: "MarkerPathDestination",
+                value: false
+              });
+            }
+          });
+      });
+      context.commit(SET_MAP_PROPERTY, { key: "stops", value: data });
     },
     locateUser: context => {
       const { userMarker } = context.state;
@@ -250,7 +332,7 @@ const map = {
     },
     viewSearch: async (context, payload) => {
       const { origin, destination } = context.state;
-      let { locationType, type } = payload;
+      let { locationType, type, building, coordinates } = payload;
       if (!type) {
         type = "Building";
       }
@@ -276,19 +358,43 @@ const map = {
           coordinates: [{ lat: origin.lat, lng: origin.lng }, { lat, lng }],
           type: "marker"
         });
+      } else if (building || coordinates) {
+        if (building) {
+          coordinates = building.coordinates;
+        }
+        context.commit(CHANGE_VIEW, {
+          coordinates,
+          type: "marker"
+        });
       } else {
         context.commit(CHANGE_VIEW, {
           coordinates: [{ lat, lng }],
           type: "marker"
         });
       }
-      context.commit(SET_LOCATION, { ...payload, type, lat, lng });
+      if (locationType !== "search") {
+        console.log(locationType);
+        context.commit(SET_LOCATION, { ...payload, type, lat, lng });
+      }
     },
     searchRoutes: async context => {
-      const { origin, destination } = context.state;
+      const { origin, destination, mapInstance } = context.state;
       try {
-        const routes = await Api.getRoutes({ origin, destination });
-        context.commit(SET_MAP_PROPERTY, { key: "routes", value: routes });
+        const colors = [];
+        const { data } = await Api.getRoutes({ origin, destination });
+        data.forEach(route => {
+          let color = randomColor().hexString();
+          while (color in colors) {
+            color = randomColor(0.99, 0.99).hexString();
+          }
+          route.color = color;
+          route.paths.forEach(path => {
+            path.polyLine = L.polyline(path.latLngs, {
+              color
+            }).addTo(mapInstance);
+          });
+        });
+        context.commit(SET_MAP_PROPERTY, { key: "routes", value: data });
       } catch (error) {
         console.log(error);
         Notify.create({
@@ -297,6 +403,117 @@ const map = {
           position: "top"
         });
       }
+    },
+    highLight: async (context, payload) => {
+      const { routes, origin, destination } = context.state;
+      const { routeIndex, pathIndex } = payload;
+      if (isNaN(routeIndex) && isNaN(pathIndex)) {
+        context.commit(CHANGE_VIEW, {
+          coordinates: [
+            { lat: origin.lat, lng: origin.lng },
+            { lat: destination.lat, lng: destination.lng }
+          ],
+          type: "marker"
+        });
+        routes.forEach(route => {
+          route.paths.forEach(path => {
+            path.polyLine.setStyle({ opacity: 1 });
+          });
+        });
+      } else if (!isNaN(routeIndex)) {
+        context.commit(CHANGE_VIEW, {
+          coordinates: [
+            { lat: origin.lat, lng: origin.lng },
+            { lat: destination.lat, lng: destination.lng }
+          ],
+          type: "marker"
+        });
+        for (let i = 0; i < routes.length; i++) {
+          if (i === routeIndex) {
+            routes[i].paths.forEach(path => {
+              path.polyLine.setStyle({ opacity: 1 });
+            });
+          } else {
+            routes[i].paths.forEach(path => {
+              path.polyLine.setStyle({ opacity: 0 });
+            });
+          }
+        }
+      } else if (!isNaN(routeIndex) && !isNaN(pathIndex)) {
+        for (let i = 0; i < routes.length; i++) {
+          if (i === routeIndex) {
+            for (let j = 0; j < routes[i].paths.length; j++) {
+              if (j === pathIndex) {
+                routes[i].paths[j].polyLine.setStyle({
+                  opacity: 1
+                });
+              } else {
+                routes[i].paths[j].polyLine.setStyle({
+                  opacity: 0.5
+                });
+              }
+            }
+          } else {
+            routes[i].paths.forEach(path => {
+              path.polyLine.setStyle({ opacity: 0 });
+            });
+          }
+        }
+      }
+    },
+    reset: async context => {
+      const { routes, originMarker, destinationMarker, paths } = context.state;
+      const layers = [];
+      const pairs = [
+        { key: "routes", value: [] },
+        { key: "paths", value: [] },
+        { key: "origin", value: null },
+        { key: "destination", value: null },
+        { key: "originMarker", value: null },
+        { key: "destinationMarker", value: null }
+      ];
+      if (originMarker) {
+        layers.push(originMarker);
+      }
+      if (destinationMarker) {
+        layers.push(destinationMarker);
+      }
+      routes.forEach(route => {
+        route.paths.forEach(path => {
+          layers.push(path.polyLine);
+        });
+      });
+      paths.forEach(path => {
+        layers.push(path.polyLine);
+      });
+      context.commit(REMOVE_LAYER, { layers });
+      context.commit(SET_MAP_PROPERTY, { pairs });
+    },
+    resetCurrentPath: async context => {
+      const { paths } = context.state;
+      const {
+        polyLine,
+        origin,
+        originMarker,
+        destination,
+        destinationMarker
+      } = paths[0];
+      const layers = [];
+      const pairs = [];
+      if (polyLine) {
+        layers.push(polyLine);
+      }
+      if (originMarker) {
+        layers.push(originMarker);
+        pairs.push(originMarker);
+        pairs.push(origin);
+      }
+      if (destinationMarker) {
+        layers.push(destinationMarker);
+        pairs.push(destinationMarker);
+        pairs.push(destination);
+      }
+      context.commit(REMOVE_LAYER, { layers });
     }
   }
 };

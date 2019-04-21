@@ -14,6 +14,10 @@
       :class="
         $route.path === '/'
           ? 'activeroute'
+          : $route.path === '/favorites'
+          ? 'activeroute'
+          : $route.path === '/contribute'
+          ? 'activeroute'
           : $route.path === '/origin'
           ? 'activeorigindestination'
           : $route.path === '/destination'
@@ -52,7 +56,10 @@ export default {
       "mapLeft",
       "mapRight",
       "mapBottom",
-      "GPSEnabled"
+      "GPSEnabled",
+      "MarkerPathOrigin",
+      "MarkerPathDestination",
+      "paths"
     ])
   },
   methods: {
@@ -63,7 +70,7 @@ export default {
     draw({ layer }) {
       if (layer instanceof L.Marker) {
         const { lat, lng } = layer.getLatLng();
-        this.removeLayer({ layer });
+        layer.dragging.disable();
         if (this.MarkerOrigin) {
           this.MarkerOrigin = false;
           this.reverseGeocode({
@@ -72,6 +79,7 @@ export default {
             locationType: "origin",
             type: "Marker"
           });
+          this.removeLayer({ layer });
         } else if (this.MarkerDestination) {
           this.MarkerDestination = false;
           this.reverseGeocode({
@@ -80,7 +88,11 @@ export default {
             locationType: "destination",
             type: "Marker"
           });
+          this.removeLayer({ layer });
         }
+        //  else if (this.MarkerPathOrigin) {
+        // } else if (this.MarkerPathDestination) {
+        // }
       } else if (layer instanceof L.Polyline) {
         console.log(layer);
       }

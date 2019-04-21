@@ -54,7 +54,8 @@ export default {
   name: "SelectSearchMethod",
   data() {
     return {
-      type: ""
+      type: "",
+      name: ""
     };
   },
   components: {
@@ -66,7 +67,6 @@ export default {
       "MarkerDestination",
       "GPSEnabled",
       "userMarker",
-      "name",
       "pois",
       "mapInstance"
     ])

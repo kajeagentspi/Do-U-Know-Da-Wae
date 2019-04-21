@@ -4,6 +4,10 @@
     :class="
       $route.path === '/'
         ? 'route'
+        : $route.path === '/favorites'
+        ? 'route'
+        : $route.path === '/contribute'
+        ? 'route'
         : $route.path === '/origin'
         ? 'originDestination'
         : $route.path === '/destination'
