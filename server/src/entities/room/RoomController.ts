@@ -9,15 +9,31 @@ export class RoomController {
   private userRepository = getRepository(User);
 
   async all(request: Request, response: Response, next: NextFunction) {
-    let { name, ...query } = request.query;
+    let { name, buildingId, ...query } = request.query;
     if (!name) {
       name = "";
     }
+    const where = [];
+    if (isNaN(buildingId)) {
+      return this.roomRepository.find({
+        where: [
+          {
+            name: Like(`%${name}%`)
+          },
+          ...where
+        ],
+        relations: ["building"]
+      });
+    }
+    const building = await this.buildingRepository.findOne(buildingId);
     return this.roomRepository.find({
-      where: {
-        name: Like(`${name}`),
-        ...query
-      },
+      where: [
+        {
+          name,
+          building
+        },
+        ...where
+      ],
       relations: ["building"]
     });
   }
@@ -30,22 +46,38 @@ export class RoomController {
 
   async save(request: Request, response: Response, next: NextFunction) {
     try {
-      const { buildingId, name, level, accessToken, id } = request.body;
-      const { uid } = await admin.auth().verifyIdToken(accessToken);
-      const { type } = await this.userRepository.findOne({ uid });
-
+      const {
+        buildingId,
+        name,
+        level,
+        accessToken,
+        id,
+        buildingCode
+      } = request.body;
+      // const { uid } = await admin.auth().verifyIdToken(accessToken);
+      // const { type } = await this.userRepository.findOne({ uid });
+      const type = "admin"; //remove this boi
       if (type === "admin") {
-        const room = await this.roomRepository.findOne(id);
-        if (room) {
+        if (id) {
+          const room = await this.roomRepository.findOne(id);
           await this.roomRepository.update(room.id, { name, level });
           return this.roomRepository.findOne(room.id, {
             relations: ["building"]
           });
         } else {
-          const building = await this.buildingRepository.findOne(buildingId);
+          let building;
+          if (buildingCode) {
+            building = await this.buildingRepository.findOne(null, {
+              where: {
+                buildingCode
+              }
+            });
+          } else {
+            building = await this.buildingRepository.findOne(buildingId);
+          }
           const room = await this.roomRepository.save({
             building,
-            name,
+            name: name.toUpperCase(),
             level
           });
           return this.roomRepository.findOne(room.id, {

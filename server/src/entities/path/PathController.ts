@@ -5,7 +5,6 @@ import {
   Path,
   POI,
   Stop,
-  Exit,
   Jeep,
   Walk,
   Indoor,
@@ -24,7 +23,6 @@ export class PathController {
   private stopRepository = getRepository(Stop);
   private markerRepository = getRepository(Marker);
   private roomRepository = getRepository(Room);
-  private exitRepository = getRepository(Exit);
   private pathRepository = getRepository(Path);
   private walkRepository = getRepository(Walk);
   private jeepRepository = getRepository(Jeep);
@@ -37,8 +35,6 @@ export class PathController {
         return this.stopRepository.findOne(poi.id);
       case "Marker":
         return this.markerRepository.findOne(poi.id);
-      case "Exit":
-        return this.exitRepository.findOne(poi.id);
     }
   }
   async all(request: Request, response: Response, next: NextFunction) {
@@ -175,24 +171,24 @@ export class PathController {
                 message: "Invalid Points of Interest"
               };
             }
-          case "indoor":
-            if (
-              (start instanceof Exit && end instanceof Room) ||
-              (start instanceof Room && end instanceof Exit)
-            ) {
-              const path = await this.indoorRepository.save({
-                start,
-                end,
-                instructions
-              });
-              return this.indoorRepository.findOne(path.id, {
-                relations: ["start", "end"]
-              });
-            } else {
-              return {
-                message: "Invalid Points of Interest"
-              };
-            }
+          // case "indoor":
+          //   if (
+          //     (start instanceof Exit && end instanceof Room) ||
+          //     (start instanceof Room && end instanceof Exit)
+          //   ) {
+          //     const path = await this.indoorRepository.save({
+          //       start,
+          //       end,
+          //       instructions
+          //     });
+          //     return this.indoorRepository.findOne(path.id, {
+          //       relations: ["start", "end"]
+          //     });
+          //   } else {
+          //     return {
+          //       message: "Invalid Points of Interest"
+          //     };
+          //   }
         }
       }
       return {

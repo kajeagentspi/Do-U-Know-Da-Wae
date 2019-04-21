@@ -10,7 +10,8 @@ import {
   Path,
   Marker,
   Stop,
-  Exit
+  Room,
+  Building
 } from "..";
 import { walking, driving } from "../config";
 import * as admin from "firebase-admin";
@@ -26,104 +27,174 @@ export class RouteController {
   private POIRepository = getRepository(POI);
   private markerRepository = getRepository(Marker);
   private stopRepository = getRepository(Stop);
-  private exitRepository = getRepository(Exit);
+  private roomRepository = getRepository(Room);
+  private buildingRepository = getRepository(Building);
 
-  typeCast(poi: POI) {
-    switch (String(poi.type)) {
+  typeCast(id: number, type: String) {
+    switch (type) {
       case "Stop":
-        return this.stopRepository.findOne(poi.id);
+        return this.stopRepository.findOne(id);
       case "Marker":
-        return this.markerRepository.findOne(poi.id);
-      case "Exit":
-        return this.exitRepository.findOne(poi.id);
+        return this.markerRepository.findOne(id);
+      case "Room":
+        return this.roomRepository.findOne(id, {
+          relations: ["building"]
+        });
+      case "Building":
+        return this.buildingRepository.findOne(id);
     }
   }
 
-  async all(request: Request, response: Response, next: NextFunction) {
-    let { startLat, startLng, endLat, endLng, startId, endId } = request.query;
-    let start;
-    let end;
-    if (startId) {
-      start = await this.POIRepository.findOne(startId);
-      start = await this.typeCast(start);
-    } else if (startLat && startLng) {
-      start = await this.markerRepository.save({
-        lat: startLat,
-        lng: startLng
-      });
-    }
+  async generatePathsFromOSRM(
+    startLat: any,
+    startLng: any,
+    endLat: any,
+    endLng: any
+  ) {
+    const searchString = `${startLng},${startLat};${endLng},${endLat}`;
+    console.log(`${walking}/${searchString}?alternatives=true&overview=full`);
+    const {
+      data: { routes: jeepneyPaths }
+    } = await axios.get(
+      `${driving}/${searchString}?alternatives=true&overview=full`
+    );
+    const {
+      data: { routes: walkingPaths }
+    } = await axios.get(
+      `${walking}/${searchString}?alternatives=true&overview=full`
+    );
+    return {
+      jeepneyPaths,
+      walkingPaths
+    };
+  }
 
-    if (endId) {
-      end = await this.POIRepository.findOne(endId);
-      end = await this.typeCast(end);
-    } else if (endLat && endLng) {
-      end = await this.markerRepository.save({ lat: endLat, lng: endLng });
+  async savePathAndRoute({
+    start,
+    end,
+    latLngs,
+    type,
+    distance,
+    duration,
+    geometry,
+    instrtuctions,
+    contributor
+  }) {
+    let path;
+    switch (type) {
+      case "Walk":
+        path = await this.walkRepository.save({
+          start,
+          end,
+          latLngs,
+          distance,
+          duration,
+          geometry
+        });
+        break;
+      case "Jeep":
+        path = await this.jeepRepository.save({
+          start,
+          end,
+          latLngs,
+          distance,
+          duration,
+          geometry
+        });
+        break;
+      case "Indoor":
+        path = await this.indoorRepository.save({
+          start,
+          end,
+          instrtuctions
+        });
+        break;
     }
-    let routes = await this.routeRepository.find({
-      where: { start, end },
-      relations: ["start", "end", "paths"]
+    await this.routeRepository.save({
+      start,
+      end,
+      paths: [path],
+      contributor,
+      distance,
+      duration
     });
-    try {
-      if (!routes.length) {
-        switch (start.type) {
-          case "Stop":
-          case "Marker":
-          case "Exit":
-            switch (end.type) {
-              case "Stop":
-              case "Marker":
-              case "Exit":
-                const searchString = `${start.lng},${start.lat};${end.lng},${
-                  end.lat
-                }?alternatives=true`;
-                const {
-                  data: { routes: paths }
-                } = await axios.get(`${walking}/${searchString}`);
-                for (let path of paths) {
-                  const { geometry, distance, duration } = path;
-                  const latLngs = polyline.decode(geometry);
-                  const walkingPath = await this.walkRepository.save({
-                    start,
-                    end,
-                    latLngs,
-                    geometry,
-                    distance,
-                    duration
-                  });
-                  const contributor = await this.userRepository.findOne(1);
-                  await this.routeRepository.save({
-                    start,
-                    end,
-                    paths: [walkingPath],
-                    contributor
-                  });
-                }
-                routes = await this.routeRepository.find({
-                  where: { start, end },
-                  relations: ["start", "end", "paths"]
-                });
-                break;
-              case "Room":
-                // add later
-                return {
-                  message: "No routes found",
-                  type: "negative"
-                };
+  }
+
+  async all(request: Request, response: Response, next: NextFunction) {
+    let { origin, destination } = request.query;
+    let routes = [];
+    if (origin && destination) {
+      if (origin.id && destination.id) {
+        const start = await this.typeCast(origin.id, origin.type);
+        const end = await this.typeCast(destination.id, destination.type);
+        const dbRoutes = await this.routeRepository.find({
+          where: { start, end },
+          relations: ["start", "end", "paths"]
+        });
+        if (dbRoutes.length !== 0) {
+          routes.push(...dbRoutes);
+        } else {
+          if (!(start instanceof Room) || !(end instanceof Room)) {
+            const contributor = await this.userRepository.findOne({
+              where: {
+                uid: "sxdtxH1nOiYizjEMFKjK2EtFruk1"
+              }
+            });
+            const {
+              jeepneyPaths,
+              walkingPaths
+            } = await this.generatePathsFromOSRM(
+              start.lat,
+              start.lng,
+              end.lat,
+              end.lng
+            );
+            for (let path of walkingPaths) {
+              const { distance, duration, geometry } = path;
+              const latLngs = polyline.decode(geometry);
+              this.savePathAndRoute({
+                start,
+                end,
+                latLngs,
+                type: "Walk",
+                distance,
+                duration,
+                geometry,
+                contributor,
+                instrtuctions: null
+              });
             }
-            break;
-          case "Room":
-            return {
-              message: "No routes found",
-              type: "negative"
-            };
+            // jeepneyPaths for dev only
+            for (let path of jeepneyPaths) {
+              const { distance, duration, geometry } = path;
+              const latLngs = polyline.decode(geometry);
+              this.savePathAndRoute({
+                start,
+                end,
+                latLngs,
+                type: "Jeep",
+                distance,
+                duration,
+                geometry,
+                contributor,
+                instrtuctions: null
+              });
+            }
+            routes.push(
+              ...(await this.routeRepository.find({
+                where: { start, end },
+                relations: ["start", "end", "paths"]
+              }))
+            );
+          }
         }
       }
-    } catch (error) {
-      console.log(error);
-      return {
-        message: "An Error Occured",
-        type: "negative"
-      };
+    } else {
+      routes.push(
+        ...(await this.routeRepository.find({
+          relations: ["start", "end", "paths"]
+        }))
+      );
     }
     return routes;
   }

@@ -3,7 +3,8 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   ManyToMany,
-  JoinTable
+  JoinTable,
+  Column
 } from "typeorm";
 import { User, POI, Path } from "..";
 
@@ -30,4 +31,10 @@ export class Route {
     onDelete: "CASCADE"
   })
   contributor: User;
+
+  @Column({ type: "float", nullable: true })
+  distance: number;
+
+  @Column({ type: "float", nullable: true })
+  duration: number;
 }
