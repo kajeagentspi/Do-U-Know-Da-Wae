@@ -7,9 +7,10 @@ import cors from "cors";
 import firebaseAccountCredentials from "./firebase.config.json";
 import { Request, Response } from "express";
 import { Routes } from "./routes";
-import { Building, Stop, User } from "./entities";
+import { Building, Stop, User, Exit } from "./entities";
 import Seeder from "./database/seeder";
-
+import serveStatic from "serve-static";
+import history from "connect-history-api-fallback";
 createConnection()
   .then(async connection => {
     // create express app
@@ -17,7 +18,8 @@ createConnection()
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(cors());
-
+    app.use(history());
+    app.use(serveStatic("public"));
     // Initialize firebase-admin
     const serviceAccount = firebaseAccountCredentials as admin.ServiceAccount;
     admin.initializeApp({
@@ -69,7 +71,14 @@ createConnection()
       console.log("Seeding Users");
       seeder.seedUsers();
     }
+    const exitRepository = getRepository(Exit);
+    const exits = await exitRepository.find();
+    if (exits.length === 0) {
+      console.log("Seeding Exits");
+      seeder.seedExits();
+    }
     // start express server
+
     app.listen(3000);
 
     console.log("Successdully Started Server");
