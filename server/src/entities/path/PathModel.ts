@@ -26,18 +26,18 @@ export class Path {
 
   @Column()
   type: "string";
+
+  @Column({ default: 0 })
+  distance: number;
+
+  @Column({ default: 0 })
+  duration: number;
 }
 
 @ChildEntity()
 export class Walk extends Path {
   @Column("simple-json")
   latLngs: "double"[][];
-
-  @Column()
-  distance: number;
-
-  @Column()
-  duration: number;
 
   @Column()
   geometry: string;
@@ -47,12 +47,6 @@ export class Walk extends Path {
 export class Jeep extends Path {
   @Column("simple-json")
   latLngs: "double"[][];
-
-  @Column()
-  distance: number;
-
-  @Column()
-  duration: number;
 
   @Column()
   geometry: string;

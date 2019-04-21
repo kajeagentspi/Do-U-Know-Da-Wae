@@ -9,16 +9,17 @@ export class BuildingController {
   private userRepository = getRepository(User);
 
   async all(request: Request, response: Response, next: NextFunction) {
-    let { name, ...query } = request.query;
+    let { name } = request.query;
     if (!name) {
       name = "";
     }
     return this.buildingRepository.find({
-      where: {
-        ...query,
-        name: Like(`%${name}%`),
-        alternativeNames: Like(`%${name}%`)
-      },
+      where: [
+        {
+          name: Like(`%${name}%`)
+        },
+        { alternativeNames: Like(`%${name}%`) }
+      ],
       relations: ["rooms", "exits"]
     });
   }
