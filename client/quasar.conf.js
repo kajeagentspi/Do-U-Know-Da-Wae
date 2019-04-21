@@ -3,7 +3,7 @@
 module.exports = function(ctx) {
   return {
     // app plugins (/src/plugins)
-    boot: ["leaflet", "vue-fragment", "firebase"],
+    boot: ["leaflet", "vue-fragment", "firebase", "components"],
 
     css: ["app.styl"],
 
@@ -36,7 +36,9 @@ module.exports = function(ctx) {
         "QPageContainer",
         "QLayout",
         "QPageSticky",
-        "QIcon"
+        "QIcon",
+        "QLinearProgress",
+        "QBtnDropdown"
       ],
 
       directives: ["Ripple"],

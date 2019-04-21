@@ -23,7 +23,7 @@
 import { mapActions } from "vuex";
 export default {
   name: "SearchResultCard",
-  props: ["result"],
+  props: ["result", "page"],
   data() {
     return {
       type: ""
@@ -33,13 +33,18 @@ export default {
     ...mapActions("map", ["viewSearch"]),
     pick() {
       this.viewSearch({ ...this.result, locationType: this.type });
+      if (this.page === "search") {
+        this.$emit("selected", this.result);
+      }
     }
   },
   mounted() {
     if (this.$route.path === "/origin") {
       this.type = "origin";
-    } else {
+    } else if (this.$route.path === "/destination") {
       this.type = "destination";
+    } else if (this.page === "search") {
+      this.type = "search";
     }
   }
 };

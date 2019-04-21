@@ -11,22 +11,20 @@ Vue.use(Vuex);
  * directly export the Store instantiation
  */
 
-export default function(/* { ssrContext } */) {
-  const vuexLocal = new VuexPersistence({
-    storage: window.localStorage,
-    key: "dukdw",
-    reducer: state => ({
-      auth: state.auth
-    })
-  });
+const vuexLocal = new VuexPersistence({
+  storage: window.localStorage,
+  key: "dukdw",
+  reducer: state => ({
+    auth: state.auth
+  })
+});
 
-  const Store = new Vuex.Store({
-    modules: {
-      map,
-      auth
-    },
-    plugins: [vuexLocal.plugin]
-  });
+const Store = new Vuex.Store({
+  modules: {
+    map,
+    auth
+  },
+  plugins: [vuexLocal.plugin]
+});
 
-  return Store;
-}
+export default Store;

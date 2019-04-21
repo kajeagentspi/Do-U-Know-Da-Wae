@@ -11,7 +11,7 @@ export const getRoom = id => {
 };
 
 export const addRoom = data => {
-  return axios.post(`${baseURL}/api/room?${qs.stringify(data)}`);
+  return axios.post(`${baseURL}/api/room`, data);
 };
 
 export const deleteRoom = ({ id, accessToken }) => {

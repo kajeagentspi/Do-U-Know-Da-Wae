@@ -2,8 +2,13 @@ import {
   RouteScreen,
   Wrapper,
   SelectSearchMethod,
-  PlaceMarkerCard
+  PlaceMarkerCard,
+  FavoritesPanel,
+  ContributePanel
 } from "../components";
+
+import store from "../store";
+import { Notify } from "quasar";
 
 const routes = [
   {
@@ -13,8 +18,7 @@ const routes = [
       {
         path: "",
         name: "RouteScreen",
-        component: RouteScreen,
-        meta: { bodyClass: "route" }
+        component: RouteScreen
       },
       {
         path: "origin",
@@ -35,6 +39,36 @@ const routes = [
         path: "/destination/marker",
         name: "DestinationMarker",
         component: PlaceMarkerCard
+      },
+      {
+        path: "/favorites",
+        name: "FavoritesPanel",
+        component: FavoritesPanel
+      },
+      {
+        path: "/contribute",
+        name: "ContributePanel",
+        component: ContributePanel,
+        beforeEnter: (to, from, next) => {
+          store.dispatch("map/reset");
+          if (store.state.auth.profile) {
+            next();
+          } else if (store.state.type === "viewer") {
+            Notify.create({
+              message: "UP Mail required to contribute",
+              color: "negative",
+              position: "top"
+            });
+            next(false);
+          } else {
+            Notify.create({
+              message: "UP Mail login required",
+              color: "negative",
+              position: "top"
+            });
+            next("/favorites");
+          }
+        }
       }
       // ,
       // {
