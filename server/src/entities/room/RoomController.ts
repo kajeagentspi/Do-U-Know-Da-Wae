@@ -1,6 +1,6 @@
 import { getRepository, Like } from "typeorm";
 import { NextFunction, Request, Response } from "express";
-import { Building, Room, User } from "..";
+import { Building, Room, User, Route } from "..";
 import * as admin from "firebase-admin";
 
 export class RoomController {

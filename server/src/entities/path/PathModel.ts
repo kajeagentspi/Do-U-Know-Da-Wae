@@ -12,21 +12,6 @@ export class Path {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: "enum", enum: PathType })
-  type: PathType;
-
-  @Column({ default: 0 })
-  distance: number;
-
-  @Column({ default: 0 })
-  duration: number;
-
-  @Column({ default: null })
-  instructions: string;
-
-  @Column({ type: "simple-json", default: null })
-  latLngs: "double"[][];
-
   @ManyToOne(type => POI, poi => poi.startPaths, {
     onDelete: "CASCADE"
   })
@@ -36,4 +21,19 @@ export class Path {
     onDelete: "CASCADE"
   })
   destination: POI;
+
+  @Column({ type: "simple-json", default: null })
+  latLngs: "double"[][];
+
+  @Column({ default: null })
+  instructions: string;
+
+  @Column({ type: "enum", enum: PathType })
+  type: PathType;
+
+  // @Column({ default: 0 })
+  // distance: number;
+
+  // @Column({ default: 0 })
+  // duration: number;
 }

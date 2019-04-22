@@ -1,15 +1,15 @@
-import { UserRoutes, BuildingRoutes, RoomRoutes, StopRoutes } from "./entities";
-// PathRoutes,
-// RouteRoutes,
-// AllRoutes
+import {
+  UserRoutes,
+  BuildingRoutes,
+  RoomRoutes,
+  StopRoutes,
+  RouteRoutes
+} from "./entities";
 
 export const Routes = [
   ...UserRoutes,
   ...BuildingRoutes,
   ...RoomRoutes,
-  ...StopRoutes
-  // ...AllRoutes,
-  // ...MarkerRoutes,
-  // ...PathRoutes,
-  // ...RouteRoutes,
+  ...StopRoutes,
+  ...RouteRoutes
 ];

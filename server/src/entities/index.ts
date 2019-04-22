@@ -9,6 +9,7 @@ import { Stop, StopDirection } from "./stop/StopModel";
 import { StopRoutes } from "./stop/StopRoutes";
 import { Path, PathType } from "./path/PathModel";
 import { Route } from "./route/RouteModel";
+import { RouteRoutes } from "./route/RouteRoutes";
 
 export {
   User,
@@ -24,5 +25,6 @@ export {
   StopRoutes,
   Path,
   PathType,
-  Route
+  Route,
+  RouteRoutes
 };
