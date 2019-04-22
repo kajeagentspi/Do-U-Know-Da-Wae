@@ -1,8 +1,9 @@
 import { getRepository, Like } from "typeorm";
 import { NextFunction, Request, Response } from "express";
 import { Building, User } from "..";
+import polygonCenter from "geojson-polygon-center";
 import * as admin from "firebase-admin";
-import * as inside from "point-in-polygon";
+import inside from "point-in-polygon";
 
 export class BuildingController {
   private buildingRepository = getRepository(Building);
@@ -20,20 +21,27 @@ export class BuildingController {
         },
         { alternativeNames: Like(`%${name}%`) }
       ],
-      relations: ["rooms", "exits"]
+      relations: ["rooms"]
     });
   }
 
   async one(request: Request, response: Response, next: NextFunction) {
-    return this.buildingRepository.findOne(request.params.id, {
-      relations: ["rooms", "exits"]
+    const building = await this.buildingRepository.findOne(request.params.id, {
+      relations: ["rooms"]
     });
+    if (building) {
+      return building;
+    }
+    return {
+      message: "Building not found",
+      color: "negative"
+    };
   }
 
   async identify(request: Request, response: Response, next: NextFunction) {
     const { lat, lng } = request.query;
     const buildings = await this.buildingRepository.find({
-      relations: ["rooms", "exits"]
+      relations: ["rooms"]
     });
     for (let building of buildings) {
       for (let polygon of building.coordinates) {
@@ -50,18 +58,37 @@ export class BuildingController {
 
   async save(request: Request, response: Response, next: NextFunction) {
     try {
-      const { accessToken, name, alternativeNames, id } = request.body;
+      const {
+        accessToken,
+        name,
+        coordinates,
+        alternativeNames,
+        id
+      } = request.body;
       const { uid } = await admin.auth().verifyIdToken(accessToken);
       const { type } = await this.userRepository.findOne({ uid });
       if (type === "admin") {
-        await this.buildingRepository.update(id, {
-          name,
-          alternativeNames,
-          active: true
-        });
-        return this.buildingRepository.findOne(id, {
-          relations: ["rooms", "exits"]
-        });
+        if (id) {
+          await this.buildingRepository.update(id, {
+            name,
+            alternativeNames
+          });
+          return this.buildingRepository.findOne(id, {
+            relations: ["rooms"]
+          });
+        } else {
+          const {
+            coordinates: [lat, lng]
+          } = polygonCenter(coordinates);
+          const building = await this.buildingRepository.save({
+            coordinates,
+            name,
+            lat,
+            lng,
+            alternativeNames
+          });
+          return this.buildingRepository.findOne(building.id);
+        }
       }
       return {
         message: "Invalid Operation",

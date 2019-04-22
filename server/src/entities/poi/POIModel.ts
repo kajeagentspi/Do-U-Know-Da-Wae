@@ -1,8 +1,8 @@
 import {
-  PrimaryGeneratedColumn,
-  OneToMany,
   Entity,
   TableInheritance,
+  PrimaryGeneratedColumn,
+  OneToMany,
   Column
 } from "typeorm";
 import { Path, Route } from "..";
@@ -13,32 +13,23 @@ export class POI {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToMany(type => Path, path => path.start, {
+  @OneToMany(type => Path, path => path.origin, {
     onDelete: "CASCADE"
   })
   startPaths: Path[];
 
-  @OneToMany(type => Path, path => path.end, {
+  @OneToMany(type => Path, path => path.destination, {
     onDelete: "CASCADE"
   })
   endPaths: Path[];
 
-  @OneToMany(type => Route, route => route.start, {
+  @OneToMany(type => Route, route => route.origin, {
     onDelete: "CASCADE"
   })
   startRoutes: Route[];
 
-  @OneToMany(type => Route, route => route.end, {
+  @OneToMany(type => Route, route => route.destination, {
     onDelete: "CASCADE"
   })
   endRoutes: Route[];
-
-  @Column()
-  type: "string";
-
-  @Column({ type: "double", nullable: true })
-  lat: number;
-
-  @Column({ type: "double", nullable: true })
-  lng: number;
 }

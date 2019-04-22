@@ -1,15 +1,23 @@
-import { ChildEntity, Column, ManyToOne } from "typeorm";
+import {
+  Column,
+  ManyToOne,
+  ChildEntity,
+  PrimaryGeneratedColumn
+} from "typeorm";
 import { Building, POI } from "..";
 
 @ChildEntity()
 export class Room extends POI {
+  @PrimaryGeneratedColumn()
+  id: number;
+
   @Column()
   name: string;
 
   @Column({ default: 1 })
   level: Number;
 
-  @ManyToOne(type => Building, building => building.rooms, {
+  @ManyToOne(() => Building, building => building.rooms, {
     onDelete: "CASCADE"
   })
   building: Building;

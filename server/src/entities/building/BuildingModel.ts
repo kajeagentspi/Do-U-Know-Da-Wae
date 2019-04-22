@@ -1,8 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
-import { Room } from "..";
+import {
+  Column,
+  OneToMany,
+  ChildEntity,
+  PrimaryGeneratedColumn
+} from "typeorm";
+import { Room, POI } from "..";
 
-@Entity()
-export class Building {
+@ChildEntity()
+export class Building extends POI {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -17,9 +22,6 @@ export class Building {
 
   @Column("simple-json", { default: null })
   coordinates: number[][][];
-
-  @Column({ default: false })
-  active: boolean;
 
   @OneToMany(type => Room, room => room.building, {
     onDelete: "CASCADE"
