@@ -7,7 +7,7 @@ import cors from "cors";
 import firebaseAccountCredentials from "./firebase.config.json";
 import { Request, Response } from "express";
 import { Routes } from "./routes";
-import { Building, Stop, User } from "./entities";
+import { Stop, User, Building } from "./entities";
 import Seeder from "./database/seeder";
 import serveStatic from "serve-static";
 import history from "connect-history-api-fallback";
@@ -52,12 +52,13 @@ createConnection()
 
     // setup express app here
     // ...
+
     const seeder = new Seeder();
-    const buildingRepository = getRepository(Building);
-    const buildings = await buildingRepository.find();
-    if (buildings.length === 0) {
-      console.log("Seeding Buildings");
-      seeder.seedBuildings();
+    const userRepository = getRepository(User);
+    const users = await userRepository.find();
+    if (users.length === 0) {
+      console.log("Seeding Users");
+      seeder.seedUsers();
     }
     const stopRepository = getRepository(Stop);
     const stops = await stopRepository.find();
@@ -65,11 +66,11 @@ createConnection()
       console.log("Seeding Stops");
       seeder.seedStops();
     }
-    const userRepository = getRepository(User);
-    const users = await userRepository.find();
-    if (users.length === 0) {
-      console.log("Seeding Users");
-      seeder.seedUsers();
+    const buildingRepository = getRepository(Building);
+    const buildings = await buildingRepository.find();
+    if (buildings.length === 0) {
+      console.log("Seeding Buildings");
+      seeder.seedBuildings();
     }
     // start express server
 

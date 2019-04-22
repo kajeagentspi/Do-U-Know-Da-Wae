@@ -1,39 +1,28 @@
-import { User } from "./user/UserModel";
+import { User, UserType } from "./user/UserModel";
 import { UserRoutes } from "./user/UserRoutes";
-import { Building } from "./building/BuildingModel";
-import { BuildingRoutes } from "./building/BuildingRoutes";
 import { POI } from "./poi/POIModel";
 import { Room } from "./room/RoomModel";
 import { RoomRoutes } from "./room/RoomRoutes";
+import { Building } from "./building/BuildingModel";
+import { BuildingRoutes } from "./building/BuildingRoutes";
 import { Stop, StopDirection } from "./stop/StopModel";
 import { StopRoutes } from "./stop/StopRoutes";
-import { Marker } from "./marker/MarkerModel";
-import { MarkerRoutes } from "./marker/MarkerRoutes";
-import { Path, Jeep, Walk, Indoor } from "./path/PathModel";
-import { PathRoutes } from "./path/PathRoutes";
+import { Path, PathType } from "./path/PathModel";
 import { Route } from "./route/RouteModel";
-import { RouteRoutes } from "./route/RouteRoutes";
-import { AllRoutes } from "./all/AllRoutes";
 
 export {
   User,
+  UserType,
   UserRoutes,
+  POI,
   Building,
   BuildingRoutes,
-  POI,
   Room,
   RoomRoutes,
   Stop,
   StopDirection,
   StopRoutes,
-  Marker,
-  MarkerRoutes,
   Path,
-  PathRoutes,
-  Jeep,
-  Walk,
-  Indoor,
-  Route,
-  RouteRoutes,
-  AllRoutes
+  PathType,
+  Route
 };

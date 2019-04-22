@@ -9,55 +9,43 @@ export class RoomController {
   private userRepository = getRepository(User);
 
   async all(request: Request, response: Response, next: NextFunction) {
-    let { name, buildingId, ...query } = request.query;
+    let { name, buildingId } = request.query;
     if (!name) {
       name = "";
     }
-    const where = [];
-    if (isNaN(buildingId)) {
-      return this.roomRepository.find({
-        where: [
-          {
-            name: Like(`%${name}%`)
-          },
-          ...where
-        ],
-        relations: ["building"]
-      });
+    if (buildingId) {
+      buildingId = "*";
     }
-    const building = await this.buildingRepository.findOne(buildingId);
     return this.roomRepository.find({
-      where: [
-        {
-          name,
-          building
-        },
-        ...where
-      ],
-      relations: ["building"]
+      where: { name: Like(`%${name}%`), buildingId }
     });
   }
 
   async one(request: Request, response: Response, next: NextFunction) {
-    return this.roomRepository.findOne(request.params.id, {
-      relations: ["building"]
-    });
+    const room = await this.roomRepository.findOne(request.params.id);
+    if (room) {
+      return room;
+    }
+    return {
+      message: "Room not found",
+      color: "negative"
+    };
   }
 
   async save(request: Request, response: Response, next: NextFunction) {
     try {
       const {
         buildingId,
+        buildingCode,
         name,
         level,
         accessToken,
-        id,
-        buildingCode
+        id
       } = request.body;
       // const { uid } = await admin.auth().verifyIdToken(accessToken);
       // const { type } = await this.userRepository.findOne({ uid });
       const type = "admin"; //remove this boi
-      if (type === "admin") {
+      if (type === "admin" || type === "contributor") {
         if (id) {
           const room = await this.roomRepository.findOne(id);
           await this.roomRepository.update(room.id, { name, level });
@@ -87,13 +75,13 @@ export class RoomController {
       }
       return {
         message: "Operation not permitted",
-        type: "negative"
+        color: "negative"
       };
     } catch (error) {
       console.log(error);
       return {
         message: "An Error Occurred",
-        type: "negative"
+        color: "negative"
       };
     }
   }
@@ -108,18 +96,18 @@ export class RoomController {
         await this.roomRepository.remove(room);
         return {
           message: "Successfully Deleted Room",
-          type: "positive"
+          color: "positive"
         };
       }
       return {
         message: "Operation not permitted",
-        type: "negative"
+        color: "negative"
       };
     } catch (error) {
       console.log(error);
       return {
         message: "An Error Occurred",
-        type: "negative"
+        color: "negative"
       };
     }
   }

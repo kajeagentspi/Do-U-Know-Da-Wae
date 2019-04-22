@@ -18,7 +18,14 @@ export class StopController {
   }
 
   async one(request: Request, response: Response, next: NextFunction) {
-    return this.stopRepository.findOne(request.params.id);
+    const stop = await this.stopRepository.findOne(request.params.id);
+    if (stop) {
+      return stop;
+    }
+    return {
+      message: "Stop not found",
+      color: "negative"
+    };
   }
 
   async save(request: Request, response: Response, next: NextFunction) {
@@ -38,13 +45,13 @@ export class StopController {
       }
       return {
         message: "Invalid Operation",
-        type: "negative"
+        color: "negative"
       };
     } catch (error) {
       console.log(error);
       return {
         message: "An Error Occurred",
-        type: "negative"
+        color: "negative"
       };
     }
   }
@@ -59,18 +66,18 @@ export class StopController {
         await this.stopRepository.remove(stop);
         return {
           message: "Successfully Deleted Stop",
-          type: "positive"
+          color: "positive"
         };
       }
       return {
         message: "Invalid Operation",
-        type: "negative"
+        color: "negative"
       };
     } catch (error) {
       console.log(error);
       return {
         message: "An Error Occurred",
-        type: "negative"
+        color: "negative"
       };
     }
   }

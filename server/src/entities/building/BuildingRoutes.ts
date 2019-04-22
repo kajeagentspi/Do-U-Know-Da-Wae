@@ -15,7 +15,7 @@ export const BuildingRoutes = [
   },
   {
     method: "get",
-    route: "/building/identify",
+    route: "/identify",
     controller: BuildingController,
     action: "identify"
   },
