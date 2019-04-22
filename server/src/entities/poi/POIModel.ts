@@ -3,7 +3,8 @@ import {
   TableInheritance,
   PrimaryGeneratedColumn,
   OneToMany,
-  Column
+  Column,
+  ChildEntity
 } from "typeorm";
 import { Path, Route } from "..";
 
@@ -32,4 +33,16 @@ export class POI {
     onDelete: "CASCADE"
   })
   endRoutes: Route[];
+
+  @Column()
+  type: string;
+}
+
+@ChildEntity()
+export class Marker extends POI {
+  @Column({ type: "double" })
+  lat: number;
+
+  @Column({ type: "double" })
+  lng: number;
 }

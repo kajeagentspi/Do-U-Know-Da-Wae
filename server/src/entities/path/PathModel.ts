@@ -31,9 +31,12 @@ export class Path {
   @Column({ type: "enum", enum: PathType })
   type: PathType;
 
-  // @Column({ default: 0 })
-  // distance: number;
+  @Column({ default: 0 })
+  distance: number;
 
-  // @Column({ default: 0 })
-  // duration: number;
+  @Column({ default: 0 })
+  duration: number;
+
+  @Column()
+  geometry: string;
 }

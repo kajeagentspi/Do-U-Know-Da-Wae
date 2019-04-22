@@ -27,11 +27,11 @@ export class Route {
   @JoinTable()
   paths: Path[];
 
-  // @Column({ type: "float", nullable: true })
-  // distance: number;
+  @Column({ type: "float", nullable: true })
+  distance: number;
 
-  // @Column({ type: "float", nullable: true })
-  // duration: number;
+  @Column({ type: "float", nullable: true })
+  duration: number;
 
   @ManyToOne(type => User, user => user.contributions, {
     onDelete: "CASCADE"
