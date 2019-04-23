@@ -3,7 +3,8 @@ import {
   BuildingRoutes,
   RoomRoutes,
   StopRoutes,
-  RouteRoutes
+  RouteRoutes,
+  PathRoutes
 } from "./entities";
 
 export const Routes = [
@@ -11,5 +12,6 @@ export const Routes = [
   ...BuildingRoutes,
   ...RoomRoutes,
   ...StopRoutes,
-  ...RouteRoutes
+  ...RouteRoutes,
+  ...PathRoutes
 ];

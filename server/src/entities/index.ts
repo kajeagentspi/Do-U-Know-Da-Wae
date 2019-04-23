@@ -8,6 +8,7 @@ import { BuildingRoutes } from "./building/BuildingRoutes";
 import { Stop, StopDirection } from "./stop/StopModel";
 import { StopRoutes } from "./stop/StopRoutes";
 import { Path, PathType } from "./path/PathModel";
+import { PathRoutes } from "./path/PathRoutes";
 import { Route } from "./route/RouteModel";
 import { RouteRoutes } from "./route/RouteRoutes";
 
@@ -26,6 +27,7 @@ export {
   StopRoutes,
   Path,
   PathType,
+  PathRoutes,
   Route,
   RouteRoutes
 };

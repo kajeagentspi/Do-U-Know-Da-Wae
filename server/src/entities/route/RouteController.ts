@@ -1,4 +1,4 @@
-import { getRepository, Like } from "typeorm";
+import { getRepository } from "typeorm";
 import { NextFunction, Request, Response } from "express";
 import {
   User,
@@ -11,11 +11,10 @@ import {
   PathType,
   Marker
 } from "..";
-import { walking, driving } from "../config";
+import { walking } from "../config";
 import * as admin from "firebase-admin";
 import * as polyline from "@mapbox/polyline";
 import axios from "axios";
-import { Routes } from "../../routes";
 
 export class RouteController {
   private pathRepository = getRepository(Path);
@@ -25,10 +24,10 @@ export class RouteController {
   private stopRepository = getRepository(Stop);
   private markerRepository = getRepository(Marker);
   private userRepository = getRepository(User);
+  private POIRepository = getRepository(POI);
 
   async all(request: Request, response: Response, next: NextFunction) {
     let { origin, destination } = request.query;
-    console.log();
     console.log(request.query);
     let routes = [];
     if (origin && destination) {
@@ -195,7 +194,6 @@ export class RouteController {
           })
         );
       }
-      console.log(inRepo);
     }
     return paths;
   }
@@ -410,7 +408,67 @@ export class RouteController {
       return newRoutes;
     }
   }
-  async one(request: Request, response: Response, next: NextFunction) {}
-  async save(request: Request, response: Response, next: NextFunction) {}
+  async one(request: Request, response: Response, next: NextFunction) {
+    return this.routeRepository.findOne(request.params.id, {
+      relations: ["origin", "destination", "paths", "contributor"]
+    });
+  }
+  async save(request: Request, response: Response, next: NextFunction) {
+    try {
+      const { paths, accessToken } = request.body;
+      const { uid } = await admin.auth().verifyIdToken(accessToken);
+      const user = await this.userRepository.findOne({ uid });
+      if (user.type === "admin" || user.type === "contributor") {
+        const dbPaths: Path[] = [];
+        let distance = 0;
+        let duration = 0;
+        for (let path of paths) {
+          if (path.id) {
+            const dbPath = await this.pathRepository.findOne(path.id, {
+              relations: ["origin", "destination"]
+            });
+            distance += dbPath.distance;
+            duration += dbPath.duration;
+            dbPaths.push(dbPath);
+          } else {
+            let { origin, destination } = path;
+            origin = await this.POIRepository.findOne(origin.id);
+            destination = await this.POIRepository.findOne(destination.id);
+            const newPath = await this.pathRepository.save({
+              ...path,
+              origin,
+              destination
+            });
+            const dbPath = await this.pathRepository.findOne(newPath.id, {
+              relations: ["origin", "destination"]
+            });
+            distance += dbPath.distance;
+            duration += dbPath.duration;
+            dbPaths.push(dbPath);
+          }
+        }
+        const origin = dbPaths[0].origin;
+        const destination = dbPaths[dbPaths.length - 1].destination;
+        await this.routeRepository.save({
+          origin,
+          destination,
+          paths: dbPaths,
+          contributor: user,
+          distance,
+          duration
+        });
+      } else {
+        return {
+          message: "UP Mail required to contribute",
+          color: "negative"
+        };
+      }
+    } catch (error) {
+      return {
+        message: "An error occured",
+        color: "negative"
+      };
+    }
+  }
   async delete(request: Request, response: Response, next: NextFunction) {}
 }
