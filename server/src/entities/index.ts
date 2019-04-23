@@ -1,6 +1,7 @@
 import { User, UserType } from "./user/UserModel";
 import { UserRoutes } from "./user/UserRoutes";
 import { POI, Marker } from "./poi/POIModel";
+import { POIRoutes } from "./poi/POIRoutes";
 import { Room } from "./room/RoomModel";
 import { RoomRoutes } from "./room/RoomRoutes";
 import { Building } from "./building/BuildingModel";
@@ -18,6 +19,7 @@ export {
   UserRoutes,
   POI,
   Marker,
+  POIRoutes,
   Building,
   BuildingRoutes,
   Room,

@@ -4,7 +4,8 @@ import {
   RoomRoutes,
   StopRoutes,
   RouteRoutes,
-  PathRoutes
+  PathRoutes,
+  POIRoutes
 } from "./entities";
 
 export const Routes = [
@@ -13,5 +14,6 @@ export const Routes = [
   ...RoomRoutes,
   ...StopRoutes,
   ...RouteRoutes,
-  ...PathRoutes
+  ...PathRoutes,
+  ...POIRoutes
 ];
