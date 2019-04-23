@@ -28,8 +28,8 @@ export class RouteController {
 
   async all(request: Request, response: Response, next: NextFunction) {
     let { origin, destination } = request.query;
-    console.log(origin, destination);
-
+    console.log();
+    console.log(request.query);
     let routes = [];
     if (origin && destination) {
       origin = await this.typeCast(origin);
@@ -104,7 +104,9 @@ export class RouteController {
         }
       }
     } else {
-      routes = await this.routeRepository.find();
+      routes = await this.routeRepository.find({
+        relations: ["origin", "destination", "paths", "contributor"]
+      });
     }
     return routes;
   }
@@ -174,14 +176,13 @@ export class RouteController {
     return paths;
   }
 
-  convertOSRMPaths(origin: POI, destination: POI, OSRMpaths: any) {
+  async convertOSRMPaths(origin: POI, destination: POI, OSRMpaths: any) {
     const paths = [];
     for (let OSRMPath of OSRMpaths) {
-      if (
-        !this.pathRepository.findOne(null, {
-          where: { geometry: OSRMPath.geometry }
-        })
-      ) {
+      const inRepo = await this.pathRepository.findOne(null, {
+        where: { geometry: OSRMPath.geometry }
+      });
+      if (!inRepo) {
         paths.push(
           this.pathRepository.create({
             latLngs: polyline.decode(OSRMPath.geometry),
@@ -194,6 +195,7 @@ export class RouteController {
           })
         );
       }
+      console.log(inRepo);
     }
     return paths;
   }
@@ -225,7 +227,10 @@ export class RouteController {
         contributor
       });
     }
-    return this.routeRepository.find({ origin, destination });
+    return this.routeRepository.find({
+      where: { origin, destination },
+      relations: ["origin", "destination", "paths", "contributor"]
+    });
   }
 
   // originBuilding === destinationRoom.building
@@ -236,7 +241,10 @@ export class RouteController {
         uid: "sxdtxH1nOiYizjEMFKjK2EtFruk1"
       }
     });
-    const routes = await this.routeRepository.find({ origin, destination });
+    const routes = await this.routeRepository.find({
+      where: { origin, destination },
+      relations: ["origin", "destination", "paths", "contributor"]
+    });
     if (routes.length === 0) {
       const path = this.pathRepository.create({
         type: PathType.INDOOR,
@@ -263,17 +271,23 @@ export class RouteController {
       }
     });
     const systemGeneratedRoutes = await this.routeRepository.find({
-      origin,
-      destination,
-      contributor
+      where: { origin, destination, contributor },
+      relations: ["origin", "destination", "paths", "contributor"]
     });
-    let routes = await this.routeRepository.find({ origin, destination });
+    let routes = await this.routeRepository.find({
+      where: { origin, destination },
+      relations: ["origin", "destination", "paths", "contributor"]
+    });
     if (systemGeneratedRoutes.length === 0) {
       const OSRMPaths = await this.generateWalkingPathsFromOSRM(
         origin,
         destination
       );
-      const tempPaths = this.convertOSRMPaths(origin, destination, OSRMPaths);
+      const tempPaths = await this.convertOSRMPaths(
+        origin,
+        destination,
+        OSRMPaths
+      );
       if (!(origin instanceof Marker) && !(destination instanceof Marker)) {
         const paths = await this.pathRepository.save(tempPaths);
         await Promise.all(
@@ -288,7 +302,10 @@ export class RouteController {
             });
           })
         );
-        routes = await this.routeRepository.find({ origin, destination });
+        routes = await this.routeRepository.find({
+          where: { origin, destination },
+          relations: ["origin", "destination", "paths", "contributor"]
+        });
       } else {
         routes.push(
           ...tempPaths.map(path =>
@@ -326,7 +343,10 @@ export class RouteController {
     const newRoutes = await this.deduplicateRoutes(tempRoutes);
     if (!(destination instanceof Marker)) {
       await this.routeRepository.save(newRoutes);
-      return this.routeRepository.find({ origin, destination });
+      return this.routeRepository.find({
+        where: { origin, destination },
+        relations: ["origin", "destination", "paths", "contributor"]
+      });
     } else {
       return newRoutes;
     }
@@ -353,7 +373,10 @@ export class RouteController {
       "No indoor paths available yet."
     ) {
       await this.routeRepository.save(newRoutes);
-      return this.routeRepository.find({ origin, destination });
+      return this.routeRepository.find({
+        where: { origin, destination },
+        relations: ["origin", "destination", "paths", "contributor"]
+      });
     } else {
       return newRoutes;
     }
@@ -379,7 +402,10 @@ export class RouteController {
         "No indoor paths available yet."
     ) {
       await this.routeRepository.save(newRoutes);
-      return this.routeRepository.find({ origin, destination });
+      return this.routeRepository.find({
+        where: { origin, destination },
+        relations: ["origin", "destination", "paths", "contributor"]
+      });
     } else {
       return newRoutes;
     }
