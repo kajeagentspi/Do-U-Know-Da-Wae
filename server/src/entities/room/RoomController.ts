@@ -66,7 +66,9 @@ export class RoomController {
           const room = await this.roomRepository.save({
             building,
             name: name.toUpperCase(),
-            level
+            level,
+            lat: building.lat,
+            lng: building.lng
           });
           return this.roomRepository.findOne(room.id, {
             relations: ["building"]

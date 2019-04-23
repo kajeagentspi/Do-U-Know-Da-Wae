@@ -24,11 +24,13 @@ export class POIController {
         relations: ["rooms"]
       })),
       ...(await this.roomRepository.find({
-        where: { name: Like(`%${name}%`) }
+        where: { name: Like(`%${name}%`) },
+        relations: ["building"]
       })),
       ...(await this.stopRepository.find({
         where: { name: Like(`%${name}%`) }
       }))
     );
+    return pois;
   }
 }

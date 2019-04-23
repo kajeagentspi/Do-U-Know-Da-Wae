@@ -21,4 +21,10 @@ export class Room extends POI {
     onDelete: "CASCADE"
   })
   building: Building;
+
+  @Column({ type: "double" })
+  lat: number;
+
+  @Column({ type: "double" })
+  lng: number;
 }
