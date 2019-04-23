@@ -2,8 +2,8 @@
   <div id="q-app">
     <q-layout>
       <q-page-container :style="pageStyle">
-        <Map />
-        <Wrapper />
+        <Map/>
+        <Wrapper/>
       </q-page-container>
     </q-layout>
   </div>
@@ -68,5 +68,20 @@ export default {
 }
 .capitalize {
   text-transform: capitalize;
+}
+.card {
+  margin: 15px;
+  /* -webkit-border-radius: 0.8rem;
+  border-radius: 0.8rem; */
+}
+.text-dukdw {
+  color: red;
+}
+.bg-dukdw {
+  background: red;
+}
+.navbar {
+  background-color: red;
+  color: white;
 }
 </style>

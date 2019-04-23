@@ -37,8 +37,7 @@ module.exports = function(ctx) {
         "QLayout",
         "QPageSticky",
         "QIcon",
-        "QLinearProgress",
-        "QBtnDropdown"
+        "QExpansionItem"
       ],
 
       directives: ["Ripple"],

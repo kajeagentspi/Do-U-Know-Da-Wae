@@ -25,8 +25,12 @@
   />
 </template>
 <script>
+import { mapState } from "vuex";
 export default {
-  name: "Wrapper"
+  name: "Wrapper",
+  computed: {
+    ...mapState("map", ["marking"])
+  }
 };
 </script>
 

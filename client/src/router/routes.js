@@ -1,5 +1,5 @@
 import {
-  RouteScreen,
+  Search,
   Wrapper,
   SelectSearchMethod,
   PlaceMarkerCard,
@@ -17,8 +17,8 @@ const routes = [
     children: [
       {
         path: "",
-        name: "RouteScreen",
-        component: RouteScreen
+        name: "Search",
+        component: Search
       },
       {
         path: "origin",

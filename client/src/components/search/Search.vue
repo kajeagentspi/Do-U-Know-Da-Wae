@@ -1,0 +1,368 @@
+<template>
+  <q-card v-if="!marking">
+    <q-card-actions class="navbar">
+      <q-btn-group flat>
+        <q-btn disabled flat icon="explore"/>
+        <q-btn label="Search" to="/"/>
+        <q-btn label="Contribute" to="/contribute"/>
+        <q-btn label="Favorites" to="/favorites"/>
+      </q-btn-group>
+    </q-card-actions>
+    <q-card-actions v-if="!selectingOrigin && !selectingDestination">
+      <q-btn
+        class="full-width godown"
+        color="dukdw"
+        :label="origin ? `[${origin.type}] ${origin.name}` : 'Select Origin'"
+        no-ripple
+        size="l"
+        @click="select('origin')"
+      />
+      <q-btn
+        class="full-width godown"
+        color="dukdw"
+        :label="destination ? `[${destination.type}] ${destination.name}` : 'Select Destination'"
+        no-ripple
+        size="l"
+        @click="select('destination')"
+      />
+    </q-card-actions>
+    <q-card-section v-else-if="selectingOrigin || selectingDestination">
+      <q-input
+        v-model="name"
+        outlined
+        label="Search for a Room, Building, Stop"
+        debounce="500"
+        :rules="[POISearch]"
+        class="godown"
+      />
+      <q-btn
+        class="full-width godown"
+        color="dukdw"
+        icon="gps_fixed"
+        label="Use Current Location"
+        :disable="!GPSEnabled"
+        @click="useGPS"
+      />
+      <q-btn
+        class="full-width"
+        color="dukdw"
+        icon="place"
+        label="Place A Marker"
+        @click="useMarker"
+      />
+    </q-card-section>
+    <div class="route-body" v-if="!selectingOrigin && !selectingDestination">
+      <route-card
+        v-for="(route,index) in routes"
+        :key="index"
+        :index="index"
+        :route="route"
+        @highLight="highLight"
+      />
+    </div>
+    <div class="poi-body" v-if="selectingOrigin || selectingDestination">
+      <poi-item
+        v-for="(poi, index) in pois"
+        :key="index"
+        :poi="poi"
+        @viewPOI="viewPOI"
+        @selectPOI="selectPOI"
+      />
+    </div>
+  </q-card>
+</template>
+
+<script>
+import { CHANGE_VIEW } from "../../store/types";
+import { mapState, mapMutations } from "vuex";
+import { mapFields } from "vuex-map-fields";
+import * as Api from "../../api";
+import randomColor from "random-color";
+import L from "leaflet";
+
+export default {
+  name: "Search",
+  computed: {
+    ...mapState("map", ["mapInstance", "GPSEnabled", "userMarker"]),
+    ...mapFields("map", ["marker", "marking"])
+  },
+  data() {
+    return {
+      origin: null,
+      destination: null,
+      selectingOrigin: false,
+      selectingDestination: false,
+      name: null,
+      pois: [],
+      routes: null
+    };
+  },
+  methods: {
+    ...mapMutations("map", {
+      changeView: CHANGE_VIEW
+    }),
+    select(endType) {
+      if (endType === "origin") {
+        this.selectingOrigin = true;
+        this.selectingDestination = false;
+      } else {
+        this.selectingOrigin = false;
+        this.selectingDestination = true;
+      }
+    },
+    viewPOI(poi) {
+      if (this.selectingOrigin) {
+        this.setOrigin(poi);
+      } else {
+        this.setDestination(poi);
+      }
+      this.setView();
+    },
+    selectPOI(poi) {
+      const { name } = poi;
+      if (name.length > 30) {
+        poi.name = `${name.slice(0, 30)}...`;
+      }
+      if (this.selectingOrigin) {
+        this.selectingOrigin = false;
+        this.setOrigin(poi);
+      } else {
+        this.selectingDestination = false;
+        this.setDestination(poi);
+      }
+      this.setView();
+      if (this.origin && this.destination) {
+        const origin = { ...this.origin };
+        const destination = { ...this.destination };
+        delete origin.marker;
+        delete destination.marker;
+        this.routeSearch(origin, destination);
+      }
+    },
+    setView() {
+      if (this.origin && this.destination) {
+        this.changeView({
+          coordinates: [
+            { lat: this.origin.lat, lng: this.origin.lng },
+            { lat: this.destination.lat, lng: this.destination.lng }
+          ]
+        });
+      } else if (this.origin) {
+        this.changeView({
+          coordinates: [{ lat: this.origin.lat, lng: this.origin.lng }]
+        });
+      } else {
+        this.changeView({
+          coordinates: [
+            { lat: this.destination.lat, lng: this.destination.lng }
+          ]
+        });
+      }
+    },
+    setOrigin(poi) {
+      let { lat, lng } = poi;
+      if (this.origin) {
+        const { marker } = this.origin;
+        marker.setLatLng({ lat, lng });
+        this.origin = { ...poi, marker };
+      } else {
+        this.origin = poi;
+        this.origin.marker = new L.Marker({ lat, lng }).addTo(this.mapInstance);
+      }
+    },
+    setDestination(poi) {
+      let { lat, lng } = poi;
+      if (this.destination) {
+        const { marker } = this.destination;
+        marker.setLatLng({ lat, lng });
+        this.destination = { ...poi, marker };
+      } else {
+        this.destination = poi;
+        this.destination.marker = new L.Marker({ lat, lng }).addTo(
+          this.mapInstance
+        );
+      }
+    },
+    async useGPS() {
+      const { lat, lng } = this.userMarker.getLatLng();
+      const poi = {
+        lat,
+        lng,
+        type: "Marker",
+        name: await this.reverseGeocode(lat, lng)
+      };
+      this.selectPOI(poi);
+    },
+    async useMarker() {
+      this.marking = true;
+      this.mapInstance.editTools.startMarker();
+    },
+    async reverseGeocode(lat, lng) {
+      try {
+        const {
+          data: { display_name }
+        } = await Api.reverseGeocode({ lat, lng });
+        const name = display_name
+          .split(", ")
+          .slice(0, 2)
+          .join(", ");
+        return name;
+      } catch (error) {
+        return `lat: ${lat} lng: ${lng}`;
+      }
+    },
+    async POISearch(name) {
+      return Api.allPOI({ name })
+        .then(result => {
+          this.pois = result.data;
+        })
+        .catch(() => {
+          this.$q.notify({
+            message: "An error occured",
+            color: "negative",
+            position: "top"
+          });
+        });
+    },
+    async routeSearch(origin, destination) {
+      const colors = [];
+      const { data } = await Api.allRoute({ origin, destination });
+      if (this.routes) {
+        this.routes.forEach(route => {
+          route.paths.forEach(path => {
+            this.mapInstance.removeLayer(path.polyLine);
+          });
+        });
+      }
+      this.routes = data.map(route => {
+        let color = randomColor().hexString();
+        while (color in colors) {
+          color = randomColor(0.99, 0.99).hexString();
+        }
+        route.color = color;
+        route.paths.forEach(path => {
+          path.polyLine = L.polyline(path.latLngs, {
+            color
+          }).addTo(this.mapInstance);
+        });
+        return route;
+      });
+      console.log(this.routes);
+    },
+    highLight({ routeIndex, pathIndex }) {
+      if (isNaN(routeIndex) && isNaN(pathIndex)) {
+        this.setView();
+        this.routes.forEach(route => {
+          route.paths.forEach(path => {
+            path.polyLine.setStyle({ opacity: 1 });
+          });
+        });
+      } else if (!isNaN(routeIndex)) {
+        this.setView();
+        for (let i = 0; i < this.routes.length; i++) {
+          if (i === routeIndex) {
+            this.routes[i].paths.forEach(path => {
+              path.polyLine.setStyle({ opacity: 1 });
+            });
+          } else {
+            this.routes[i].paths.forEach(path => {
+              path.polyLine.setStyle({ opacity: 0 });
+            });
+          }
+        }
+      } else {
+        let activePath;
+        for (let i = 0; i < this.routes.length; i++) {
+          if (i === routeIndex) {
+            for (let j = 0; j < this.routes[i].paths.length; j++) {
+              if (j === pathIndex) {
+                activePath = this.routes[i].paths[j];
+                this.routes[i].paths[j].polyLine.setStyle({
+                  opacity: 1
+                });
+              } else {
+                this.routes[i].paths[j].polyLine.setStyle({
+                  opacity: 0.5
+                });
+              }
+            }
+          } else {
+            this.routes[i].paths.forEach(path => {
+              path.polyLine.setStyle({ opacity: 0 });
+            });
+          }
+        }
+        this.changeView({
+          coordinates: [
+            {
+              lat: activePath.origin.lat,
+              lng: activePath.origin.lng
+            },
+            {
+              lat: activePath.destination.lat,
+              lng: activePath.destination.lng
+            }
+          ]
+        });
+      }
+    }
+  },
+  watch: {
+    async marker(newValue) {
+      this.mapInstance.removeLayer(newValue);
+      const { lat, lng } = newValue.getLatLng();
+      const poi = {
+        lat,
+        lng,
+        type: "Marker",
+        name: await this.reverseGeocode(lat, lng)
+      };
+      this.selectPOI(poi);
+    }
+  },
+  beforeDestroy() {
+    console.log("Search Destroyed");
+    if (this.origin) {
+      this.mapInstance.removeLayer(this.origin.marker);
+    }
+    if (this.destination) {
+      this.mapInstance.removeLayer(this.destination.marker);
+    }
+    if (this.routes) {
+      this.routes.forEach(route => {
+        route.paths.forEach(path => {
+          this.mapInstance.removeLayer(path.polyLine);
+        });
+      });
+    }
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+.swap {
+  width: 74px;
+  height: 72px;
+}
+.godown {
+  margin-bottom: 5px;
+}
+.route-body {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  position: absolute;
+  top: 150px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+.poi-body {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  position: absolute;
+  top: 244px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+</style>
