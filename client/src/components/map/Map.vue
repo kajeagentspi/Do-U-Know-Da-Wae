@@ -12,24 +12,13 @@
     <div id="map"></div>
     <div
       :class="
+        marking ? 'full' :
         $route.path === '/'
           ? 'activeroute'
           : $route.path === '/favorites'
           ? 'activeroute'
           : $route.path === '/contribute'
           ? 'activeroute'
-          : $route.path === '/origin'
-          ? 'activeorigindestination'
-          : $route.path === '/destination'
-          ? 'activeorigindestination'
-          : $route.path === '/origin/marker'
-          ? 'activemark'
-          : $route.path === '/destination/marker'
-          ? 'activemark'
-          : $route.path === '/origin/selected'
-          ? 'activemark'
-          : $route.path === '/destination/selected'
-          ? 'activemark'
           : ''
       "
       ref="visibleMap"
@@ -48,51 +37,25 @@ export default {
     ...mapFields("map", [
       "mapInstance",
       "userMarker",
-      "GPSOrigin",
-      "GPSDestination",
-      "MarkerOrigin",
-      "MarkerDestination",
       "mapTop",
       "mapLeft",
       "mapRight",
       "mapBottom",
       "GPSEnabled",
-      "MarkerPathOrigin",
-      "MarkerPathDestination",
-      "paths"
+      "marker",
+      "marking"
     ])
   },
   methods: {
-    ...mapActions("map", ["initializeMap", "locateUser", "reverseGeocode"]),
+    ...mapActions("map", ["initializeMap", "locateUser", "identifyBuilding"]),
     ...mapMutations("map", {
       removeLayer: REMOVE_LAYER
     }),
     draw({ layer }) {
       if (layer instanceof L.Marker) {
-        const { lat, lng } = layer.getLatLng();
         layer.dragging.disable();
-        if (this.MarkerOrigin) {
-          this.MarkerOrigin = false;
-          this.reverseGeocode({
-            lat,
-            lng,
-            locationType: "origin",
-            type: "Marker"
-          });
-          this.removeLayer({ layer });
-        } else if (this.MarkerDestination) {
-          this.MarkerDestination = false;
-          this.reverseGeocode({
-            lat,
-            lng,
-            locationType: "destination",
-            type: "Marker"
-          });
-          this.removeLayer({ layer });
-        }
-        //  else if (this.MarkerPathOrigin) {
-        // } else if (this.MarkerPathDestination) {
-        // }
+        this.marking = false;
+        this.marker = layer;
       } else if (layer instanceof L.Polyline) {
         console.log(layer);
       }
@@ -113,17 +76,6 @@ export default {
           this.mapInstance
         );
       }
-      if (this.GPSOrigin) {
-        this.GPSOrigin = false;
-        this.reverseGeocode({ latLng: latlng, endType: "Origin", type: "GPS" });
-      } else if (this.GPSDestination) {
-        this.GPSDestination = false;
-        this.reverseGeocode({
-          latLng: latlng,
-          endType: "Destination",
-          type: "GPS"
-        });
-      }
     },
     onLocationError() {
       this.GPSEnabled = false;
@@ -133,26 +85,6 @@ export default {
         position: "top"
       });
     }
-    // removeLayer: REMOVE_LAYER,
-    // updatePosition: UPDATE_POSITION
-    // })
-    // ...mapActions("map", ["reverseGeocode"]),
-    //
-
-    // click(e) {
-    //   const marker = new L.Marker(e.latlng, { draggable: true }).on(
-    //     "drag",
-    //     e => {
-    //       console.log(e.latlng);
-    //     }
-    //   );
-    //   marker.addTo(this.mapInstance);
-    //   this.mapInstance.fitBounds([{ ...e.latlng }], {
-    //     paddingTopLeft: [0, 360]
-    //   });
-    // },
-    // }
-    // }
   },
   mounted() {
     const {
@@ -210,11 +142,19 @@ export default {
   z-index: 0;
 }
 @media (min-width: 641px) {
-  .activeroute,
-  .activeorigindestination,
-  .activemark {
+  .activeroute {
     top: 0px;
     left: calc(360px + 1vw);
+    right: 0px;
+    height: 100%;
+    position: absolute;
+    z-index: 10;
+    pointer-events: none;
+    border-style: solid;
+  }
+  .full {
+    top: 0px;
+    left: 0px;
     right: 0px;
     height: 100%;
     position: absolute;
@@ -234,28 +174,17 @@ export default {
     border-style: solid;
     pointer-events: none;
   }
-  .activeorigindestination {
+  .full {
     top: 0px;
     left: 0px;
     right: 0px;
-    bottom: calc(80%);
+    height: 100%;
     position: absolute;
     z-index: 10;
-    border-style: solid;
     pointer-events: none;
-  }
-  .activemark {
-    top: 0px;
-    left: 0px;
-    right: 0px;
-    bottom: calc(20%);
-    position: absolute;
-    z-index: 10;
     border-style: solid;
-    pointer-events: none;
   }
 }
-
 .front {
   z-index: 10;
 }

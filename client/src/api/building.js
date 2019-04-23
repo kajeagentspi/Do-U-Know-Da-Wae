@@ -2,23 +2,23 @@ import axios from "axios";
 import { baseURL } from "./config";
 import qs from "qs";
 
-export const getBuildings = data => {
+export const allBuilding = data => {
   return axios.get(`${baseURL}/api/building?${qs.stringify(data)}`);
 };
 
-export const getBuilding = id => {
+export const oneBuilding = id => {
   return axios.get(`${baseURL}/api/building/${id}`);
 };
 
-export const getBuildingIdentify = data => {
-  return axios.get(`${baseURL}/api/building/identify?${qs.stringify(data)}`);
+export const identifyBuilding = data => {
+  return axios.get(`${baseURL}/api/identify?${qs.stringify(data)}`);
 };
 
-export const addBuilding = data => {
+export const saveBuilding = data => {
   return axios.post(`${baseURL}/api/building`, data);
 };
 
-export const deleteBuilding = ({ id, accessToken }) => {
+export const removeBuilding = ({ id, accessToken }) => {
   return axios.delete(`${baseURL}/api/building/${id}`, {
     data: { accessToken }
   });
