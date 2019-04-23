@@ -29,154 +29,78 @@ export class RouteController {
   async all(request: Request, response: Response, next: NextFunction) {
     let { origin, destination } = request.query;
     console.log(origin, destination);
-    const contributor = await this.userRepository.findOne(null, {
-      where: {
-        uid: "sxdtxH1nOiYizjEMFKjK2EtFruk1"
-      }
-    });
+
     let routes = [];
     if (origin && destination) {
       origin = await this.typeCast(origin);
       destination = await this.typeCast(destination);
       routes = await this.routeRepository.find({ origin, destination });
-      // add systemGeneratedRoute check to ensure that system routes are already generated
-      const systemGeneratedRoutes = await this.routeRepository.find({
-        origin,
-        destination,
-        contributor
-      });
-      if (routes.length === 0 || systemGeneratedRoutes.length === 0) {
+      if (routes.length === 0) {
         if (origin instanceof Room && destination instanceof Room) {
+          if (origin.building === destination.building) {
+            routes = await this.getBuildingOrRoomToSameBuildingRoutes(
+              origin,
+              destination
+            );
+          } else {
+            routes = await this.getRoomToRoomDifferentBuilding(
+              origin,
+              destination
+            );
+          }
         } else if (origin instanceof Room && destination instanceof Building) {
+          if (origin.building === destination) {
+            routes = await this.getRoomToSameBuildingRoutes(
+              origin,
+              destination
+            );
+          } else {
+            routes = await this.getRoomToPOIRoutes(origin, destination);
+          }
         } else if (origin instanceof Room && destination instanceof Stop) {
+          routes = await this.getRoomToPOIRoutes(origin, destination);
         } else if (origin instanceof Room && destination instanceof Marker) {
+          routes = await this.getRoomToPOIRoutes(origin, destination);
         } else if (
           origin instanceof Building &&
           destination instanceof Building
         ) {
-          // Walking Only
-          await this.getPOItoPOIExceptRoomWalkingPaths(origin, destination);
-          // With Jeep
-          routes = await this.routeRepository.find({ origin, destination });
+          routes = await this.getPOIToPOIExceptRoomRoutes(origin, destination);
         } else if (origin instanceof Building && destination instanceof Stop) {
-          // Walking Only
-          await this.getPOItoPOIExceptRoomWalkingPaths(origin, destination);
-          // With Jeep
-          routes = await this.routeRepository.find({ origin, destination });
+          routes = await this.getPOIToPOIExceptRoomRoutes(origin, destination);
         } else if (
           origin instanceof Building &&
           destination instanceof Marker
         ) {
-          // Walking Only
-          const paths = await this.getPOItoPOIExceptRoomWalkingPaths(
-            origin,
-            destination
-          );
-          routes.push(
-            ...paths.map(path =>
-              this.routeRepository.create({
-                origin,
-                destination,
-                paths: [path],
-                distance: path.distance,
-                duration: path.duration,
-                contributor
-              })
-            )
-          );
-          // With Jeep
+          routes = await this.getPOIToPOIExceptRoomRoutes(origin, destination);
         } else if (origin instanceof Building && destination instanceof Room) {
+          if (origin === destination.building) {
+            routes = await this.getBuildingOrRoomToSameBuildingRoutes(
+              origin,
+              destination
+            );
+          } else {
+            routes = await this.POIToRoomRoutes(origin, destination);
+          }
         } else if (origin instanceof Stop && destination instanceof Stop) {
-          // Walking Only
-          await this.getPOItoPOIExceptRoomWalkingPaths(origin, destination);
-          // With Jeep
-          routes = await this.routeRepository.find({ origin, destination });
+          routes = await this.getPOIToPOIExceptRoomRoutes(origin, destination);
         } else if (origin instanceof Stop && destination instanceof Marker) {
-          // Walking Only
-          const paths = await this.getPOItoPOIExceptRoomWalkingPaths(
-            origin,
-            destination
-          );
-          routes.push(
-            ...paths.map(path =>
-              this.routeRepository.create({
-                origin,
-                destination,
-                paths: [path],
-                distance: path.distance,
-                duration: path.duration,
-                contributor
-              })
-            )
-          );
-          // With Jeep
+          routes = await this.getPOIToPOIExceptRoomRoutes(origin, destination);
         } else if (origin instanceof Stop && destination instanceof Room) {
+          routes = await this.POIToRoomRoutes(origin, destination);
         } else if (origin instanceof Stop && destination instanceof Building) {
-          // Walking Only
-          await this.getPOItoPOIExceptRoomWalkingPaths(origin, destination);
-          // With Jeep
-          routes = await this.routeRepository.find({ origin, destination });
+          routes = await this.getPOIToPOIExceptRoomRoutes(origin, destination);
         } else if (origin instanceof Marker && destination instanceof Marker) {
-          // Walking Only
-          const paths = await this.getPOItoPOIExceptRoomWalkingPaths(
-            origin,
-            destination
-          );
-          routes.push(
-            ...paths.map(path =>
-              this.routeRepository.create({
-                origin,
-                destination,
-                paths: [path],
-                distance: path.distance,
-                duration: path.duration,
-                contributor
-              })
-            )
-          );
-          // With Jeep
+          routes = await this.getPOIToPOIExceptRoomRoutes(origin, destination);
         } else if (origin instanceof Marker && destination instanceof Room) {
+          routes = await this.POIToRoomRoutes(origin, destination);
         } else if (
           origin instanceof Marker &&
           destination instanceof Building
         ) {
-          // Walking Only
-          const paths = await this.getPOItoPOIExceptRoomWalkingPaths(
-            origin,
-            destination
-          );
-          routes.push(
-            ...paths.map(path =>
-              this.routeRepository.create({
-                origin,
-                destination,
-                paths: [path],
-                distance: path.distance,
-                duration: path.duration,
-                contributor
-              })
-            )
-          );
-          // With Jeep
+          routes = await this.getPOIToPOIExceptRoomRoutes(origin, destination);
         } else if (origin instanceof Marker && destination instanceof Marker) {
-          // Walking Only
-          const paths = await this.getPOItoPOIExceptRoomWalkingPaths(
-            origin,
-            destination
-          );
-          routes.push(
-            ...paths.map(path => {
-              this.routeRepository.create({
-                origin,
-                destination,
-                paths: [path],
-                distance: path.distance,
-                duration: path.duration,
-                contributor
-              });
-            })
-          );
-          // With Jeep
+          routes = await this.getPOIToPOIExceptRoomRoutes(origin, destination);
         }
       }
     } else {
@@ -198,6 +122,43 @@ export class RouteController {
       case "Marker":
         return this.markerRepository.create({ ...poi });
     }
+  }
+
+  async mergeRoutes(start: Route[], end: Route[]) {
+    const routes = [];
+    const contributor = await this.userRepository.findOne(null, {
+      where: {
+        uid: "sxdtxH1nOiYizjEMFKjK2EtFruk1"
+      }
+    });
+    for (let startToMidRoute of start) {
+      for (let midToEnd of end) {
+        routes.push({
+          origin: startToMidRoute.origin,
+          destination: midToEnd.destination,
+          paths: [...startToMidRoute.paths, ...midToEnd.paths],
+          distance: startToMidRoute.distance + midToEnd.distance,
+          duration: startToMidRoute.duration + midToEnd.duration,
+          contributor
+        });
+      }
+    }
+    return routes;
+  }
+
+  async deduplicateRoutes(routes: Route[]) {
+    const deduplicatedRoutes = [];
+    for (let route of routes) {
+      const inRepo = await this.routeRepository.findOne(null, {
+        where: {
+          paths: route.paths
+        }
+      });
+      if (!inRepo) {
+        deduplicatedRoutes.push(route);
+      }
+    }
+    return deduplicatedRoutes;
   }
 
   async generateWalkingPathsFromOSRM(origin: any, destination: any) {
@@ -237,30 +198,84 @@ export class RouteController {
     return paths;
   }
 
-  // building => walk => building
-  // building => walk => stop
-  // building => walk => marker
-  // stop => walk => stop
-  // stop => walk => building
-  // stop => walk => marker
-  // marker => walk => stop
-  // marker => walk => building
-  // marker => walk => marker
-  async getPOItoPOIExceptRoomWalkingPaths(origin: POI, destination: POI) {
-    let paths = await this.pathRepository.find({ origin, destination });
-    if (paths.length === 0) {
-      const contributor = await this.userRepository.findOne(null, {
-        where: {
-          uid: "sxdtxH1nOiYizjEMFKjK2EtFruk1"
-        }
+  // originRoom.building === destinationBuilding
+  async getRoomToSameBuildingRoutes(origin: Room, destination: Building) {
+    const contributor = await this.userRepository.findOne(null, {
+      where: {
+        uid: "sxdtxH1nOiYizjEMFKjK2EtFruk1"
+      }
+    });
+    const systemGeneratedRoutes = await this.routeRepository.find({
+      origin,
+      destination,
+      contributor
+    });
+
+    if (systemGeneratedRoutes.length === 0) {
+      const path = await this.pathRepository.save({
+        type: PathType.INDOOR,
+        instructions: `Walk outside ${destination.name}`,
+        origin,
+        destination
       });
+      await this.routeRepository.save({
+        origin,
+        destination,
+        paths: [path],
+        contributor
+      });
+    }
+    return this.routeRepository.find({ origin, destination });
+  }
+
+  // originBuilding === destinationRoom.building
+  // originRoom.building === destinationRoom.building
+  async getBuildingOrRoomToSameBuildingRoutes(origin: POI, destination: Room) {
+    const contributor = await this.userRepository.findOne(null, {
+      where: {
+        uid: "sxdtxH1nOiYizjEMFKjK2EtFruk1"
+      }
+    });
+    const routes = await this.routeRepository.find({ origin, destination });
+    if (routes.length === 0) {
+      const path = this.pathRepository.create({
+        type: PathType.INDOOR,
+        instructions: `No indoor paths available yet.`,
+        origin,
+        destination
+      });
+      routes.push(
+        this.routeRepository.create({
+          origin,
+          destination,
+          paths: [path],
+          contributor
+        })
+      );
+    }
+    return routes;
+  }
+
+  async getPOIToPOIExceptRoomRoutes(origin: POI, destination: POI) {
+    const contributor = await this.userRepository.findOne(null, {
+      where: {
+        uid: "sxdtxH1nOiYizjEMFKjK2EtFruk1"
+      }
+    });
+    const systemGeneratedRoutes = await this.routeRepository.find({
+      origin,
+      destination,
+      contributor
+    });
+    let routes = await this.routeRepository.find({ origin, destination });
+    if (systemGeneratedRoutes.length === 0) {
       const OSRMPaths = await this.generateWalkingPathsFromOSRM(
         origin,
         destination
       );
       const tempPaths = this.convertOSRMPaths(origin, destination, OSRMPaths);
       if (!(origin instanceof Marker) && !(destination instanceof Marker)) {
-        paths = await this.pathRepository.save(tempPaths);
+        const paths = await this.pathRepository.save(tempPaths);
         await Promise.all(
           paths.map(path => {
             this.routeRepository.save({
@@ -269,356 +284,106 @@ export class RouteController {
               paths: [path],
               distance: path.distance,
               duration: path.duration,
-              contributor,
-              geometry: path.geometry
+              contributor
             });
           })
         );
+        routes = await this.routeRepository.find({ origin, destination });
       } else {
-        paths = tempPaths;
+        routes.push(
+          ...tempPaths.map(path =>
+            this.routeRepository.create({
+              origin,
+              destination,
+              paths: [path],
+              distance: path.distance,
+              duration: path.duration,
+              contributor
+            })
+          )
+        );
       }
     }
-    return paths;
+    return routes;
   }
 
-  // room => indoor => building
-  async getRoomToBuildingIndoorPaths(origin: Room, destination: Building) {
-    let paths = await this.pathRepository.find({ origin, destination });
-    if (paths.length === 0) {
-      const contributor = await this.userRepository.findOne(null, {
-        where: {
-          uid: "sxdtxH1nOiYizjEMFKjK2EtFruk1"
-        }
-      });
-      const path = await this.pathRepository.save({
-        type: PathType.INDOOR,
-        instructions: `Walk outside ${destination.name}`,
-        origin,
-        destination
-      });
-      paths.push(path);
-      await this.routeRepository.save({
-        origin,
-        destination,
-        paths: [path],
-        contributor
-      });
+  // room => indoor => building => walk => building
+  // room => indoor => building => walk => stop
+  // room => indoor => building => walk => marker
+  async getRoomToPOIRoutes(origin: Room, destination: POI) {
+    const roomToBuildingRoutes = await this.getRoomToSameBuildingRoutes(
+      origin,
+      origin.building
+    );
+    const buildingToBuildingRoutes = await this.getPOIToPOIExceptRoomRoutes(
+      origin.building,
+      destination
+    );
+    const tempRoutes = await this.mergeRoutes(
+      roomToBuildingRoutes,
+      buildingToBuildingRoutes
+    );
+    const newRoutes = await this.deduplicateRoutes(tempRoutes);
+    if (!(destination instanceof Marker)) {
+      await this.routeRepository.save(newRoutes);
+      return this.routeRepository.find({ origin, destination });
+    } else {
+      return newRoutes;
     }
-    return paths;
   }
 
-  // building => indoor => room
-  // room => indoor => room
-  async getRoomBuildingToRoomIndoorPaths(origin: POI, destination: Room) {
-    let paths = await this.pathRepository.find({ origin, destination });
-    if (paths.length === 0) {
-      const path = await this.pathRepository.create({
-        type: PathType.INDOOR,
-        instructions: `No indoor paths available yet.`,
-        origin,
-        destination
-      });
-      paths.push(path);
+  // room => indoor => building => walk => building => indoor => room
+  async getRoomToRoomDifferentBuilding(origin: Room, destination: Room) {
+    const roomToDiffBuildingRoutes = await this.getRoomToPOIRoutes(
+      origin,
+      destination.building
+    );
+    const destBuildingtoDestRoomRoutes = await this.getBuildingOrRoomToSameBuildingRoutes(
+      destination.building,
+      destination
+    );
+    const tempRoutes = await this.mergeRoutes(
+      roomToDiffBuildingRoutes,
+      destBuildingtoDestRoomRoutes
+    );
+
+    const newRoutes = await this.deduplicateRoutes(tempRoutes);
+    if (
+      destBuildingtoDestRoomRoutes[0].paths[0].instructions !==
+      "No indoor paths available yet."
+    ) {
+      await this.routeRepository.save(newRoutes);
+      return this.routeRepository.find({ origin, destination });
+    } else {
+      return newRoutes;
     }
-    return paths;
   }
-  // async getRoomToStopRoutes(origin: Room, destination: Stop) {
-  //   //    roomtoBuilding = get room to building route
-  //   //    buildingToStop = get building to stop route
-  //   const routes = [];
-  //   const contributor = await this.userRepository.findOne(null, {
-  //     where: {
-  //       uid: "sxdtxH1nOiYizjEMFKjK2EtFruk1"
-  //     }
-  //   });
-  //   const building = await this.buildingRepository.findOne(origin.building.id);
-  //   const roomToBuildingRoutes = await this.routeRepository.find({
-  //     origin,
-  //     destination: building
-  //   });
-  //   let buildingToStopRoutes = await this.routeRepository.find({
-  //     origin: building,
-  //     destination
-  //   });
 
-  //   // roomToBuilding && buildingToStop => combine //save to db
-  //   // roomToBuilding => generateBuildingToStop then combine //save to db
-  //   // buildingToStop => insert dummy path return to user // no save
-  //   // else get buildingToStop then insert dummy path // save buildingToStop
-  //   if (
-  //     roomToBuildingRoutes.length !== 0 &&
-  //     buildingToStopRoutes.length !== 0
-  //   ) {
-  //     // new route paths = [...roomtoBuilding.paths, ...buildingToStop.paths]
-  //     // save to db
-  //     const listOfPaths = [];
-  //     for (let roomToBuildingRoute of roomToBuildingRoutes) {
-  //       for (let buildingToStopRoute of buildingToStopRoutes) {
-  //         listOfPaths.push([
-  //           ...roomToBuildingRoute.paths,
-  //           ...buildingToStopRoute.paths
-  //         ]);
-  //       }
-  //     }
-  //     for (let paths of listOfPaths) {
-  //       await this.routeRepository.save({
-  //         origin,
-  //         destination,
-  //         paths,
-  //         contributor
-  //       });
-  //     }
-  //     routes.push(
-  //       ...(await this.routeRepository.find({ origin, destination }))
-  //     );
-  //   } else if (roomToBuildingRoutes.length !== 0) {
-  //     // query osrm start: building end: stop
-  //     // save to db route path walking
-  //     // query osrm start: stop end: building
-  //     // save to db route path walking
-  //     // get buildingtostop paths
-  //     // combine each result to roomtobuilding
-  //     // path => [..roomtobuilding.paths, buildingtostop]
-  //     // save to db
-  //     // get and push
-  //     const paths = [
-  //       ...(await this.generatePathsFromOSRM(building, destination)),
-  //       ...(await this.generatePathsFromOSRM(destination, building))
-  //     ];
-  //     await this.saveOSRMDataAsPathAndRoute(paths, building, destination);
-  //     const buildingToStopPaths = await this.pathRepository.find({
-  //       origin: building,
-  //       destination
-  //     });
-  //     for (let roomToBuildingRoute of roomToBuildingRoutes) {
-  //       for (let buildingToStopPath of buildingToStopPaths) {
-  //         await this.routeRepository.save({
-  //           origin,
-  //           destination,
-  //           paths: [...roomToBuildingRoute.paths, buildingToStopPath],
-  //           contributor
-  //         });
-  //       }
-  //     }
-  //     routes.push(
-  //       ...(await this.routeRepository.find({ origin, destination }))
-  //     );
-  //   } else if (buildingToStopRoutes.length !== 0) {
-  //     const instructionPath = new Path();
-  //     Object.assign(instructionPath, {
-  //       instructions: "Exit the Building",
-  //       origin,
-  //       destination: building,
-  //       type: PathType.INDOOR
-  //     });
-  //     routes.push(
-  //       ...buildingToStopRoutes.map(buildingToStopRoute => {
-  //         buildingToStopRoute.origin = origin;
-  //         buildingToStopRoute.paths = [
-  //           instructionPath,
-  //           ...buildingToStopRoute.paths
-  //         ];
-  //         return buildingToStopRoute;
-  //       })
-  //     );
-  //   } else {
-  //     const instructionPath = new Path();
-  //     Object.assign(instructionPath, {
-  //       instructions: "Exit the Building",
-  //       origin,
-  //       destination: building,
-  //       type: PathType.INDOOR
-  //     });
-  //     const paths = [
-  //       ...(await this.generatePathsFromOSRM(building, destination)),
-  //       ...(await this.generatePathsFromOSRM(destination, building))
-  //     ];
-  //     await this.saveOSRMDataAsPathAndRoute(paths, building, destination);
-  //     buildingToStopRoutes = await this.routeRepository.find({
-  //       origin: building,
-  //       destination
-  //     });
-  //     routes.push(
-  //       ...buildingToStopRoutes.map(buildingToStopRoute => {
-  //         buildingToStopRoute.origin = origin;
-  //         buildingToStopRoute.paths = [
-  //           instructionPath,
-  //           ...buildingToStopRoute.paths
-  //         ];
-  //         return buildingToStopRoute;
-  //       })
-  //     );
-  //   }
-  //   return routes;
-  // }
-
-  // async getStopToRoomRoutes(origin: Stop, destination: Room) {
-  //   const routes = [];
-  //   const contributor = await this.userRepository.findOne(null, {
-  //     where: {
-  //       uid: "sxdtxH1nOiYizjEMFKjK2EtFruk1"
-  //     }
-  //   });
-  //   const building = await this.buildingRepository.findOne(
-  //     destination.building.id
-  //   );
-  //   const stopToBuildingRoutes = await this.routeRepository.find({
-  //     origin,
-  //     destination: building
-  //   });
-  //   let buildingToRoomRoutes = await this.routeRepository.find({
-  //     origin: building,
-  //     destination
-  //   });
-  //   if (
-  //     stopToBuildingRoutes.length !== 0 &&
-  //     buildingToRoomRoutes.length !== 0
-  //   ) {
-  //     const listOfPaths = [];
-  //     for (let stopToBuildingRoute of stopToBuildingRoutes) {
-  //       for (let buildingToRoomRoute of buildingToRoomRoutes) {
-  //         listOfPaths.push([
-  //           ...stopToBuildingRoute.paths,
-  //           ...buildingToRoomRoute.paths
-  //         ]);
-  //       }
-  //     }
-  //     for (let paths of listOfPaths) {
-  //       await this.routeRepository.save({
-  //         origin,
-  //         destination,
-  //         paths,
-  //         contributor
-  //       });
-  //     }
-  //     routes.push(
-  //       ...(await this.routeRepository.find({ origin, destination }))
-  //     );
-  //   } else if (stopToBuildingRoutes.length !== 0) {
-  //     const instructionPath = new Path();
-  //     Object.assign(instructionPath, {
-  //       instructions: "No building to room available",
-  //       origin: building,
-  //       destination,
-  //       type: PathType.INDOOR
-  //     });
-  //     routes.push(
-  //       ...stopToBuildingRoutes.map(stopToBuildingRoute => {
-  //         stopToBuildingRoute.destination = destination;
-  //         stopToBuildingRoute.paths = [
-  //           ...stopToBuildingRoute.paths,
-  //           instructionPath
-  //         ];
-  //         return stopToBuildingRoute;
-  //       })
-  //     );
-  //   } else if (buildingToRoomRoutes.length !== 0) {
-  //     const paths = [
-  //       ...(await this.generatePathsFromOSRM(origin, building)),
-  //       ...(await this.generatePathsFromOSRM(building, origin))
-  //     ];
-  //     await this.saveOSRMDataAsPathAndRoute(paths, origin, building);
-  //     const stopToBuildingPaths = await this.pathRepository.find({
-  //       origin,
-  //       destination: building
-  //     });
-  //     for (let buildingToRoomRoute of buildingToRoomRoutes) {
-  //       for (let stopToBuildingPath of stopToBuildingPaths) {
-  //         await this.routeRepository.save({
-  //           origin,
-  //           destination,
-  //           paths: [stopToBuildingPath, ...buildingToRoomRoute.paths],
-  //           contributor
-  //         });
-  //       }
-  //     }
-  //     routes.push(
-  //       ...(await this.routeRepository.find({ origin, destination }))
-  //     );
-  //   } else {
-  //     const instructionPath = new Path();
-  //     Object.assign(instructionPath, {
-  //       instructions: "No building to room available",
-  //       origin: building,
-  //       destination,
-  //       type: PathType.INDOOR
-  //     });
-  //     const paths = [
-  //       ...(await this.generatePathsFromOSRM(origin, building)),
-  //       ...(await this.generatePathsFromOSRM(building, origin))
-  //     ];
-  //     await this.saveOSRMDataAsPathAndRoute(paths, origin, building);
-  //     const stopToBuildingRoutes = await this.routeRepository.find({
-  //       origin,
-  //       destination: building
-  //     });
-  //     routes.push(
-  //       ...stopToBuildingRoutes.map(stopToBuildingRoute => {
-  //         stopToBuildingRoute.destination = destination;
-  //         stopToBuildingRoute.paths = [
-  //           ...stopToBuildingRoute.paths,
-  //           instructionPath
-  //         ];
-  //         return stopToBuildingRoute;
-  //       })
-  //     );
-  //   }
-  //   return routes;
-  // }
-
-  // async all(request: Request, response: Response, next: NextFunction) {
-  // let { origin, destination } = request.query;
-  // console.log({ Origin: origin.type, Destination: destination.type });
-  // const routes = [];
-  // if (origin && destination) {
-  //   const { type: originType } = origin;
-  //   const { type: destinationType } = destination;
-  //   if (
-  //     (originType === "Marker" && destinationType === "Marker") ||
-  //     (originType === "Marker" && destinationType === "Stop") ||
-  //     (originType === "Stop" && destinationType === "Marker") ||
-  //     (originType === "Marker" && destinationType === "Building") ||
-  //     (originType === "Building" && destinationType === "Marker")
-  //   ) {
-  //     const OSRMPaths = await this.generatePathsFromOSRM(origin, destination);
-  //     routes.push(
-  //       OSRMPaths.map(path => {
-  //         return {
-  //           origin,
-  //           destination,
-  //           paths: [
-  //             {
-  //               origin,
-  //               destination,
-  //               type: "Walking",
-  //               latLngs: polyline.decode(path.geometry)
-  //             }
-  //           ]
-  //         };
-  //       })
-  //     );
-  //   } else if (
-  //     (originType === "Building" && destinationType === "Building") ||
-  //     (originType === "Building" && destinationType === "Stop") ||
-  //     (originType === "Building" && destinationType === "Room") ||
-  //     (originType === "Stop" && destinationType === "Stop") ||
-  //     (originType === "Stop" && destinationType === "Building") ||
-  //     (originType === "Stop" && destinationType === "Room") ||
-  //     (originType === "Room" && destinationType === "Room") ||
-  //     (originType === "Room" && destinationType === "Stop") ||
-  //     (originType === "Room" && destinationType === "Building")
-  //   ) {
-  //     origin = await this.typeCast(origin.id);
-  //     destination = await this.typeCast(destination.id);
-  //     routes.push(
-  //       ...(await this.routeRepository.find({ origin, destination }))
-  //     );
-  //   }
-  // } else {
-  //   routes.push(...(await this.routeRepository.find()));
-  // }
-  // return routes;
-  // }
+  async POIToRoomRoutes(origin: POI, destination: Room) {
+    const poiToBuildingRoutes = await this.getPOIToPOIExceptRoomRoutes(
+      origin,
+      destination.building
+    );
+    const destBuildingtoDestRoomRoutes = await this.getBuildingOrRoomToSameBuildingRoutes(
+      destination.building,
+      destination
+    );
+    const tempRoutes = await this.mergeRoutes(
+      poiToBuildingRoutes,
+      destBuildingtoDestRoomRoutes
+    );
+    const newRoutes = await this.deduplicateRoutes(tempRoutes);
+    if (
+      !(origin instanceof Marker) &&
+      destBuildingtoDestRoomRoutes[0].paths[0].instructions !==
+        "No indoor paths available yet."
+    ) {
+      await this.routeRepository.save(newRoutes);
+      return this.routeRepository.find({ origin, destination });
+    } else {
+      return newRoutes;
+    }
+  }
   async one(request: Request, response: Response, next: NextFunction) {}
   async save(request: Request, response: Response, next: NextFunction) {}
   async delete(request: Request, response: Response, next: NextFunction) {}
