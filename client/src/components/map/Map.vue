@@ -48,6 +48,9 @@ export default {
     }),
     toggleTracking() {
       this.GPSTracking = !this.GPSTracking;
+      if (this.GPSTracking) {
+        this.changeView({ coordinates: [this.userMarker.getLatLng()] });
+      }
     },
     draw({ layer }) {
       if (layer instanceof L.Marker) {

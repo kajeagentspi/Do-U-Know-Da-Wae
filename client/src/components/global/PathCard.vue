@@ -1,9 +1,5 @@
 <template>
-  <q-card
-    class="card"
-    @mouseover="highLight({ routeIndex: routeIndex, pathIndex: index })"
-    @mouseleave="highLight({ routeIndex: routeIndex })"
-  >
+  <q-card class="card" @click="highLight({ routeIndex: routeIndex, pathIndex: index })">
     <q-card-section v-if="path.type==='indoor'">
       <p class="text-h6">{{path.instructions}}</p>
     </q-card-section>
