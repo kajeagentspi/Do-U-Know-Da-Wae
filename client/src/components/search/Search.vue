@@ -3,71 +3,89 @@
     <q-card-actions class="navbar">
       <q-btn-group flat>
         <q-btn disabled flat icon="explore"/>
-        <q-btn label="Search" to="/"/>
+        <q-btn label="Search" to="/" @click="reset"/>
         <q-btn label="Contribute" to="/contribute"/>
         <q-btn label="Favorites" to="/favorites"/>
       </q-btn-group>
     </q-card-actions>
-    <q-card-actions v-if="!selectingOrigin && !selectingDestination">
-      <q-btn
-        class="full-width godown"
-        color="dukdw"
-        :label="origin ? `[${origin.type}] ${origin.name}` : 'Select Origin'"
-        no-ripple
-        size="l"
-        @click="select('origin')"
-      />
-      <q-btn
-        class="full-width godown"
-        color="dukdw"
-        :label="destination ? `[${destination.type}] ${destination.name}` : 'Select Destination'"
-        no-ripple
-        size="l"
-        @click="select('destination')"
-      />
-    </q-card-actions>
-    <q-card-section v-else-if="selectingOrigin || selectingDestination">
-      <q-input
-        v-model="name"
-        outlined
-        label="Search for a Room, Building, Stop"
-        debounce="500"
-        :rules="[POISearch]"
-        class="godown"
-      />
-      <q-btn
-        class="full-width godown"
-        color="dukdw"
-        icon="gps_fixed"
-        label="Use Current Location"
-        :disable="!GPSEnabled"
-        @click="useGPS"
-      />
-      <q-btn
-        class="full-width"
-        color="dukdw"
-        icon="place"
-        label="Place A Marker"
-        @click="useMarker"
-      />
-    </q-card-section>
-    <div class="route-body" v-if="!selectingOrigin && !selectingDestination">
-      <route-card
-        v-for="(route,index) in routes"
-        :key="index"
-        :index="index"
-        :route="route"
-        @highLight="highLight"
-      />
+    <div v-if="!selectedRoute">
+      <q-card-actions v-if="!selectingOrigin && !selectingDestination">
+        <q-btn
+          class="full-width godown"
+          color="dukdw"
+          :label="origin ? `[${origin.type}] ${origin.name}` : 'Select Origin'"
+          no-ripple
+          size="l"
+          @click="select('origin')"
+        />
+        <q-btn
+          class="full-width godown"
+          color="dukdw"
+          :label="destination ? `[${destination.type}] ${destination.name}` : 'Select Destination'"
+          no-ripple
+          size="l"
+          @click="select('destination')"
+        />
+      </q-card-actions>
+      <q-card-section v-else-if="selectingOrigin || selectingDestination">
+        <q-input
+          v-model="name"
+          outlined
+          label="Search for a Room, Building, Stop"
+          debounce="500"
+          :rules="[POISearch]"
+          class="godown"
+        />
+        <q-btn
+          class="full-width godown"
+          color="dukdw"
+          icon="gps_fixed"
+          label="Use Current Location"
+          :disable="!GPSEnabled"
+          @click="useGPS"
+        />
+        <q-btn
+          class="full-width"
+          color="dukdw"
+          icon="place"
+          label="Place A Marker"
+          @click="useMarker"
+        />
+      </q-card-section>
+      <div class="route-body" v-if="!selectingOrigin && !selectingDestination">
+        <route-card
+          v-for="(route,index) in routes"
+          :key="index"
+          :index="index"
+          :route="route"
+          @highLight="highLight"
+          @setRoute="setRoute"
+        />
+      </div>
+      <div class="poi-body" v-if="selectingOrigin || selectingDestination">
+        <poi-item
+          v-for="(poi, index) in pois"
+          :key="index"
+          :poi="poi"
+          @viewPOI="viewPOI"
+          @selectPOI="selectPOI"
+        />
+      </div>
     </div>
-    <div class="poi-body" v-if="selectingOrigin || selectingDestination">
-      <poi-item
-        v-for="(poi, index) in pois"
-        :key="index"
-        :poi="poi"
-        @viewPOI="viewPOI"
-        @selectPOI="selectPOI"
-      />
+    <div v-else>
+      <q-card-section>
+        <q-btn class="full-width" color="dukdw" @click="setRoute" label="Go back to results"/>
+      </q-card-section>
+      <div class="path-body" v-if="selectedRoute">
+        <path-card
+          v-for="(path,index) in selectedRoute.paths"
+          :key="index"
+          :path="path"
+          :index="index"
+          :routeIndex="selectedRouteIndex"
+          @highLight="highLight"
+        />
+      </div>
     </div>
   </q-card>
 </template>
@@ -93,8 +111,10 @@ export default {
       selectingOrigin: false,
       selectingDestination: false,
       name: null,
-      pois: [],
-      routes: null
+      pois: null,
+      routes: null,
+      selectedRoute: null,
+      selectedRouteIndex: null
     };
   },
   methods: {
@@ -230,7 +250,9 @@ export default {
       if (this.routes) {
         this.routes.forEach(route => {
           route.paths.forEach(path => {
-            this.mapInstance.removeLayer(path.polyLine);
+            if (path.latLngs) {
+              this.mapInstance.removeLayer(path.polyLine);
+            }
           });
         });
       }
@@ -241,20 +263,23 @@ export default {
         }
         route.color = color;
         route.paths.forEach(path => {
-          path.polyLine = L.polyline(path.latLngs, {
-            color
-          }).addTo(this.mapInstance);
+          if (path.latLngs) {
+            path.polyLine = L.polyline(path.latLngs, {
+              color
+            }).addTo(this.mapInstance);
+          }
         });
         return route;
       });
-      console.log(this.routes);
     },
     highLight({ routeIndex, pathIndex }) {
       if (isNaN(routeIndex) && isNaN(pathIndex)) {
         this.setView();
         this.routes.forEach(route => {
           route.paths.forEach(path => {
-            path.polyLine.setStyle({ opacity: 1 });
+            if (path.latLngs) {
+              path.polyLine.setStyle({ opacity: 1 });
+            }
           });
         });
       } else if (!isNaN(routeIndex)) {
@@ -262,11 +287,15 @@ export default {
         for (let i = 0; i < this.routes.length; i++) {
           if (i === routeIndex) {
             this.routes[i].paths.forEach(path => {
-              path.polyLine.setStyle({ opacity: 1 });
+              if (path.latLngs) {
+                path.polyLine.setStyle({ opacity: 1 });
+              }
             });
           } else {
             this.routes[i].paths.forEach(path => {
-              path.polyLine.setStyle({ opacity: 0 });
+              if (path.latLngs) {
+                path.polyLine.setStyle({ opacity: 0 });
+              }
             });
           }
         }
@@ -277,18 +306,24 @@ export default {
             for (let j = 0; j < this.routes[i].paths.length; j++) {
               if (j === pathIndex) {
                 activePath = this.routes[i].paths[j];
-                this.routes[i].paths[j].polyLine.setStyle({
-                  opacity: 1
-                });
+                if (this.routes[i].paths[j].latLngs) {
+                  this.routes[i].paths[j].polyLine.setStyle({
+                    opacity: 1
+                  });
+                }
               } else {
-                this.routes[i].paths[j].polyLine.setStyle({
-                  opacity: 0.5
-                });
+                if (this.routes[i].paths[j].latLngs) {
+                  this.routes[i].paths[j].polyLine.setStyle({
+                    opacity: 0.5
+                  });
+                }
               }
             }
           } else {
             this.routes[i].paths.forEach(path => {
-              path.polyLine.setStyle({ opacity: 0 });
+              if (path.latLngs) {
+                path.polyLine.setStyle({ opacity: 0 });
+              }
             });
           }
         }
@@ -304,6 +339,40 @@ export default {
             }
           ]
         });
+      }
+    },
+    reset() {
+      if (this.origin) {
+        this.mapInstance.removeLayer(this.origin.marker);
+      }
+      if (this.destination) {
+        this.mapInstance.removeLayer(this.destination.marker);
+      }
+      if (this.routes) {
+        this.routes.forEach(route => {
+          route.paths.forEach(path => {
+            if (path.latLngs) {
+              this.mapInstance.removeLayer(path.polyLine);
+            }
+          });
+        });
+      }
+      this.origin = null;
+      this.destination = null;
+      this.selectingOrigin = false;
+      this.selectingDestination = false;
+      this.name = null;
+      this.pois = null;
+      this.routes = null;
+      this.selectedRoute = null;
+    },
+    setRoute(routeIndex) {
+      if (isNaN(routeIndex)) {
+        this.selectedRoute = null;
+        this.selectedRouteIndex = null;
+      } else {
+        this.selectedRoute = this.routes[routeIndex];
+        this.selectedRouteIndex = routeIndex;
       }
     }
   },
@@ -321,20 +390,7 @@ export default {
     }
   },
   beforeDestroy() {
-    console.log("Search Destroyed");
-    if (this.origin) {
-      this.mapInstance.removeLayer(this.origin.marker);
-    }
-    if (this.destination) {
-      this.mapInstance.removeLayer(this.destination.marker);
-    }
-    if (this.routes) {
-      this.routes.forEach(route => {
-        route.paths.forEach(path => {
-          this.mapInstance.removeLayer(path.polyLine);
-        });
-      });
-    }
+    this.reset();
   }
 };
 </script>
@@ -361,6 +417,15 @@ export default {
   -webkit-overflow-scrolling: touch;
   position: absolute;
   top: 244px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+.path-body {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  position: absolute;
+  top: 120px;
   bottom: 0;
   left: 0;
   right: 0;

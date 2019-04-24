@@ -71,8 +71,8 @@ export default {
 }
 .card {
   margin: 15px;
-  /* -webkit-border-radius: 0.8rem;
-  border-radius: 0.8rem; */
+  -webkit-border-radius: 0.8rem;
+  border-radius: 0.8rem;
 }
 .text-dukdw {
   color: red;
