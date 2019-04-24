@@ -74,7 +74,18 @@
     </div>
     <div v-else>
       <q-card-section>
-        <q-btn class="full-width" color="dukdw" @click="setRoute" label="Go back to results"/>
+        <q-btn
+          class="full-width godown"
+          color="dukdw"
+          @click="setRoute"
+          label="Go back to results"
+        />
+        <q-btn
+          class="full-width godown"
+          color="dukdw"
+          @click="highLight({ routeIndex: selectedRouteIndex })"
+          label="View full route"
+        />
       </q-card-section>
       <div class="path-body" v-if="selectedRoute">
         <path-card
@@ -428,7 +439,7 @@ export default {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   position: absolute;
-  top: 120px;
+  top: 166px;
   bottom: 0;
   left: 0;
   right: 0;
