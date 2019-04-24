@@ -43,7 +43,6 @@ export class RouteController {
           "contributor"
         ]
       });
-      console.log(routes);
       if (routes.length === 0) {
         if (origin instanceof Room && destination instanceof Room) {
           if (origin.building === destination.building) {
