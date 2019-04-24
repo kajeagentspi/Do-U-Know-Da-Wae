@@ -1,40 +1,17 @@
 <template>
-  <router-view
-    class="wrapper"
-    :class="
-      $route.path === '/'
-        ? 'route'
-        : $route.path === '/favorites'
-        ? 'route'
-        : $route.path === '/contribute'
-        ? 'route'
-        : $route.path === '/origin'
-        ? 'originDestination'
-        : $route.path === '/destination'
-        ? 'originDestination'
-        : $route.path === '/origin/marker'
-        ? 'mark'
-        : $route.path === '/destination/marker'
-        ? 'mark'
-        : $route.path === '/origin/selected'
-        ? 'mark'
-        : $route.path === '/destination/selected'
-        ? 'mark'
-        : ''
-    "
-  />
+  <search class="wrapper" :class="viewing ? 'viewing':'search'"/>
 </template>
 <script>
 import { mapState } from "vuex";
 export default {
   name: "Wrapper",
   computed: {
-    ...mapState("map", ["marking"])
+    ...mapState("map", ["marking", "viewing"])
   }
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @media (max-width: 640px) {
   .wrapper {
     left: 1vw;
@@ -45,14 +22,11 @@ export default {
     overflow: hidden;
     z-index: 0;
   }
-  .route {
+  .search {
     height: 60%;
   }
-  .originDestination {
-    height: 80%;
-  }
-  .mark {
-    height: 20%;
+  .viewing {
+    height: 40%;
   }
 }
 
@@ -65,9 +39,8 @@ export default {
     top: 1vh;
     bottom: 1vh;
   }
-  .route,
-  .originDestination,
-  .mark {
+  .search,
+  .viewing {
     height: 98vh;
   }
 }

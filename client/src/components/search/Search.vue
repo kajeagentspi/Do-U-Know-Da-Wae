@@ -41,7 +41,7 @@
           color="dukdw"
           icon="gps_fixed"
           label="Use Current Location"
-          :disable="!GPSEnabled"
+          :disable="!GPSAvailable"
           @click="useGPS"
         />
         <q-btn
@@ -101,8 +101,8 @@ import L from "leaflet";
 export default {
   name: "Search",
   computed: {
-    ...mapState("map", ["mapInstance", "GPSEnabled", "userMarker"]),
-    ...mapFields("map", ["marker", "marking"])
+    ...mapState("map", ["mapInstance", "GPSAvailable", "userMarker"]),
+    ...mapFields("map", ["marker", "marking", "viewing"])
   },
   data() {
     return {
@@ -282,7 +282,7 @@ export default {
             }
           });
         });
-      } else if (!isNaN(routeIndex)) {
+      } else if (!isNaN(routeIndex) && isNaN(pathIndex)) {
         this.setView();
         for (let i = 0; i < this.routes.length; i++) {
           if (i === routeIndex) {
@@ -327,6 +327,7 @@ export default {
             });
           }
         }
+        console.log(activePath);
         this.changeView({
           coordinates: [
             {
@@ -370,9 +371,11 @@ export default {
       if (isNaN(routeIndex)) {
         this.selectedRoute = null;
         this.selectedRouteIndex = null;
+        this.viewing = false;
       } else {
         this.selectedRoute = this.routes[routeIndex];
         this.selectedRouteIndex = routeIndex;
+        this.viewing = true;
       }
     }
   },
