@@ -167,12 +167,12 @@ export class RouteController {
   async deduplicateRoutes(routes: Route[]) {
     const deduplicatedRoutes = [];
     for (let route of routes) {
-      const inRepo = await this.routeRepository.findOne(null, {
-        where: {
-          paths: route.paths
-        }
+      const pathIDs = route.paths.map(path => path.id);
+      const inRepo = await this.routeRepository.find({
+        pathString: pathIDs.toString()
       });
-      if (!inRepo) {
+      if (inRepo.length === 0) {
+        route.pathString = pathIDs.toString();
         deduplicatedRoutes.push(route);
       }
     }
@@ -195,10 +195,10 @@ export class RouteController {
   async convertOSRMPaths(origin: POI, destination: POI, OSRMpaths: any) {
     const paths = [];
     for (let OSRMPath of OSRMpaths) {
-      const inRepo = await this.pathRepository.findOne(null, {
+      const inRepo = await this.pathRepository.find({
         where: { geometry: OSRMPath.geometry }
       });
-      if (!inRepo) {
+      if (inRepo.length === 0) {
         paths.push(
           this.pathRepository.create({
             latLngs: polyline.decode(OSRMPath.geometry),
@@ -239,6 +239,7 @@ export class RouteController {
         origin,
         destination,
         paths: [path],
+        pathString: path.id.toString(),
         contributor
       });
     }
@@ -339,6 +340,7 @@ export class RouteController {
               origin,
               destination,
               paths: [path],
+              pathString: path.id.toString(),
               distance: path.distance,
               duration: path.duration,
               contributor
@@ -529,10 +531,12 @@ export class RouteController {
         }
         const origin = dbPaths[0].origin;
         const destination = dbPaths[dbPaths.length - 1].destination;
+        const pathIDs = dbPaths.map(path => path.id);
         await this.routeRepository.save({
           origin,
           destination,
           paths: dbPaths,
+          pathString: pathIDs.toString(),
           contributor: user,
           distance,
           duration
