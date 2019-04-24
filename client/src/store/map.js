@@ -23,10 +23,13 @@ const map = {
     mapInstance: null,
 
     userMarker: null,
-    GPSEnabled: false,
+    GPSAvailable: false,
+    GPSTracking: false,
 
     marker: null,
-    marking: false
+    marking: false,
+
+    viewing: false
   },
   getters: {
     getField

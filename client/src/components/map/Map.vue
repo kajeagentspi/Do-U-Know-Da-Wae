@@ -4,22 +4,15 @@
       <q-btn
         round
         color="primary"
-        :disable="!GPSEnabled"
-        :icon="GPSEnabled ? 'gps_fixed' : 'gps_not_fixed'"
-        @click="locateUser"
+        :disable="!GPSAvailable"
+        :icon="GPSAvailable ? GPSTracking ? 'gps_fixed' : 'gps_off' : 'gps_not_fixed'"
+        @click="toggleTracking"
       />
     </q-page-sticky>
     <div id="map"></div>
     <div
       :class="
-        marking ? 'full' :
-        $route.path === '/'
-          ? 'activeroute'
-          : $route.path === '/favorites'
-          ? 'activeroute'
-          : $route.path === '/contribute'
-          ? 'activeroute'
-          : ''
+        marking ? 'full' : viewing ? 'viewing' : 'search'
       "
       ref="visibleMap"
     ></div>
@@ -30,7 +23,7 @@
 import L from "leaflet";
 import { mapActions, mapMutations } from "vuex";
 import { mapFields } from "vuex-map-fields";
-import { REMOVE_LAYER } from "../../store/types";
+import { CHANGE_VIEW } from "../../store/types";
 export default {
   name: "Map",
   computed: {
@@ -41,16 +34,21 @@ export default {
       "mapLeft",
       "mapRight",
       "mapBottom",
-      "GPSEnabled",
+      "GPSAvailable",
+      "GPSTracking",
       "marker",
-      "marking"
+      "marking",
+      "viewing"
     ])
   },
   methods: {
-    ...mapActions("map", ["initializeMap", "locateUser", "identifyBuilding"]),
+    ...mapActions("map", ["initializeMap", "identifyBuilding"]),
     ...mapMutations("map", {
-      removeLayer: REMOVE_LAYER
+      changeView: CHANGE_VIEW
     }),
+    toggleTracking() {
+      this.GPSTracking = !this.GPSTracking;
+    },
     draw({ layer }) {
       if (layer instanceof L.Marker) {
         layer.dragging.disable();
@@ -61,8 +59,9 @@ export default {
       }
     },
     located({ latlng }) {
-      if (!this.GPSEnabled) {
-        this.GPSEnabled = true;
+      this.GPSAvailable = true;
+      if (this.GPSTracking) {
+        this.changeView({ coordinates: [latlng] });
       }
       if (this.userMarker) {
         this.userMarker.setLatLng(latlng);
@@ -78,7 +77,8 @@ export default {
       }
     },
     onLocationError() {
-      this.GPSEnabled = false;
+      this.GPSTracking = false;
+      this.GPSAvailable = false;
       this.$q.notify({
         message: "I'm sorry but I can't find you. GPS Search would be disabled",
         color: "negative",
@@ -101,7 +101,6 @@ export default {
     this.mapInstance.on("locationfound", this.located);
     this.mapInstance.on("locationerror", this.onLocationError);
     this.mapInstance.on("editable:drawing:end", this.draw);
-    // this.mapInstance.on("click", this.click);
   },
   watch: {
     "$q.screen.width"() {
@@ -132,7 +131,7 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss" scoped>
 #map {
   top: 0px;
   left: 0px;
@@ -142,7 +141,8 @@ export default {
   z-index: 0;
 }
 @media (min-width: 641px) {
-  .activeroute {
+  .search,
+  .viewing {
     top: 0px;
     left: calc(360px + 1vw);
     right: 0px;
@@ -164,11 +164,21 @@ export default {
   }
 }
 @media (max-width: 640px) {
-  .activeroute {
+  .search {
     top: 0px;
     left: 0px;
     right: 0px;
     bottom: calc(60%);
+    position: absolute;
+    z-index: 10;
+    border-style: solid;
+    pointer-events: none;
+  }
+  .viewing {
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: calc(40%);
     position: absolute;
     z-index: 10;
     border-style: solid;
