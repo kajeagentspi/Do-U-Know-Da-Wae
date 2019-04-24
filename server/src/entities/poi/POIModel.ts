@@ -45,4 +45,7 @@ export class Marker extends POI {
 
   @Column({ type: "double" })
   lng: number;
+
+  @Column()
+  name: string;
 }
