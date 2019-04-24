@@ -1,13 +1,16 @@
 import { getRepository, Like } from "typeorm";
 import { NextFunction, Request, Response } from "express";
-import { Building, User } from "..";
+import { Building, User, Marker } from "..";
 import polygonCenter from "geojson-polygon-center";
 import * as admin from "firebase-admin";
 import inside from "point-in-polygon";
+import axios from "axios";
+import qs from "qs";
 
 export class BuildingController {
   private buildingRepository = getRepository(Building);
   private userRepository = getRepository(User);
+  private markerRepository = getRepository(Marker);
 
   async all(request: Request, response: Response, next: NextFunction) {
     let { name } = request.query;
@@ -50,10 +53,26 @@ export class BuildingController {
         }
       }
     }
-    return {
-      message: "Building not found",
-      type: "negative"
+    const query = {
+      lat,
+      lon: lng,
+      format: "json"
     };
+    const {
+      data: { display_name }
+    } = await axios.get(
+      `https://nominatim.openstreetmap.org/reverse?${qs.stringify(query)}`
+    );
+    const name = display_name
+      .split(", ")
+      .slice(0, 2)
+      .join(", ");
+    return this.markerRepository.create({
+      name,
+      lat,
+      lng,
+      type: "Marker"
+    });
   }
 
   async save(request: Request, response: Response, next: NextFunction) {
