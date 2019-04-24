@@ -27,10 +27,13 @@ export class Route {
   @JoinTable()
   paths: Path[];
 
-  @Column({ type: "float", nullable: true })
+  @Column()
+  pathString: string;
+
+  @Column({ type: "float", default: 0 })
   distance: number;
 
-  @Column({ type: "float", nullable: true })
+  @Column({ type: "float", default: 0 })
   duration: number;
 
   @ManyToOne(type => User, user => user.contributions, {
