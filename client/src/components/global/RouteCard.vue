@@ -1,38 +1,44 @@
 <template>
-  <q-card class="card" @mouseover="highLight({routeIndex: index})" @mouseleave="highLight">
-    <q-expansion-item>
-      <template v-slot:header>
-        <q-avatar icon="bluetooth" color="primary" text-color="white"/>
-
-        <q-item-section>Bluetooth technology</q-item-section>
-
-        <q-item-section side>
-          <div class="row items-center">
-            <q-icon name="star" color="red" size="24px"/>
-            <q-icon name="star" color="red" size="24px"/>
-            <q-icon name="star" color="red" size="24px"/>
-          </div>
-        </q-item-section>
-      </template>
-      <q-card>
-        <q-card-section>
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem, eius reprehenderit eos corrupti
-          commodi magni quaerat ex numquam, dolorum officiis modi facere maiores architecto suscipit iste
-          eveniet doloribus ullam aliquid.
-        </q-card-section>
-      </q-card>
-    </q-expansion-item>
+  <q-card
+    class="card"
+    @click="setRoute"
+    @mouseover="highLight({ routeIndex: index })"
+    @mouseleave="highLight"
+  >
+    <q-card-section class="text-h6">
+      <p class="text-h6">Route Summary</p>
+      <p class="text-subtitle2">{{`Total Distance: ${route.distance}m`}}</p>
+      <p class="text-subtitle2">{{`Departure Time: ${timeStart}`}}</p>
+      <p class="text-subtitle2">{{`Arrival Time: ${timeEnd}`}}</p>
+    </q-card-section>
   </q-card>
 </template>
 
 <script>
+import moment from "moment";
+
 export default {
   name: "RouteCard",
   props: ["route", "index"],
+  data() {
+    return {
+      timeStart: "",
+      timeEnd: ""
+    };
+  },
   methods: {
     highLight(data) {
       this.$emit("highLight", data);
+    },
+    setRoute() {
+      this.$emit("setRoute", this.index);
     }
+  },
+  mounted() {
+    this.timeStart = moment().format("LT");
+    this.timeEnd = moment()
+      .add(this.route.duration, "seconds")
+      .format("LT");
   }
 };
 </script>
