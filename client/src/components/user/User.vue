@@ -2,14 +2,14 @@
   <q-card>
     <q-card-actions class="navbar">
       <q-btn-group flat>
-        <q-btn disabled flat icon="explore"/>
-        <q-btn label="Search" @click="changeActive('search')"/>
+        <q-btn disabled flat icon="explore" />
+        <q-btn label="Search" @click="changeActive('search')" />
         <q-btn
           label="Contribute"
           @click="changeActive('contribute')"
-          :disable="type!=='admin'&&type!=='contributor'"
+          :disable="type !== 'admin' && type !== 'contributor'"
         />
-        <q-btn label="User" @click="reset"/>
+        <q-btn label="User" @click="reset" />
       </q-btn-group>
     </q-card-actions>
     <div v-if="!selectedRoute">
@@ -25,7 +25,7 @@
           <q-item>
             <q-item-section avatar>
               <q-avatar>
-                <img :src="profile.picture">
+                <img :src="profile.picture" />
               </q-avatar>
             </q-item-section>
             <q-item-section>{{ `Hello ${profile.given_name}` }}</q-item-section>
@@ -33,10 +33,10 @@
           </q-item>
         </q-card>
       </q-card-section>
-      <q-separator/>
+      <q-separator />
       <div class="route-body">
         <route-card
-          v-for="(route,index) in bookmarks"
+          v-for="(route, index) in bookmarks"
           :key="index"
           :index="index"
           :route="route"
@@ -47,7 +47,12 @@
     </div>
     <div v-else>
       <q-card-section>
-        <q-btn class="full-width godown" color="dukdw" @click="setRoute" label="Go back"/>
+        <q-btn
+          class="full-width godown"
+          color="dukdw"
+          @click="setRoute"
+          label="Go back"
+        />
         <q-btn
           class="full-width godown"
           color="dukdw"
@@ -57,7 +62,7 @@
       </q-card-section>
       <div class="path-body" v-if="selectedRoute">
         <path-card
-          v-for="(path,index) in selectedRoute.paths"
+          v-for="(path, index) in selectedRoute.paths"
           :key="index"
           :path="path"
           :index="index"
@@ -81,9 +86,9 @@ export default {
   name: "User",
   computed: {
     ...mapState("user", ["accessToken", "profile", "type"]),
-    ...mapFields("user",["bookmarks"]),
-    ...mapFields("map", ["active","viewing"]),
-    ...mapState("map",["mapInstance"])
+    ...mapFields("user", ["bookmarks"]),
+    ...mapFields("map", ["active", "viewing"]),
+    ...mapState("map", ["mapInstance"])
   },
   data() {
     return {
@@ -108,8 +113,8 @@ export default {
           /* forceRefresh */ true
         );
         await this.setUser({ profile, accessToken, user });
-        console.log("fdfefd")
-        this.drawLines()
+        console.log("fdfefd");
+        this.drawLines();
         this.$q.notify({
           message: "Successfully Logged in",
           color: "positive",
@@ -131,8 +136,8 @@ export default {
           color: "positive",
           position: "top"
         });
-        this.reset()
-        this.setUser({ accessToken: null});
+        this.reset();
+        this.setUser({ accessToken: null });
       } catch (error) {
         this.$q.notify({
           message: "Error Logging out",
@@ -258,7 +263,7 @@ export default {
         });
       }
     },
-    drawLines(){
+    drawLines() {
       const colors = [];
       this.bookmarks = this.bookmarks.map(route => {
         let color = randomColor().hexString();
@@ -277,9 +282,9 @@ export default {
       });
     }
   },
-  mounted(){
+  mounted() {
     if (this.accessToken) {
-      this.getUser()
+      this.getUser();
       if (this.bookmarks) {
         this.bookmarks.forEach(route => {
           route.paths.forEach(path => {
@@ -289,7 +294,7 @@ export default {
           });
         });
       }
-      this.drawLines()
+      this.drawLines();
     }
   }
 };
