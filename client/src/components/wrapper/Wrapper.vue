@@ -1,12 +1,18 @@
 <template>
-  <search class="wrapper" :class="viewing ? 'viewing':'search'"/>
+  <search v-if="active==='search'" class="wrapper" :class="viewing ? 'viewing':'search'"/>
+  <contribute
+    v-else-if="active==='contribute'"
+    class="wrapper"
+    :class="viewing ? 'viewing':'contribute'"
+  />
+  <user v-else-if="active==='user'" class="wrapper" :class="viewing ? 'viewing':'user'"/>
 </template>
 <script>
 import { mapState } from "vuex";
 export default {
   name: "Wrapper",
   computed: {
-    ...mapState("map", ["marking", "viewing"])
+    ...mapState("map", ["drawing", "viewing", "active"])
   }
 };
 </script>
@@ -22,7 +28,9 @@ export default {
     overflow: hidden;
     z-index: 0;
   }
-  .search {
+  .search,
+  .user,
+  .contribute {
     height: 60%;
   }
   .viewing {
@@ -40,7 +48,9 @@ export default {
     bottom: 1vh;
   }
   .search,
-  .viewing {
+  .viewing,
+  .user,
+  .contribute {
     height: 98vh;
   }
 }

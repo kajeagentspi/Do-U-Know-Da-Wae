@@ -12,7 +12,7 @@
     <div id="map"></div>
     <div
       :class="
-        marking ? 'full' : viewing ? 'viewing' : 'search'
+        drawing ? 'full' : viewing ? 'viewing' : 'search'
       "
       ref="visibleMap"
     ></div>
@@ -37,7 +37,7 @@ export default {
       "GPSAvailable",
       "GPSTracking",
       "marker",
-      "marking",
+      "drawing",
       "viewing"
     ])
   },
@@ -55,7 +55,7 @@ export default {
     draw({ layer }) {
       if (layer instanceof L.Marker) {
         layer.dragging.disable();
-        this.marking = false;
+        this.drawing = false;
         this.marker = layer;
       } else if (layer instanceof L.Polyline) {
         console.log(layer);

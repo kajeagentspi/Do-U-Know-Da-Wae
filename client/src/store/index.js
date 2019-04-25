@@ -3,7 +3,7 @@ import Vuex from "vuex";
 import VuexPersistence from "vuex-persist";
 
 import map from "./map";
-import auth from "./auth";
+import user from "./user";
 Vue.use(Vuex);
 
 /*
@@ -14,15 +14,26 @@ Vue.use(Vuex);
 const vuexLocal = new VuexPersistence({
   storage: window.localStorage,
   key: "dukdw",
-  reducer: state => ({
-    auth: state.auth
-  })
+  reducer: state => {
+    const { bookmarks } = state.user;
+    const cleanBookmarks = bookmarks.map(bookmark => {
+      bookmark.paths.forEach(path => {
+        if (path.polyLine) {
+          delete path.polyLine;
+        }
+      });
+      return bookmark;
+    });
+    return {
+      user: { ...state.user, bookmarks: cleanBookmarks }
+    };
+  }
 });
 
 const Store = new Vuex.Store({
   modules: {
     map,
-    auth
+    user
   },
   plugins: [vuexLocal.plugin]
 });
