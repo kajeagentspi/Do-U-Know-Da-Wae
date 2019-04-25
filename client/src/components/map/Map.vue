@@ -171,21 +171,12 @@ export default {
   }
 }
 @media (max-width: 640px) {
-  .search {
-    top: 0px;
-    left: 0px;
-    right: 0px;
-    bottom: calc(60%);
-    position: absolute;
-    z-index: 10;
-    border-style: solid;
-    pointer-events: none;
-  }
+  .search,
   .viewing {
     top: 0px;
     left: 0px;
     right: 0px;
-    bottom: calc(40%);
+    bottom: calc(60%);
     position: absolute;
     z-index: 10;
     border-style: solid;

@@ -32,7 +32,7 @@ const map = {
     [INITIALIZE_MAP]: state => {
       state.mapInstance = L.map("map", {
         zoomControl: false,
-        minZoom: 17,
+        minZoom: 14,
         maxZoom: 21,
         // maxBounds: [
         //   { lat: 14.171030846860607, lng: 121.26183271408082 },

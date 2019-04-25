@@ -38,11 +38,9 @@ export default {
   }
   .search,
   .user,
-  .contribute {
-    height: 60%;
-  }
+  .contribute,
   .viewing {
-    height: 40%;
+    height: 60%;
   }
 }
 
