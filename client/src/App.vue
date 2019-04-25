@@ -84,4 +84,7 @@ export default {
   background-color: red;
   color: white;
 }
+.godown {
+  margin-bottom: 5px;
+}
 </style>

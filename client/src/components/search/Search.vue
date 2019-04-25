@@ -1,11 +1,15 @@
 <template>
-  <q-card v-if="!marking">
+  <q-card v-if="!drawing">
     <q-card-actions class="navbar">
       <q-btn-group flat>
         <q-btn disabled flat icon="explore"/>
-        <q-btn label="Search" to="/" @click="reset"/>
-        <q-btn label="Contribute" to="/contribute"/>
-        <q-btn label="Favorites" to="/favorites"/>
+        <q-btn label="Search" @click="reset"/>
+        <q-btn
+          label="Contribute"
+          @click="changeActive('contribute')"
+          :disable="type!=='admin'&&type!=='contributor'"
+        />
+        <q-btn label="User" @click="changeActive('user')"/>
       </q-btn-group>
     </q-card-actions>
     <div v-if="!selectedRoute">
@@ -13,7 +17,7 @@
         <q-btn
           class="full-width godown"
           color="dukdw"
-          :label="origin ? `[${origin.type}] ${origin.name}` : 'Select Origin'"
+          :label="origin ? `[${origin.type}] ${origin.name.length > 30 ? `${origin.name.slice(0, 30)}...`: `${origin.name}`}` : 'Select Origin'"
           no-ripple
           size="l"
           @click="select('origin')"
@@ -21,7 +25,7 @@
         <q-btn
           class="full-width godown"
           color="dukdw"
-          :label="destination ? `[${destination.type}] ${destination.name}` : 'Select Destination'"
+          :label="destination ? `[${destination.type}] ${destination.name.length > 30 ? `${destination.name.slice(0, 30)}...`: `${destination.name}`}` : 'Select Destination'"
           no-ripple
           size="l"
           @click="select('destination')"
@@ -86,6 +90,7 @@
           @click="highLight({ routeIndex: selectedRouteIndex })"
           label="View full route"
         />
+        <q-btn class="full-width godown" color="dukdw" @click="bookmark" label="Add to bookmarks"/>
       </q-card-section>
       <div class="path-body" v-if="selectedRoute">
         <path-card
@@ -113,7 +118,8 @@ export default {
   name: "Search",
   computed: {
     ...mapState("map", ["mapInstance", "GPSAvailable", "userMarker"]),
-    ...mapFields("map", ["marker", "marking", "viewing"])
+    ...mapFields("map", ["marker", "drawing", "viewing", "active"]),
+    ...mapState("user", ["type", "accessToken"])
   },
   data() {
     return {
@@ -150,10 +156,6 @@ export default {
       this.setView();
     },
     selectPOI(poi) {
-      const { name } = poi;
-      if (name.length > 30) {
-        poi.name = `${name.slice(0, 30)}...`;
-      }
       if (this.selectingOrigin) {
         this.selectingOrigin = false;
         this.setOrigin(poi);
@@ -214,33 +216,18 @@ export default {
         );
       }
     },
+    async bookmark(){
+      const { data } = await Api.bookmarkRoute({accessToken: this.accessToken, routeId: this.selectedRoute.id})
+      this.$q.notify(data)
+    },
     async useGPS() {
       const { lat, lng } = this.userMarker.getLatLng();
-      const poi = {
-        lat,
-        lng,
-        type: "Marker",
-        name: await this.reverseGeocode(lat, lng)
-      };
+      const { data: poi } = await Api.identifyBuilding({ lat, lng });
       this.selectPOI(poi);
     },
     async useMarker() {
-      this.marking = true;
+      this.drawing = true;
       this.mapInstance.editTools.startMarker();
-    },
-    async reverseGeocode(lat, lng) {
-      try {
-        const {
-          data: { display_name }
-        } = await Api.reverseGeocode({ lat, lng });
-        const name = display_name
-          .split(", ")
-          .slice(0, 2)
-          .join(", ");
-        return name;
-      } catch (error) {
-        return `lat: ${lat} lng: ${lng}`;
-      }
     },
     async POISearch(name) {
       return Api.allPOI({ name })
@@ -261,7 +248,7 @@ export default {
       if (this.routes) {
         this.routes.forEach(route => {
           route.paths.forEach(path => {
-            if (path.latLngs) {
+            if (path.polyLine) {
               this.mapInstance.removeLayer(path.polyLine);
             }
           });
@@ -288,7 +275,7 @@ export default {
         this.setView();
         this.routes.forEach(route => {
           route.paths.forEach(path => {
-            if (path.latLngs) {
+            if (path.polyLine) {
               path.polyLine.setStyle({ opacity: 1 });
             }
           });
@@ -298,13 +285,13 @@ export default {
         for (let i = 0; i < this.routes.length; i++) {
           if (i === routeIndex) {
             this.routes[i].paths.forEach(path => {
-              if (path.latLngs) {
+              if (path.polyLine) {
                 path.polyLine.setStyle({ opacity: 1 });
               }
             });
           } else {
             this.routes[i].paths.forEach(path => {
-              if (path.latLngs) {
+              if (path.polyLine) {
                 path.polyLine.setStyle({ opacity: 0 });
               }
             });
@@ -317,13 +304,13 @@ export default {
             for (let j = 0; j < this.routes[i].paths.length; j++) {
               if (j === pathIndex) {
                 activePath = this.routes[i].paths[j];
-                if (this.routes[i].paths[j].latLngs) {
+                if (this.routes[i].paths[j].polyLine) {
                   this.routes[i].paths[j].polyLine.setStyle({
                     opacity: 1
                   });
                 }
               } else {
-                if (this.routes[i].paths[j].latLngs) {
+                if (this.routes[i].paths[j].polyLine) {
                   this.routes[i].paths[j].polyLine.setStyle({
                     opacity: 0.5
                   });
@@ -363,7 +350,7 @@ export default {
       if (this.routes) {
         this.routes.forEach(route => {
           route.paths.forEach(path => {
-            if (path.latLngs) {
+            if (path.polyLine) {
               this.mapInstance.removeLayer(path.polyLine);
             }
           });
@@ -388,18 +375,16 @@ export default {
         this.selectedRouteIndex = routeIndex;
         this.viewing = true;
       }
+    },
+    changeActive(pageName) {
+      this.active = pageName;
     }
   },
   watch: {
     async marker(newValue) {
       this.mapInstance.removeLayer(newValue);
       const { lat, lng } = newValue.getLatLng();
-      const poi = {
-        lat,
-        lng,
-        type: "Marker",
-        name: await this.reverseGeocode(lat, lng)
-      };
+      const { data: poi } = await Api.identifyBuilding({ lat, lng });
       this.selectPOI(poi);
     }
   },
@@ -413,9 +398,6 @@ export default {
 .swap {
   width: 74px;
   height: 72px;
-}
-.godown {
-  margin-bottom: 5px;
 }
 .route-body {
   overflow-y: auto;
@@ -439,7 +421,7 @@ export default {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   position: absolute;
-  top: 166px;
+  top: 207px;
   bottom: 0;
   left: 0;
   right: 0;

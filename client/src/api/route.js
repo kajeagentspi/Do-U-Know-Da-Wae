@@ -8,13 +8,15 @@ export const allRoute = data => {
     id: origin.id,
     type: origin.type,
     lat: origin.lat,
-    lng: origin.lng
+    lng: origin.lng,
+    name: origin.name
   };
   destination = {
     id: destination.id,
     type: destination.type,
     lat: destination.lat,
-    lng: destination.lng
+    lng: destination.lng,
+    name: destination.name
   };
   return axios.get(
     `${baseURL}/api/route?${qs.stringify({ origin, destination })}`
@@ -26,7 +28,12 @@ export const oneRoute = id => {
 };
 
 export const saveRoute = data => {
-  return axios.post(`${baseURL}/api/route}`, data);
+  return axios.post(`${baseURL}/api/route`, data);
+};
+
+export const bookmarkRoute = data => {
+  console.log(data);
+  return axios.post(`${baseURL}/api/bookmark`, data);
 };
 
 export const removeRoute = ({ id, accessToken }) => {
