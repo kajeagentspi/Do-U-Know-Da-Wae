@@ -38,5 +38,5 @@ export class User {
 
   @ManyToMany(type => Route)
   @JoinTable()
-  favorites: Route[];
+  bookmarks: Route[];
 }
