@@ -437,8 +437,8 @@ export class RouteController {
       if (!(origin instanceof Marker) && !(destination instanceof Marker)) {
         const paths = await this.pathRepository.save(tempPaths);
         await Promise.all(
-          paths.map(path => {
-            this.routeRepository.save({
+          paths.map(async path => {
+            await this.routeRepository.save({
               origin,
               destination,
               paths: [path],

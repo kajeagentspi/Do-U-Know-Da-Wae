@@ -10,7 +10,7 @@ import { Routes } from "./routes";
 import { Stop, User, Building } from "./entities";
 import Seeder from "./database/seeder";
 import serveStatic from "serve-static";
-import history from "connect-history-api-fallback";
+
 createConnection()
   .then(async connection => {
     // create express app
