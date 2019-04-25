@@ -11,8 +11,24 @@ export class UserController {
   }
 
   async one(request: Request, response: Response, next: NextFunction) {
-    return this.userRepository.findOne(request.params.id, {
-      relations: ["contributions"]
+    const { accessToken } = request.body;
+    const { uid } = await admin.auth().verifyIdToken(accessToken);
+    return await this.userRepository.findOne(null, {
+      where: { uid },
+      relations: [
+        "bookmarks",
+        "bookmarks.origin",
+        "bookmarks.destination",
+        "bookmarks.paths",
+        "bookmarks.paths.origin",
+        "bookmarks.paths.destination",
+        "contributions",
+        "contributions.origin",
+        "contributions.destination",
+        "contributions.paths",
+        "contributions.paths.origin",
+        "contributions.paths.destination"
+      ]
     });
   }
 
@@ -33,7 +49,22 @@ export class UserController {
         type = "admin";
       }
       await this.userRepository.update(user.id, { name, type });
-      return this.userRepository.findOne(user.id);
+      return this.userRepository.findOne(user.id, {
+        relations: [
+          "bookmarks",
+          "bookmarks.origin",
+          "bookmarks.destination",
+          "bookmarks.paths",
+          "bookmarks.paths.origin",
+          "bookmarks.paths.destination",
+          "contributions",
+          "contributions.origin",
+          "contributions.destination",
+          "contributions.paths",
+          "contributions.paths.origin",
+          "contributions.paths.destination"
+        ]
+      });
     } else {
       return this.userRepository.save({ name, email, type, uid });
     }

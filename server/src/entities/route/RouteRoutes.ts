@@ -20,6 +20,12 @@ export const RouteRoutes = [
     action: "save"
   },
   {
+    method: "post",
+    route: "/bookmark",
+    controller: RouteController,
+    action: "bookmark"
+  },
+  {
     method: "delete",
     route: "/route/:id",
     controller: RouteController,

@@ -126,6 +126,109 @@ export class RouteController {
     return routes;
   }
 
+  async bookmark(request: Request, response: Response, next: NextFunction) {
+    const { accessToken, routeId } = request.body;
+    const { uid } = await admin.auth().verifyIdToken(accessToken);
+    const user = await this.userRepository.findOne(null, {
+      where: { uid },
+      relations: ["bookmarks"]
+    });
+    const route = await this.routeRepository.findOne(routeId);
+    const bookmarkedIds = user.bookmarks.map(bookmark => bookmark.id);
+    if (route.id in bookmarkedIds) {
+      return {
+        message: "Route bookmarked already",
+        color: "negative"
+      };
+    } else if (user && route) {
+      user.bookmarks.push(route);
+      this.userRepository.save(user);
+      return {
+        message: "Added to bookmarks",
+        color: "positive"
+      };
+    }
+    return {
+      message: "Failed to add to bookmarks",
+      color: "negative"
+    };
+  }
+
+  async one(request: Request, response: Response, next: NextFunction) {
+    return this.routeRepository.findOne(request.params.id, {
+      relations: [
+        "origin",
+        "destination",
+        "paths",
+        "paths.origin",
+        "paths.destination",
+        "contributor"
+      ]
+    });
+  }
+
+  async save(request: Request, response: Response, next: NextFunction) {
+    try {
+      const { paths, accessToken } = request.body;
+      const { uid } = await admin.auth().verifyIdToken(accessToken);
+      const user = await this.userRepository.findOne(null, { where: { uid } });
+      if (user.type === "admin" || user.type === "contributor") {
+        const dbPaths: Path[] = [];
+        let distance = 0;
+        let duration = 0;
+        for (let path of paths) {
+          if (path.id) {
+            const dbPath = await this.pathRepository.findOne(path.id, {
+              relations: ["origin", "destination"]
+            });
+            distance += dbPath.distance;
+            duration += dbPath.duration;
+            dbPaths.push(dbPath);
+          } else {
+            let { origin, destination } = path;
+            origin = await this.POIRepository.findOne(origin.id);
+            destination = await this.POIRepository.findOne(destination.id);
+            const newPath = await this.pathRepository.save({
+              ...path,
+              origin,
+              destination
+            });
+            const dbPath = await this.pathRepository.findOne(newPath.id, {
+              relations: ["origin", "destination"]
+            });
+            distance += dbPath.distance;
+            duration += dbPath.duration;
+            dbPaths.push(dbPath);
+          }
+        }
+        const origin = dbPaths[0].origin;
+        const destination = dbPaths[dbPaths.length - 1].destination;
+        const pathIDs = dbPaths.map(path => path.id);
+        await this.routeRepository.save({
+          origin,
+          destination,
+          paths: dbPaths,
+          pathString: pathIDs.toString(),
+          contributor: user,
+          distance,
+          duration
+        });
+      } else {
+        return {
+          message: "UP Mail required to contribute",
+          color: "negative"
+        };
+      }
+    } catch (error) {
+      return {
+        message: "An error occured",
+        color: "negative"
+      };
+    }
+  }
+
+  async delete(request: Request, response: Response, next: NextFunction) {}
+
   typeCast(poi) {
     switch (poi.type) {
       case "Building":
@@ -482,76 +585,4 @@ export class RouteController {
       return newRoutes;
     }
   }
-  async one(request: Request, response: Response, next: NextFunction) {
-    return this.routeRepository.findOne(request.params.id, {
-      relations: [
-        "origin",
-        "destination",
-        "paths",
-        "paths.origin",
-        "paths.destination",
-        "contributor"
-      ]
-    });
-  }
-  async save(request: Request, response: Response, next: NextFunction) {
-    try {
-      const { paths, accessToken } = request.body;
-      const { uid } = await admin.auth().verifyIdToken(accessToken);
-      const user = await this.userRepository.findOne({ uid });
-      if (user.type === "admin" || user.type === "contributor") {
-        const dbPaths: Path[] = [];
-        let distance = 0;
-        let duration = 0;
-        for (let path of paths) {
-          if (path.id) {
-            const dbPath = await this.pathRepository.findOne(path.id, {
-              relations: ["origin", "destination"]
-            });
-            distance += dbPath.distance;
-            duration += dbPath.duration;
-            dbPaths.push(dbPath);
-          } else {
-            let { origin, destination } = path;
-            origin = await this.POIRepository.findOne(origin.id);
-            destination = await this.POIRepository.findOne(destination.id);
-            const newPath = await this.pathRepository.save({
-              ...path,
-              origin,
-              destination
-            });
-            const dbPath = await this.pathRepository.findOne(newPath.id, {
-              relations: ["origin", "destination"]
-            });
-            distance += dbPath.distance;
-            duration += dbPath.duration;
-            dbPaths.push(dbPath);
-          }
-        }
-        const origin = dbPaths[0].origin;
-        const destination = dbPaths[dbPaths.length - 1].destination;
-        const pathIDs = dbPaths.map(path => path.id);
-        await this.routeRepository.save({
-          origin,
-          destination,
-          paths: dbPaths,
-          pathString: pathIDs.toString(),
-          contributor: user,
-          distance,
-          duration
-        });
-      } else {
-        return {
-          message: "UP Mail required to contribute",
-          color: "negative"
-        };
-      }
-    } catch (error) {
-      return {
-        message: "An error occured",
-        color: "negative"
-      };
-    }
-  }
-  async delete(request: Request, response: Response, next: NextFunction) {}
 }
