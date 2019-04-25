@@ -2,14 +2,14 @@
   <q-card v-if="!drawing">
     <q-card-actions class="navbar">
       <q-btn-group flat>
-        <q-btn disabled flat icon="explore"/>
-        <q-btn label="Search" @click="reset"/>
+        <q-btn disabled flat icon="explore" />
+        <q-btn label="Search" @click="reset" />
         <q-btn
           label="Contribute"
           @click="changeActive('contribute')"
-          :disable="type!=='admin'&&type!=='contributor'"
+          :disable="type !== 'admin' && type !== 'contributor'"
         />
-        <q-btn label="User" @click="changeActive('user')"/>
+        <q-btn label="User" @click="changeActive('user')" />
       </q-btn-group>
     </q-card-actions>
     <div v-if="!selectedRoute">
@@ -17,7 +17,15 @@
         <q-btn
           class="full-width godown"
           color="dukdw"
-          :label="origin ? `[${origin.type}] ${origin.name.length > 30 ? `${origin.name.slice(0, 30)}...`: `${origin.name}`}` : 'Select Origin'"
+          :label="
+            origin
+              ? `[${origin.type}] ${
+                  origin.name.length > 30
+                    ? `${origin.name.slice(0, 30)}...`
+                    : `${origin.name}`
+                }`
+              : 'Select Origin'
+          "
           no-ripple
           size="l"
           @click="select('origin')"
@@ -25,7 +33,15 @@
         <q-btn
           class="full-width godown"
           color="dukdw"
-          :label="destination ? `[${destination.type}] ${destination.name.length > 30 ? `${destination.name.slice(0, 30)}...`: `${destination.name}`}` : 'Select Destination'"
+          :label="
+            destination
+              ? `[${destination.type}] ${
+                  destination.name.length > 30
+                    ? `${destination.name.slice(0, 30)}...`
+                    : `${destination.name}`
+                }`
+              : 'Select Destination'
+          "
           no-ripple
           size="l"
           @click="select('destination')"
@@ -58,7 +74,7 @@
       </q-card-section>
       <div class="route-body" v-if="!selectingOrigin && !selectingDestination">
         <route-card
-          v-for="(route,index) in routes"
+          v-for="(route, index) in routes"
           :key="index"
           :index="index"
           :route="route"
@@ -90,11 +106,16 @@
           @click="highLight({ routeIndex: selectedRouteIndex })"
           label="View full route"
         />
-        <q-btn class="full-width godown" color="dukdw" @click="bookmark" label="Add to bookmarks"/>
+        <q-btn
+          class="full-width godown"
+          color="dukdw"
+          @click="bookmark"
+          label="Add to bookmarks"
+        />
       </q-card-section>
       <div class="path-body" v-if="selectedRoute">
         <path-card
-          v-for="(path,index) in selectedRoute.paths"
+          v-for="(path, index) in selectedRoute.paths"
           :key="index"
           :path="path"
           :index="index"
@@ -216,9 +237,12 @@ export default {
         );
       }
     },
-    async bookmark(){
-      const { data } = await Api.bookmarkRoute({accessToken: this.accessToken, routeId: this.selectedRoute.id})
-      this.$q.notify(data)
+    async bookmark() {
+      const { data } = await Api.bookmarkRoute({
+        accessToken: this.accessToken,
+        routeId: this.selectedRoute.id
+      });
+      this.$q.notify(data);
     },
     async useGPS() {
       const { lat, lng } = this.userMarker.getLatLng();

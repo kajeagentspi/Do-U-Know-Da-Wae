@@ -1,11 +1,19 @@
 <template>
-  <search v-if="active==='search'" class="wrapper" :class="viewing ? 'viewing':'search'"/>
-  <contribute
-    v-else-if="active==='contribute'"
+  <search
+    v-if="active === 'search'"
     class="wrapper"
-    :class="viewing ? 'viewing':'contribute'"
+    :class="viewing ? 'viewing' : 'search'"
   />
-  <user v-else-if="active==='user'" class="wrapper" :class="viewing ? 'viewing':'user'"/>
+  <contribute
+    v-else-if="active === 'contribute'"
+    class="wrapper"
+    :class="viewing ? 'viewing' : 'contribute'"
+  />
+  <user
+    v-else-if="active === 'user'"
+    class="wrapper"
+    :class="viewing ? 'viewing' : 'user'"
+  />
 </template>
 <script>
 import { mapState } from "vuex";

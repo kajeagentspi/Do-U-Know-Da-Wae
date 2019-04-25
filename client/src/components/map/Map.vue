@@ -5,15 +5,19 @@
         round
         color="primary"
         :disable="!GPSAvailable"
-        :icon="GPSAvailable ? GPSTracking ? 'gps_fixed' : 'gps_off' : 'gps_not_fixed'"
+        :icon="
+          GPSAvailable
+            ? GPSTracking
+              ? 'gps_fixed'
+              : 'gps_off'
+            : 'gps_not_fixed'
+        "
         @click="toggleTracking"
       />
     </q-page-sticky>
     <div id="map"></div>
     <div
-      :class="
-        drawing ? 'full' : viewing ? 'viewing' : 'search'
-      "
+      :class="drawing ? 'full' : viewing ? 'viewing' : 'search'"
       ref="visibleMap"
     ></div>
   </div>

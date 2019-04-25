@@ -1,15 +1,14 @@
 <template>
-  <q-card
-    class="card"
-    @click="setRoute"
-  >
+  <q-card class="card" @click="setRoute">
     <q-card-section class="text-h6">
       <p class="text-h6">Route Summary</p>
-      <p class="text-subtitle2">{{`Origin: ${route.origin.name}`}}</p>
-      <p class="text-subtitle2">{{`Destination: ${route.destination.name}`}}</p>
-      <p class="text-subtitle2">{{`Total Distance: ${route.distance}m`}}</p>
-      <p class="text-subtitle2">{{`Departure Time: ${timeStart}`}}</p>
-      <p class="text-subtitle2">{{`Arrival Time: ${timeEnd}`}}</p>
+      <p class="text-subtitle2">{{ `Origin: ${route.origin.name}` }}</p>
+      <p class="text-subtitle2">
+        {{ `Destination: ${route.destination.name}` }}
+      </p>
+      <p class="text-subtitle2">{{ `Total Distance: ${route.distance}m` }}</p>
+      <p class="text-subtitle2">{{ `Departure Time: ${timeStart}` }}</p>
+      <p class="text-subtitle2">{{ `Arrival Time: ${timeEnd}` }}</p>
     </q-card-section>
   </q-card>
 </template>
@@ -31,7 +30,7 @@ export default {
       this.$emit("highLight", data);
     },
     setRoute() {
-      this.highLight({ routeIndex: this.index })
+      this.highLight({ routeIndex: this.index });
       this.$emit("setRoute", this.index);
     }
   },
@@ -44,5 +43,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

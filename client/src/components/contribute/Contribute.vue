@@ -2,14 +2,23 @@
   <q-card v-if="!drawing">
     <q-card-actions class="navbar">
       <q-btn-group flat>
-        <q-btn disabled flat icon="explore"/>
-        <q-btn label="Search" @click="changeActive('search')"/>
-        <q-btn label="Contribute" @click="reset" :disable="type!=='admin'&&type!=='contributor'"/>
-        <q-btn label="User" @click="changeActive('user')"/>
+        <q-btn disabled flat icon="explore" />
+        <q-btn label="Search" @click="changeActive('search')" />
+        <q-btn
+          label="Contribute"
+          @click="reset"
+          :disable="type !== 'admin' && type !== 'contributor'"
+        />
+        <q-btn label="User" @click="changeActive('user')" />
       </q-btn-group>
     </q-card-actions>
-    <q-card-section v-if="page==='select'">
-      <q-btn class="full-width godown" color="dukdw" label="Add Room" @click="changePage('room')"/>
+    <q-card-section v-if="page === 'select'">
+      <q-btn
+        class="full-width godown"
+        color="dukdw"
+        label="Add Room"
+        @click="changePage('room')"
+      />
       <q-btn
         class="full-width godown"
         color="dukdw"

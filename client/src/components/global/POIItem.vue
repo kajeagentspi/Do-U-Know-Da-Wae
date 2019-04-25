@@ -16,12 +16,16 @@
       />
     </q-item-section>
     <q-item-section>
-      <q-item-label>{{poi.name}}</q-item-label>
-      <q-item-label v-if="poi.direction">{{`${poi.direction} Stop`}}</q-item-label>
-      <q-item-label v-if="poi.building">{{`Level ${poi.level} of ${poi.building.name}`}}</q-item-label>
+      <q-item-label>{{ poi.name }}</q-item-label>
+      <q-item-label v-if="poi.direction">{{
+        `${poi.direction} Stop`
+      }}</q-item-label>
+      <q-item-label v-if="poi.building">{{
+        `Level ${poi.level} of ${poi.building.name}`
+      }}</q-item-label>
     </q-item-section>
     <q-item-section side>
-      <q-btn label="Select" color="dukdw" @click="selectPOI"/>
+      <q-btn label="Select" color="dukdw" @click="selectPOI" />
     </q-item-section>
   </q-item>
 </template>
@@ -41,5 +45,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>
