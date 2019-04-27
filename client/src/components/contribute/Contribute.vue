@@ -16,20 +16,20 @@
       <q-btn
         class="full-width godown"
         color="dukdw"
+        label="Add Building"
+        @click="changePage('addbuilding')"
+      />
+      <q-btn
+        class="full-width godown"
+        color="dukdw"
+        label="Edit Building"
+        @click="changePage('editbuilding')"
+      />
+      <q-btn
+        class="full-width godown"
+        color="dukdw"
         label="Add Room"
         @click="changePage('room')"
-      />
-      <q-btn
-        class="full-width godown"
-        color="dukdw"
-        label="Add/Edit Building"
-        @click="changePage('building')"
-      />
-      <q-btn
-        class="full-width godown"
-        color="dukdw"
-        label="Add Jeepney Route"
-        @click="changePage('jeepney')"
       />
       <q-btn
         class="full-width godown"
@@ -37,8 +37,14 @@
         label="Add Route"
         @click="changePage('route')"
       />
+      <q-btn
+        class="full-width godown"
+        color="dukdw"
+        label="Add Jeepney Route"
+        @click="changePage('jeepney')"
+      />
     </q-card-section>
-    <q-card-section></q-card-section>
+    <add-room v-if="page === 'room'" />
   </q-card>
 </template>
 
@@ -76,19 +82,7 @@ export default {
       }
     }
   },
-  watch: {
-    async marker(newValue) {
-      this.mapInstance.removeLayer(newValue);
-      const { lat, lng } = newValue.getLatLng();
-      const poi = {
-        lat,
-        lng,
-        type: "Marker",
-        name: await this.reverseGeocode(lat, lng)
-      };
-      console.log(poi);
-    }
-  },
+  watch: {},
   beforeDestroy() {
     this.reset();
   }
