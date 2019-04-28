@@ -52,6 +52,7 @@
     </q-card-section>
     <add-room v-if="page === 'addroom'" />
     <delete-room v-else-if="page === 'deleteroom'" />
+    <add-building v-else-if="page === 'addbuilding'" />
   </q-card>
 </template>
 

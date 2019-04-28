@@ -20,6 +20,7 @@ const map = {
     GPSTracking: false,
 
     marker: null,
+    polygon: null,
     drawing: false,
 
     viewing: false
@@ -66,25 +67,6 @@ const map = {
     }
   },
   actions: {
-    // createRoom: async (context, data) => {
-    //   try {
-    //     const { name, buildingName } = data;
-    //     const { accessToken } = context.rootState.auth;
-    //     await Api.addRoom({ ...data, accessToken });
-    //     Notify.create({
-    //       message: `Successfully created room ${name} on ${buildingName}`,
-    //       color: "positive",
-    //       position: "top"
-    //     });
-    //   } catch (error) {
-    //     console.log(error);
-    //     Notify.create({
-    //       message: "An error occured",
-    //       color: "negative",
-    //       position: "top"
-    //     });
-    //   }
-    // },
     initializeMap: async context => {
       context.commit(INITIALIZE_MAP);
     }

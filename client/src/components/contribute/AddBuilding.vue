@@ -3,32 +3,33 @@
     <q-btn
       class="full-width godown"
       color="dukdw"
-      :label="selectedBuilding ? selectedBuilding.name : 'Select Building'"
+      label="Draw Building"
       @click="mark"
     />
     <q-input
       class="godown"
       outlined
       v-model="name"
-      label="Enter Room Name"
-      :disable="!selectedBuilding"
-      :rules="[roomSearch]"
-      debounce="500"
+      placeholder="Francisco O. Santos Hall"
+      label="Enter Building Name"
+      :disable="!newBuilding || newBuildingCoordinates.length === 0"
     />
     <q-input
       class="godown"
       outlined
-      type="number"
-      v-model.number="level"
-      label="Enter Room Level"
-      :disable="!selectedBuilding"
+      v-model="alternativeNames"
+      placeholder="ICS,IMSP,IC,Physci"
+      label="Enter Building Alternative Names"
+      :disable="
+        !newBuilding || newBuildingCoordinates.length === 0 || name.length === 0
+      "
     />
     <q-btn
       class="full-width"
       color="green"
       label="Submit"
-      :disable="!selectedBuilding || name.length === 0 || rooms.length !== 0"
-      @click="addRoom"
+      :disable="!newBuilding || name.length === 0"
+      @click="addBuilding"
     />
   </q-card-section>
 </template>
@@ -40,36 +41,22 @@ import { mapFields } from "vuex-map-fields";
 import * as Api from "../../api";
 
 export default {
-  name: "AddRoom",
+  name: "AddBuilding",
   data() {
     return {
-      selectedBuilding: null,
+      newBuildingCoordinates: [],
+      newBuilding: null,
       buildings: [],
-      rooms: [],
       name: "",
-      level: 1
+      alternativeNames: ""
     };
   },
   computed: {
     ...mapState("map", ["mapInstance"]),
     ...mapState("user", ["accessToken"]),
-    ...mapFields("map", ["drawing", "marker"])
+    ...mapFields("map", ["drawing", "polygon"])
   },
   methods: {
-    async roomSearch() {
-      const request = await Api.allRoom({
-        name: this.name,
-        buildingId: this.selectedBuilding.id,
-        exact: true
-      });
-      this.rooms = request.data;
-      if (this.rooms.length !== 0) {
-        this.$q.notify({
-          message: "Room exists",
-          color: "negative"
-        });
-      }
-    },
     async getBuildings() {
       try {
         const { data } = await Api.allBuilding();
@@ -86,16 +73,16 @@ export default {
         });
       }
     },
-    async addRoom() {
+    async addBuilding() {
       try {
-        await Api.saveRoom({
-          buildingId: this.selectedBuilding.id,
+        await Api.saveBuilding({
+          coordinates: this.newBuildingCoordinates,
           accessToken: this.accessToken,
           name: this.name,
-          level: this.level
+          alternativeNames: this.alternativeNames
         });
         this.$q.notify({
-          message: "Successfully added room",
+          message: "Successfully added building",
           color: "positive"
         });
       } catch (error) {
@@ -109,24 +96,21 @@ export default {
       this.buildings.forEach(building => {
         this.mapInstance.removeLayer(building.polygon);
       });
+      if (this.newBuilding) {
+        this.mapInstance.removeLayer(this.newBuilding);
+      }
     },
     mark() {
-      this.mapInstance.editTools.startMarker();
+      this.mapInstance.editTools.startPolygon();
     }
   },
   watch: {
-    async marker(newValue) {
+    async polygon(newValue) {
       this.mapInstance.removeLayer(newValue);
-      const { lat, lng } = newValue.getLatLng();
-      const { data } = await Api.identifyBuilding({ lat, lng });
-      if (data.type === "Building") {
-        this.selectedBuilding = data;
-      } else {
-        this.$q.notify({
-          message: "Not a building",
-          color: "negative"
-        });
-      }
+      this.newBuildingCoordinates = newValue.getLatLngs();
+      this.newBuilding = L.polygon(this.newBuildingCoordinates, {
+        color: "blue"
+      }).addTo(this.mapInstance);
     }
   },
   async mounted() {

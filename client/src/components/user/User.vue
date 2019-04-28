@@ -114,7 +114,6 @@ export default {
           /* forceRefresh */ true
         );
         await this.setUser({ profile, accessToken, user });
-        console.log("fdfefd");
         this.drawLines();
         this.$q.notify({
           message: "Successfully Logged in",

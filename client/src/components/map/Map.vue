@@ -41,6 +41,7 @@ export default {
       "GPSAvailable",
       "GPSTracking",
       "marker",
+      "polygon",
       "drawing",
       "viewing"
     ])
@@ -57,12 +58,12 @@ export default {
       }
     },
     draw({ layer }) {
+      this.drawing = false;
       if (layer instanceof L.Marker) {
         layer.dragging.disable();
-        this.drawing = false;
         this.marker = layer;
       } else if (layer instanceof L.Polyline) {
-        console.log(layer);
+        this.polygon = layer;
       }
     },
     located({ latlng }) {
