@@ -9,5 +9,7 @@ export { default as AddRoom } from "./contribute/AddRoom";
 export { default as DeleteRoom } from "./contribute/DeleteRoom";
 export { default as AddBuilding } from "./contribute/AddBuilding";
 export { default as EditBuilding } from "./contribute/EditBuilding";
-export { default as EditablePathCard } from "./global/EditablePathCard";
+export { default as AddRoute } from "./contribute/AddRoute";
+export { default as AddIndoorRoute } from "./contribute/AddIndoorRoute";
+export { default as ViewPathCard } from "./global/ViewPathCard";
 export { default as User } from "./user/User";

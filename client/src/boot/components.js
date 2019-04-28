@@ -8,7 +8,9 @@ import {
   DeleteRoom,
   AddBuilding,
   EditBuilding,
-  EditablePathCard,
+  AddRoute,
+  AddIndoorRoute,
+  ViewPathCard,
   User
 } from "../components";
 
@@ -22,6 +24,8 @@ export default ({ Vue }) => {
   Vue.component("delete-room", DeleteRoom);
   Vue.component("add-building", AddBuilding);
   Vue.component("edit-building", EditBuilding);
-  Vue.component("editable-path-card", EditablePathCard);
+  Vue.component("view-path-card", ViewPathCard);
+  Vue.component("add-route", AddRoute);
+  Vue.component("add-indoor-route", AddIndoorRoute);
   Vue.component("user", User);
 };

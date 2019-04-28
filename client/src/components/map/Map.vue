@@ -16,10 +16,7 @@
       />
     </q-page-sticky>
     <div id="map"></div>
-    <div
-      :class="drawing ? 'full' : viewing ? 'viewing' : 'search'"
-      ref="visibleMap"
-    ></div>
+    <div :class="drawing ? 'full' : viewing ? 'viewing' : 'search'" ref="visibleMap"></div>
   </div>
 </template>
 
@@ -28,6 +25,8 @@ import L from "leaflet";
 import { mapActions, mapMutations } from "vuex";
 import { mapFields } from "vuex-map-fields";
 import { CHANGE_VIEW } from "../../store/types";
+// import * as Api from "../../api";
+
 export default {
   name: "Map",
   computed: {
@@ -94,7 +93,7 @@ export default {
       });
     }
   },
-  mounted() {
+  async mounted() {
     const {
       top,
       left,
@@ -109,6 +108,16 @@ export default {
     this.mapInstance.on("locationfound", this.located);
     this.mapInstance.on("locationerror", this.onLocationError);
     this.mapInstance.on("editable:drawing:end", this.draw);
+    // const { data } = await Api.allStop();
+    // console.log(data);
+    // data.forEach(stop => {
+    //   const { lat, lng } = stop;
+    //   new L.Marker({ lat, lng }, { color: "red" })
+    //     .addTo(this.mapInstance)
+    //     .on("click", () => {
+    //       console.log(stop);
+    //     });
+    // });
   },
   watch: {
     "$q.screen.width"() {

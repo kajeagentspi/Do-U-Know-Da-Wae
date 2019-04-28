@@ -2,14 +2,14 @@
   <q-card v-if="!drawing">
     <q-card-actions class="navbar">
       <q-btn-group flat>
-        <q-btn disabled flat icon="explore"/>
-        <q-btn label="Search" @click="changeActive('search')"/>
+        <q-btn disabled flat icon="explore" />
+        <q-btn label="Search" @click="changeActive('search')" />
         <q-btn
           label="Contribute"
           @click="reset"
           :disable="type !== 'admin' && type !== 'contributor'"
         />
-        <q-btn label="User" @click="changeActive('user')"/>
+        <q-btn label="User" @click="changeActive('user')" />
       </q-btn-group>
     </q-card-actions>
     <q-card-section v-if="page === 'select'">
@@ -41,19 +41,14 @@
         class="full-width godown"
         color="dukdw"
         label="Add Route"
-        @click="changePage('route')"
-      />
-      <q-btn
-        class="full-width godown"
-        color="dukdw"
-        label="Add Jeepney Route"
-        @click="changePage('jeepney')"
+        @click="changePage('addroute')"
       />
     </q-card-section>
-    <add-room v-if="page === 'addroom'"/>
-    <delete-room v-else-if="page === 'deleteroom'"/>
-    <add-building v-else-if="page === 'addbuilding'"/>
-    <edit-building v-else-if="page === 'editbuilding'"/>
+    <add-room v-if="page === 'addroom'" />
+    <delete-room v-else-if="page === 'deleteroom'" />
+    <add-building v-else-if="page === 'addbuilding'" />
+    <edit-building v-else-if="page === 'editbuilding'" />
+    <add-route v-else-if="page === 'addroute'" />
   </q-card>
 </template>
 

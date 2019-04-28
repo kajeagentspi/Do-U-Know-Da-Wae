@@ -1,6 +1,11 @@
 <template>
   <q-card-section>
-    <q-btn class="full-width godown" color="dukdw" label="Select Building" @click="mark"/>
+    <q-btn
+      class="full-width godown"
+      color="dukdw"
+      label="Select Building"
+      @click="mark"
+    />
     <q-input
       class="godown"
       outlined
@@ -15,9 +20,7 @@
       v-model="alternativeNames"
       placeholder="ICS,IMSP,IC,Physci"
       label="Enter Building Alternative Names"
-      :disable="
-        !selectedBuilding || name.length === 0
-      "
+      :disable="!selectedBuilding || name.length === 0"
     />
     <q-btn
       class="full-width"
