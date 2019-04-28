@@ -298,7 +298,7 @@ export class RouteController {
     const paths = [];
     for (let OSRMPath of OSRMpaths) {
       const inRepo = await this.pathRepository.find({
-        where: { geometry: OSRMPath.geometry }
+        where: { geometry: OSRMPath.geometry, type: PathType.WALKING }
       });
       if (inRepo.length === 0) {
         paths.push(

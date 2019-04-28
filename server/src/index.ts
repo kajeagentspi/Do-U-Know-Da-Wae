@@ -7,7 +7,7 @@ import cors from "cors";
 import firebaseAccountCredentials from "./firebase.config.json";
 import { Request, Response } from "express";
 import { Routes } from "./routes";
-import { Stop, User, Building } from "./entities";
+import { Stop, User, Building, Route } from "./entities";
 import Seeder from "./database/seeder";
 import serveStatic from "serve-static";
 
@@ -71,6 +71,13 @@ createConnection()
     if (buildings.length === 0) {
       console.log("Seeding Buildings");
       seeder.seedBuildings();
+    }
+
+    const routeRepository = getRepository(Route);
+    const routes = await routeRepository.find();
+    if (routes.length === 0) {
+      console.log("Seeding Stop Routes");
+      seeder.seedStopRoutes();
     }
     // start express server
 

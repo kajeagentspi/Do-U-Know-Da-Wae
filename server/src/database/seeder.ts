@@ -1,76 +1,51 @@
 import { getRepository } from "typeorm";
-import { Stop, StopDirection, User, UserType, Building } from "../entities";
+import {
+  Stop,
+  StopDirection,
+  User,
+  UserType,
+  Building,
+  Route,
+  Path,
+  PathType
+} from "../entities";
 import buildings from "./buildings";
 import polygonCenter from "geojson-polygon-center";
+import { driving } from "../entities/config";
+import axios from "axios";
+import * as polyline from "@mapbox/polyline";
 
 const seedData = {
   stops: [
-    // { lat: 14.1516795, lng: 121.2338884, name: 'title' },
-    // { lat: 14.1519177, lng: 121.2353384, name: 'title' },
-    // { lat: 14.1523148, lng: 121.2342491, name: 'title' },
-    // { lat: 14.1527581, lng: 121.2350554, name: 'title' },
-    // { lat: 14.1534830, lng: 121.2351114, name: 'title' },
-    // { lat: 14.1535811, lng: 121.2352553, name: 'title' },
-    // { lat: 14.1541820, lng: 121.2355887, name: 'title' },
-    // { lat: 14.1547361, lng: 121.2360272, name: 'title' },
-    // { lat: 14.1552239, lng: 121.2349496, name: 'title' },
-    // { lat: 14.1556645, lng: 121.2366554, name: 'title' },
-    // { lat: 14.1558111, lng: 121.2351684, name: 'title' },
-    // { lat: 14.1567540, lng: 121.2358104, name: 'FPRDI' },
-    // { lat: 14.1568823, lng: 121.2362150, name: 'title' },
-    // { lat: 14.1589717, lng: 121.2374757, name: 'Copeland Heigths', direction: StopDirection.KANAN },
-    // { lat: 14.1590402, lng: 121.2374404, name: 'Copeland Heigths', direction: StopDirection.KALIWA },
-    // { lat: 14.1600217, lng: 121.2380474, name: 'CPAF', direction: StopDirection.KANAN },
-    // { lat: 14.1600970, lng: 121.2378801, name: 'CPAF', direction: StopDirection.KALIWA },
-    // { lat: 14.1620914, lng: 121.2388429, name: 'UHS', direction: StopDirection.KALIWA },
-    // { lat: 14.1621055, lng: 121.2389323, name: 'UHS', direction: StopDirection.KANAN },
     {
-      lat: 14.1636436,
-      lng: 121.2425354,
-      name: "Physci",
+      lat: 14.1669832,
+      lng: 121.2436838,
+      name: "UP Gate",
       direction: StopDirection.KALIWA
     },
     {
-      lat: 14.163712,
-      lng: 121.2423962,
-      name: "Physci",
+      lat: 14.1658894,
+      lng: 121.2441851,
+      name: "Maquiling School",
       direction: StopDirection.KALIWA
     },
     {
-      lat: 14.163791,
-      lng: 121.2415592,
-      name: "Physci",
+      lat: 14.1650748,
+      lng: 121.244529,
+      name: "Math Building,St. Therese",
       direction: StopDirection.KALIWA
     },
     {
-      lat: 14.1638784,
-      lng: 121.2413639,
-      name: "Physci",
-      direction: StopDirection.KANAN
-    },
-    {
-      lat: 14.1597934,
-      lng: 121.2436166,
-      name: "AnSci",
+      lat: 14.1634401,
+      lng: 121.2435869,
+      name: "PhySci",
       direction: StopDirection.KALIWA
     },
     {
-      lat: 14.1598585,
-      lng: 121.2434548,
-      name: "AnSci",
-      direction: StopDirection.KANAN
-    },
-    {
-      lat: 14.1601432,
-      lng: 121.2444066,
-      name: "FoodTech",
+      lat: 14.1626671,
+      lng: 121.24381,
+      name: "Senior's Social Garden",
       direction: StopDirection.KALIWA
-    },
-    {
-      lat: 14.160215,
-      lng: 121.2446384,
-      name: "Agronomy",
-      direction: StopDirection.KANAN
     },
     {
       lat: 14.1608523,
@@ -79,10 +54,22 @@ const seedData = {
       direction: StopDirection.KALIWA
     },
     {
-      lat: 14.1609052,
-      lng: 121.245038,
-      name: "CEAT",
-      direction: StopDirection.KANAN
+      lat: 14.1601432,
+      lng: 121.2444066,
+      name: "FoodTech",
+      direction: StopDirection.KALIWA
+    },
+    {
+      lat: 14.1597934,
+      lng: 121.2436166,
+      name: "AnSci",
+      direction: StopDirection.KALIWA
+    },
+    {
+      lat: 14.1614215,
+      lng: 121.2424934,
+      name: "Baker",
+      direction: StopDirection.KALIWA
     },
     {
       lat: 14.1609739,
@@ -97,70 +84,10 @@ const seedData = {
       direction: StopDirection.BOTH
     },
     {
-      lat: 14.1613905,
-      lng: 121.2422655,
-      name: "Baker",
-      direction: StopDirection.KANAN
-    },
-    {
-      lat: 14.1614215,
-      lng: 121.2424934,
-      name: "Baker",
-      direction: StopDirection.KALIWA
-    },
-    {
-      lat: 14.161687,
-      lng: 121.2408855,
-      name: "FPark",
-      direction: StopDirection.KANAN
-    },
-    {
       lat: 14.1622763,
       lng: 121.2404891,
       name: "Women's Dorm",
       direction: StopDirection.BOTH
-    },
-    {
-      lat: 14.1626671,
-      lng: 121.24381,
-      name: "Senior's Social Garden",
-      direction: StopDirection.KALIWA
-    },
-    {
-      lat: 14.1626702,
-      lng: 121.2438536,
-      name: "Senior's Social Garden",
-      direction: StopDirection.KANAN
-    },
-    {
-      lat: 14.1628143,
-      lng: 121.2413658,
-      name: "SU",
-      direction: StopDirection.KALIWA
-    },
-    {
-      lat: 14.1628542,
-      lng: 121.2411535,
-      name: "SU",
-      direction: StopDirection.KANAN
-    },
-    {
-      lat: 14.1634401,
-      lng: 121.2435869,
-      name: "PhySci",
-      direction: StopDirection.KALIWA
-    },
-    {
-      lat: 14.1634643,
-      lng: 121.2437679,
-      name: "PhySci",
-      direction: StopDirection.KANAN
-    },
-    {
-      lat: 14.1635769,
-      lng: 121.2406342,
-      name: "Mariang Banga",
-      direction: StopDirection.KANAN
     },
     {
       lat: 14.1636534,
@@ -169,39 +96,9 @@ const seedData = {
       direction: StopDirection.KALIWA
     },
     {
-      lat: 14.1637471,
-      lng: 121.2399205,
-      name: "DL Umali",
-      direction: StopDirection.KANAN
-    },
-    {
-      lat: 14.1650748,
-      lng: 121.244529,
-      name: "Math Building,St. Therese",
-      direction: StopDirection.KALIWA
-    },
-    {
-      lat: 14.1650861,
-      lng: 121.2446069,
-      name: "Math Building,St. Therese",
-      direction: StopDirection.KANAN
-    },
-    {
       lat: 14.1654236,
       lng: 121.2385843,
       name: "Main Lib",
-      direction: StopDirection.KALIWA
-    },
-    {
-      lat: 14.1654993,
-      lng: 121.2385293,
-      name: "Main Lib",
-      direction: StopDirection.KANAN
-    },
-    {
-      lat: 14.1658894,
-      lng: 121.2441851,
-      name: "Maquling School",
       direction: StopDirection.KALIWA
     },
     {
@@ -211,39 +108,21 @@ const seedData = {
       direction: StopDirection.KALIWA
     },
     {
-      lat: 14.1665156,
-      lng: 121.2387514,
-      name: "Sacay",
-      direction: StopDirection.KANAN
-    },
-    {
       lat: 14.1669733,
       lng: 121.2399398,
       name: "BioSci",
       direction: StopDirection.KALIWA
     },
     {
-      lat: 14.1669832,
-      lng: 121.2436838,
-      name: "UP Gate",
-      direction: StopDirection.KALIWA
-    },
-    {
-      lat: 14.1670048,
-      lng: 121.2437459,
-      name: "UP Gate",
-      direction: StopDirection.KANAN
-    },
-    {
-      lat: 14.1671303,
-      lng: 121.2401897,
-      name: "BioSci",
-      direction: StopDirection.KANAN
-    },
-    {
       lat: 14.1673357,
       lng: 121.2407525,
       name: "Humanities",
+      direction: StopDirection.KALIWA
+    },
+    {
+      lat: 14.1677242,
+      lng: 121.2416524,
+      name: "Raymundo",
       direction: StopDirection.KALIWA
     },
     {
@@ -265,10 +144,84 @@ const seedData = {
       direction: StopDirection.KANAN
     },
     {
-      lat: 14.1677242,
-      lng: 121.2416524,
-      name: "Raymundo",
-      direction: StopDirection.KALIWA
+      lat: 14.1671303,
+      lng: 121.2401897,
+      name: "BioSci",
+      direction: StopDirection.KANAN
+    },
+    {
+      lat: 14.1665156,
+      lng: 121.2387514,
+      name: "Sacay",
+      direction: StopDirection.KANAN
+    },
+    {
+      lat: 14.1654993,
+      lng: 121.2385293,
+      name: "Main Lib",
+      direction: StopDirection.KANAN
+    },
+    {
+      lat: 14.1637471,
+      lng: 121.2399205,
+      name: "DL Umali",
+      direction: StopDirection.KANAN
+    },
+    // womens
+    {
+      lat: 14.161687,
+      lng: 121.2408855,
+      name: "FPark",
+      direction: StopDirection.KANAN
+    },
+    // mens
+    {
+      lat: 14.1613905,
+      lng: 121.2422655,
+      name: "Baker",
+      direction: StopDirection.KANAN
+    },
+    {
+      lat: 14.1598585,
+      lng: 121.2434548,
+      name: "AnSci",
+      direction: StopDirection.KANAN
+    },
+    {
+      lat: 14.160215,
+      lng: 121.2446384,
+      name: "Agronomy",
+      direction: StopDirection.KANAN
+    },
+    {
+      lat: 14.1609052,
+      lng: 121.245038,
+      name: "CEAT",
+      direction: StopDirection.KANAN
+    },
+    {
+      lat: 14.1626702,
+      lng: 121.2438536,
+      name: "Senior's Social Garden",
+      direction: StopDirection.KANAN
+    },
+    {
+      lat: 14.1634643,
+      lng: 121.2437679,
+      name: "PhySci",
+      direction: StopDirection.KANAN
+    },
+    {
+      lat: 14.1650861,
+      lng: 121.2446069,
+      name: "Math Building,St. Therese",
+      direction: StopDirection.KANAN
+    },
+    {
+      lat: 14.1670048,
+      lng: 121.2437459,
+      name: "UP Gate",
+      direction: StopDirection.KANAN
     }
   ],
   users: [
@@ -278,6 +231,345 @@ const seedData = {
       type: UserType.ADMIN,
       uid: "sxdtxH1nOiYizjEMFKjK2EtFruk1"
     }
+  ],
+  stopRoutes: [
+    {
+      origin: {
+        lat: 14.1669832,
+        lng: 121.2436838
+      },
+      destination: {
+        lat: 14.1658894,
+        lng: 121.2441851
+      }
+    },
+    {
+      origin: {
+        lat: 14.1658894,
+        lng: 121.2441851
+      },
+      destination: {
+        lat: 14.1650748,
+        lng: 121.244529
+      }
+    },
+    {
+      origin: {
+        lat: 14.1650748,
+        lng: 121.244529
+      },
+      destination: {
+        lat: 14.1634401,
+        lng: 121.2435869
+      }
+    },
+    {
+      origin: {
+        lat: 14.1634401,
+        lng: 121.2435869
+      },
+      destination: {
+        lat: 14.1626671,
+        lng: 121.24381
+      }
+    },
+    {
+      origin: {
+        lat: 14.1626671,
+        lng: 121.24381
+      },
+      destination: {
+        lat: 14.1608523,
+        lng: 121.2449352
+      }
+    },
+    {
+      origin: {
+        lat: 14.1608523,
+        lng: 121.2449352
+      },
+      destination: {
+        lat: 14.1601432,
+        lng: 121.2444066
+      }
+    },
+    {
+      origin: {
+        lat: 14.1601432,
+        lng: 121.2444066
+      },
+      destination: {
+        lat: 14.1597934,
+        lng: 121.2436166
+      }
+    },
+    {
+      origin: {
+        lat: 14.1597934,
+        lng: 121.2436166
+      },
+      destination: {
+        lat: 14.1614215,
+        lng: 121.2424934
+      }
+    },
+    {
+      origin: {
+        lat: 14.1614215,
+        lng: 121.2424934
+      },
+      destination: {
+        lat: 14.1609739,
+        lng: 121.2414561
+      }
+    },
+    {
+      origin: {
+        lat: 14.1609739,
+        lng: 121.2414561
+      },
+      destination: {
+        lat: 14.1612352,
+        lng: 121.24092
+      }
+    },
+    {
+      origin: {
+        lat: 14.1612352,
+        lng: 121.24092
+      },
+      destination: {
+        lat: 14.1622763,
+        lng: 121.2404891
+      }
+    },
+    {
+      origin: {
+        lat: 14.1622763,
+        lng: 121.2404891
+      },
+      destination: {
+        lat: 14.1636534,
+        lng: 121.2400171
+      }
+    },
+    {
+      origin: {
+        lat: 14.1636534,
+        lng: 121.2400171
+      },
+      destination: {
+        lat: 14.1654236,
+        lng: 121.2385843
+      }
+    },
+    {
+      origin: {
+        lat: 14.1654236,
+        lng: 121.2385843
+      },
+      destination: {
+        lat: 14.1662999,
+        lng: 121.23857
+      }
+    },
+    {
+      origin: {
+        lat: 14.1662999,
+        lng: 121.23857
+      },
+      destination: {
+        lat: 14.1669733,
+        lng: 121.2399398
+      }
+    },
+    {
+      origin: {
+        lat: 14.1669733,
+        lng: 121.2399398
+      },
+      destination: {
+        lat: 14.1673357,
+        lng: 121.2407525
+      }
+    },
+    {
+      origin: {
+        lat: 14.1673357,
+        lng: 121.2407525
+      },
+      destination: {
+        lat: 14.1677242,
+        lng: 121.2416524
+      }
+    },
+    {
+      origin: {
+        lat: 14.1677242,
+        lng: 121.2416524
+      },
+      destination: {
+        lat: 14.1675438,
+        lng: 121.2429887
+      }
+    },
+    {
+      origin: {
+        lat: 14.1676036,
+        lng: 121.2430325
+      },
+      destination: {
+        lat: 14.1676533,
+        lng: 121.241397
+      }
+    },
+    {
+      origin: {
+        lat: 14.1676533,
+        lng: 121.241397
+      },
+      destination: {
+        lat: 14.1671303,
+        lng: 121.2401897
+      }
+    },
+    {
+      origin: { lat: 14.1671303, lng: 121.2401897 },
+      destination: {
+        lat: 14.1665156,
+        lng: 121.2387514
+      }
+    },
+    {
+      origin: {
+        lat: 14.1665156,
+        lng: 121.2387514
+      },
+      destination: {
+        lat: 14.1654993,
+        lng: 121.2385293
+      }
+    },
+    {
+      origin: {
+        lat: 14.1654993,
+        lng: 121.2385293
+      },
+      destination: {
+        lat: 14.1637471,
+        lng: 121.2399205
+      }
+    },
+    {
+      origin: {
+        lat: 14.1637471,
+        lng: 121.2399205
+      },
+      destination: {
+        lat: 14.1622763,
+        lng: 121.2404891
+      }
+    },
+    {
+      origin: {
+        lat: 14.1622763,
+        lng: 121.2404891
+      },
+      destination: {
+        lat: 14.161687,
+        lng: 121.2408855
+      }
+    },
+    {
+      origin: {
+        lat: 14.161687,
+        lng: 121.2408855
+      },
+      destination: {
+        lat: 14.1612352,
+        lng: 121.24092
+      }
+    },
+    {
+      origin: {
+        lat: 14.1612352,
+        lng: 121.24092
+      },
+      destination: {
+        lat: 14.1613905,
+        lng: 121.2422655
+      }
+    },
+    {
+      origin: {
+        lat: 14.1613905,
+        lng: 121.2422655
+      },
+      destination: {
+        lat: 14.1598585,
+        lng: 121.2434548
+      }
+    },
+    {
+      origin: {
+        lat: 14.1598585,
+        lng: 121.2434548
+      },
+      destination: {
+        lat: 14.160215,
+        lng: 121.2446384
+      }
+    },
+    {
+      origin: {
+        lat: 14.160215,
+        lng: 121.2446384
+      },
+      destination: {
+        lat: 14.1609052,
+        lng: 121.245038
+      }
+    },
+    {
+      origin: {
+        lat: 14.1609052,
+        lng: 121.245038
+      },
+      destination: {
+        lat: 14.1626702,
+        lng: 121.2438536
+      }
+    },
+    {
+      origin: {
+        lat: 14.1626702,
+        lng: 121.2438536
+      },
+      destination: {
+        lat: 14.1634643,
+        lng: 121.2437679
+      }
+    },
+    {
+      origin: {
+        lat: 14.1634643,
+        lng: 121.2437679
+      },
+      destination: {
+        lat: 14.1650861,
+        lng: 121.2446069
+      }
+    },
+    {
+      origin: {
+        lat: 14.1650861,
+        lng: 121.2446069
+      },
+      destination: {
+        lat: 14.1670048,
+        lng: 121.2437459
+      }
+    }
   ]
 };
 
@@ -285,6 +577,9 @@ class Seeder {
   private buildingRepository = getRepository(Building);
   private stopRepository = getRepository(Stop);
   private userRepository = getRepository(User);
+  private routeRepository = getRepository(Route);
+  private pathRepository = getRepository(Path);
+
   async seedUsers() {
     await Promise.all(
       seedData.users.map(user => {
@@ -292,6 +587,7 @@ class Seeder {
       })
     );
   }
+
   async seedStops() {
     await Promise.all(
       seedData.stops.map(stop => {
@@ -299,6 +595,7 @@ class Seeder {
       })
     );
   }
+
   async seedBuildings() {
     await Promise.all(
       buildings.features.map(building => {
@@ -319,6 +616,48 @@ class Seeder {
         });
       })
     );
+  }
+
+  async seedStopRoutes() {
+    const contributor = await this.userRepository.findOne(null, {
+      where: {
+        uid: "sxdtxH1nOiYizjEMFKjK2EtFruk1"
+      }
+    });
+    for (let route of seedData.stopRoutes) {
+      let { origin, destination } = route;
+      const searchString = `${origin.lng},${origin.lat};${destination.lng},${
+        destination.lat
+      }`;
+      const {
+        data: { routes: paths }
+      } = await axios.get(`${driving}/${searchString}?overview=full`);
+      const { geometry, distance, duration } = paths[0];
+      const startStop = await this.stopRepository.findOne(null, {
+        where: { ...origin }
+      });
+      const endStop = await this.stopRepository.findOne(null, {
+        where: { ...destination }
+      });
+      const path = await this.pathRepository.save({
+        origin: startStop,
+        destination: endStop,
+        type: PathType.JEEP,
+        latLngs: polyline.decode(geometry),
+        geometry,
+        distance,
+        duration
+      });
+      await this.routeRepository.save({
+        origin: startStop,
+        destination: endStop,
+        paths: [path],
+        distance,
+        duration,
+        pathString: `${path.id}`,
+        contributor
+      });
+    }
   }
 }
 
