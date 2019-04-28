@@ -8,5 +8,6 @@ export { default as Contribute } from "./contribute/Contribute";
 export { default as AddRoom } from "./contribute/AddRoom";
 export { default as DeleteRoom } from "./contribute/DeleteRoom";
 export { default as AddBuilding } from "./contribute/AddBuilding";
+export { default as EditBuilding } from "./contribute/EditBuilding";
 export { default as EditablePathCard } from "./global/EditablePathCard";
 export { default as User } from "./user/User";
