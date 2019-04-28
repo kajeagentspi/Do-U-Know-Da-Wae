@@ -1,7 +1,7 @@
 <template>
   <div v-if="!selectingOrigin && !selectingDestination">
     <q-card-actions>
-      <p class="text-h5">Add Walking Path</p>
+      <p class="text-h5">Add Jeep Path</p>
       <q-btn
         class="full-width godown"
         color="dukdw"
@@ -45,13 +45,6 @@
         @click="autoMode"
       />
       <q-btn
-        class="full-width godown"
-        color="green"
-        label="Manual Mode"
-        :disable="!origin || !destination"
-        @click="manualMode"
-      />
-      <q-btn
         class="full-width"
         color="green"
         label="Add Path"
@@ -90,7 +83,7 @@ import L from "leaflet";
 import { mapMutations, mapState } from "vuex";
 
 export default {
-  name: "AddWalkRoute",
+  name: "AddJeepPath",
   props: ["oldDestination"],
   data() {
     return {
@@ -112,23 +105,27 @@ export default {
     }),
     async autoMode() {
       this.reset();
-      const origin = { ...this.origin };
-      const destination = { ...this.destination };
-      delete origin.marker;
-      delete destination.marker;
-      const { data } = await Api.allPath({
-        origin,
-        destination
-      });
-      this.latLngs = data[0].latLngs;
-      this.polyLine = L.polyline(this.latLngs, {
-        color: "blue"
-      }).addTo(this.mapInstance);
-    },
-    manualMode() {
-      this.reset();
-      const { lat, lng } = this.origin;
-      this.mapInstance.editTools.startPolyline(L.latLng(lat, lng));
+      try {
+        const origin = { ...this.origin };
+        const destination = { ...this.destination };
+        delete origin.marker;
+        delete destination.marker;
+        const { data } = await Api.allPath({
+          origin,
+          destination,
+          type: "Jeep"
+        });
+        this.latLngs = data[0].latLngs;
+        this.polyLine = L.polyline(this.latLngs, {
+          color: "blue"
+        }).addTo(this.mapInstance);
+      } catch (error) {
+        this.$q.notify({
+          message: "Route Impossible",
+          color: "negative",
+          position: "top"
+        });
+      }
     },
     select(endType) {
       if (endType === "origin") {
@@ -225,7 +222,7 @@ export default {
         origin: this.origin,
         destination: this.destination,
         latLngs: this.latLngs,
-        type: "walking"
+        type: "jeep"
       };
       this.$emit("addPath", path);
     },

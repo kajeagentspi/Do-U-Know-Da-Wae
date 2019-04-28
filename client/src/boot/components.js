@@ -9,8 +9,9 @@ import {
   AddBuilding,
   EditBuilding,
   AddRoute,
-  AddIndoorRoute,
-  AddWalkRoute,
+  AddIndoorPath,
+  AddWalkPath,
+  AddJeepPath,
   ViewPathCard,
   User
 } from "../components";
@@ -27,7 +28,8 @@ export default ({ Vue }) => {
   Vue.component("edit-building", EditBuilding);
   Vue.component("view-path-card", ViewPathCard);
   Vue.component("add-route", AddRoute);
-  Vue.component("add-indoor-route", AddIndoorRoute);
-  Vue.component("add-walk-route", AddWalkRoute);
+  Vue.component("add-indoor-path", AddIndoorPath);
+  Vue.component("add-walk-path", AddWalkPath);
+  Vue.component("add-jeep-path", AddJeepPath);
   Vue.component("user", User);
 };

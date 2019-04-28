@@ -10,8 +10,6 @@
       <q-input outlined label="Type" readonly :value="path.type" />
       <q-input outlined label="Origin" readonly :value="path.origin.name" />
     </q-card-section>
-    <!-- <q-btn class="full-width go" color="dukdw" :label="path.origin.name"/>
-    <q-btn class="full-width" color="dukdw" :label="path.destination.name"/>-->
   </q-card>
 </template>
 

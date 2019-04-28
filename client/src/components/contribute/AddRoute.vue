@@ -5,7 +5,11 @@
       color="dukdw"
       label="Add Indoor Path"
       @click="addIndoor"
-      :disabled="paths.length > 0 && paths[0].destination.type === 'Room'"
+      :disabled="
+        paths.length > 0 &&
+          (paths[0].destination.type !== 'Room' ||
+            paths[0].destination.type !== 'Building')
+      "
     />
     <q-btn
       class="full-width godown"
@@ -18,7 +22,8 @@
       class="full-width godown"
       color="dukdw"
       label="Add Jeepney Path"
-      :disabled="paths.length > 0 && paths[0].destination.type !== 'Jeep'"
+      @click="addJeep"
+      :disabled="paths.length > 0 && paths[0].destination.type !== 'Stop'"
     />
     <view-path-card
       v-for="(path, index) in paths"
@@ -27,13 +32,18 @@
       :index="index"
     />
   </q-card-section>
-  <add-indoor-route
+  <add-indoor-path
     v-else-if="mode === 'indoor'"
     @addPath="addPath"
     :oldDestination="paths.length > 0 ? paths[0].destination : null"
   />
-  <add-walk-route
+  <add-walk-path
     v-else-if="mode === 'walking'"
+    @addPath="addPath"
+    :oldDestination="paths.length > 0 ? paths[0].destination : null"
+  />
+  <add-jeep-path
+    v-else-if="mode === 'jeep'"
     @addPath="addPath"
     :oldDestination="paths.length > 0 ? paths[0].destination : null"
   />
@@ -54,6 +64,9 @@ export default {
     },
     addWalking() {
       this.mode = "walking";
+    },
+    addJeep() {
+      this.mode = "jeep";
     },
     addPath(path) {
       this.paths.unshift(path);

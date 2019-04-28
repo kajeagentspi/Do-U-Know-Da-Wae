@@ -8,12 +8,15 @@ export class StopController {
   private userRepository = getRepository(User);
 
   async all(request: Request, response: Response, next: NextFunction) {
-    let { direction, ...query } = request.query;
+    let { direction, name } = request.query;
     if (!direction) {
       direction = "";
     }
+    if (!name) {
+      name = "";
+    }
     return this.stopRepository.find({
-      where: { ...query, direction: Like(`%${direction}%`) }
+      where: { name: Like(`%${name}%`), direction: Like(`%${direction}%`) }
     });
   }
 
