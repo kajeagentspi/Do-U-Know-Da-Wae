@@ -12,5 +12,11 @@ export const POIRoutes = [
     route: "/roomBuilding",
     controller: POIController,
     action: "roomBuilding"
+  },
+  {
+    method: "get",
+    route: "/buildingStop",
+    controller: POIController,
+    action: "buildingStop"
   }
 ];

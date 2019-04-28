@@ -42,6 +42,29 @@ export class POIController {
     console.log(rooms);
   }
 
+  async buildingStop(request: Request, response: Response, next: NextFunction) {
+    let { name } = request.query;
+    if (!name) {
+      name = "";
+    }
+    const pois = [];
+    pois.push(
+      ...(await this.buildingRepository.find({
+        where: [
+          {
+            name: Like(`%${name}%`)
+          },
+          { alternativeNames: Like(`%${name}%`) }
+        ],
+        relations: ["rooms"]
+      })),
+      ...(await this.stopRepository.find({
+        where: { name: Like(`%${name}%`) }
+      }))
+    );
+    return pois;
+  }
+
   async roomBuilding(request: Request, response: Response, next: NextFunction) {
     let { name } = request.query;
     if (!name) {
