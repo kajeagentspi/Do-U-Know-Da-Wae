@@ -232,343 +232,152 @@ const seedData = {
       uid: "sxdtxH1nOiYizjEMFKjK2EtFruk1"
     }
   ],
-  stopRoutes: [
+  kaliwaStops: [
     {
-      origin: {
-        lat: 14.1669832,
-        lng: 121.2436838
-      },
-      destination: {
-        lat: 14.1658894,
-        lng: 121.2441851
-      }
+      lat: 14.1669832,
+      lng: 121.2436838
     },
     {
-      origin: {
-        lat: 14.1658894,
-        lng: 121.2441851
-      },
-      destination: {
-        lat: 14.1650748,
-        lng: 121.244529
-      }
+      lat: 14.1658894,
+      lng: 121.2441851
     },
     {
-      origin: {
-        lat: 14.1650748,
-        lng: 121.244529
-      },
-      destination: {
-        lat: 14.1634401,
-        lng: 121.2435869
-      }
+      lat: 14.1650748,
+      lng: 121.244529
     },
     {
-      origin: {
-        lat: 14.1634401,
-        lng: 121.2435869
-      },
-      destination: {
-        lat: 14.1626671,
-        lng: 121.24381
-      }
+      lat: 14.1634401,
+      lng: 121.2435869
     },
     {
-      origin: {
-        lat: 14.1626671,
-        lng: 121.24381
-      },
-      destination: {
-        lat: 14.1608523,
-        lng: 121.2449352
-      }
+      lat: 14.1626671,
+      lng: 121.24381
     },
     {
-      origin: {
-        lat: 14.1608523,
-        lng: 121.2449352
-      },
-      destination: {
-        lat: 14.1601432,
-        lng: 121.2444066
-      }
+      lat: 14.1608523,
+      lng: 121.2449352
     },
     {
-      origin: {
-        lat: 14.1601432,
-        lng: 121.2444066
-      },
-      destination: {
-        lat: 14.1597934,
-        lng: 121.2436166
-      }
+      lat: 14.1601432,
+      lng: 121.2444066
     },
     {
-      origin: {
-        lat: 14.1597934,
-        lng: 121.2436166
-      },
-      destination: {
-        lat: 14.1614215,
-        lng: 121.2424934
-      }
+      lat: 14.1597934,
+      lng: 121.2436166
     },
     {
-      origin: {
-        lat: 14.1614215,
-        lng: 121.2424934
-      },
-      destination: {
-        lat: 14.1609739,
-        lng: 121.2414561
-      }
+      lat: 14.1614215,
+      lng: 121.2424934
     },
     {
-      origin: {
-        lat: 14.1609739,
-        lng: 121.2414561
-      },
-      destination: {
-        lat: 14.1612352,
-        lng: 121.24092
-      }
+      lat: 14.1609739,
+      lng: 121.2414561
     },
     {
-      origin: {
-        lat: 14.1612352,
-        lng: 121.24092
-      },
-      destination: {
-        lat: 14.1622763,
-        lng: 121.2404891
-      }
+      lat: 14.1612352,
+      lng: 121.24092
     },
     {
-      origin: {
-        lat: 14.1622763,
-        lng: 121.2404891
-      },
-      destination: {
-        lat: 14.1636534,
-        lng: 121.2400171
-      }
+      lat: 14.1622763,
+      lng: 121.2404891
     },
     {
-      origin: {
-        lat: 14.1636534,
-        lng: 121.2400171
-      },
-      destination: {
-        lat: 14.1654236,
-        lng: 121.2385843
-      }
+      lat: 14.1636534,
+      lng: 121.2400171
     },
     {
-      origin: {
-        lat: 14.1654236,
-        lng: 121.2385843
-      },
-      destination: {
-        lat: 14.1662999,
-        lng: 121.23857
-      }
+      lat: 14.1654236,
+      lng: 121.2385843
     },
     {
-      origin: {
-        lat: 14.1662999,
-        lng: 121.23857
-      },
-      destination: {
-        lat: 14.1669733,
-        lng: 121.2399398
-      }
+      lat: 14.1662999,
+      lng: 121.23857
     },
     {
-      origin: {
-        lat: 14.1669733,
-        lng: 121.2399398
-      },
-      destination: {
-        lat: 14.1673357,
-        lng: 121.2407525
-      }
+      lat: 14.1669733,
+      lng: 121.2399398
     },
     {
-      origin: {
-        lat: 14.1673357,
-        lng: 121.2407525
-      },
-      destination: {
-        lat: 14.1677242,
-        lng: 121.2416524
-      }
+      lat: 14.1673357,
+      lng: 121.2407525
     },
     {
-      origin: {
-        lat: 14.1677242,
-        lng: 121.2416524
-      },
-      destination: {
-        lat: 14.1675438,
-        lng: 121.2429887
-      }
+      lat: 14.1677242,
+      lng: 121.2416524
     },
     {
-      origin: {
-        lat: 14.1676036,
-        lng: 121.2430325
-      },
-      destination: {
-        lat: 14.1676533,
-        lng: 121.241397
-      }
+      lat: 14.1675438,
+      lng: 121.2429887
+    }
+  ],
+  kananStops: [
+    {
+      lat: 14.1676036,
+      lng: 121.2430325
     },
     {
-      origin: {
-        lat: 14.1676533,
-        lng: 121.241397
-      },
-      destination: {
-        lat: 14.1671303,
-        lng: 121.2401897
-      }
+      lat: 14.1676533,
+      lng: 121.241397
     },
     {
-      origin: { lat: 14.1671303, lng: 121.2401897 },
-      destination: {
-        lat: 14.1665156,
-        lng: 121.2387514
-      }
+      lat: 14.1671303,
+      lng: 121.2401897
     },
     {
-      origin: {
-        lat: 14.1665156,
-        lng: 121.2387514
-      },
-      destination: {
-        lat: 14.1654993,
-        lng: 121.2385293
-      }
+      lat: 14.1665156,
+      lng: 121.2387514
     },
     {
-      origin: {
-        lat: 14.1654993,
-        lng: 121.2385293
-      },
-      destination: {
-        lat: 14.1637471,
-        lng: 121.2399205
-      }
+      lat: 14.1654993,
+      lng: 121.2385293
     },
     {
-      origin: {
-        lat: 14.1637471,
-        lng: 121.2399205
-      },
-      destination: {
-        lat: 14.1622763,
-        lng: 121.2404891
-      }
+      lat: 14.1637471,
+      lng: 121.2399205
     },
     {
-      origin: {
-        lat: 14.1622763,
-        lng: 121.2404891
-      },
-      destination: {
-        lat: 14.161687,
-        lng: 121.2408855
-      }
+      lat: 14.1622763,
+      lng: 121.2404891
     },
     {
-      origin: {
-        lat: 14.161687,
-        lng: 121.2408855
-      },
-      destination: {
-        lat: 14.1612352,
-        lng: 121.24092
-      }
+      lat: 14.161687,
+      lng: 121.2408855
     },
     {
-      origin: {
-        lat: 14.1612352,
-        lng: 121.24092
-      },
-      destination: {
-        lat: 14.1613905,
-        lng: 121.2422655
-      }
+      lat: 14.1612352,
+      lng: 121.24092
     },
     {
-      origin: {
-        lat: 14.1613905,
-        lng: 121.2422655
-      },
-      destination: {
-        lat: 14.1598585,
-        lng: 121.2434548
-      }
+      lat: 14.1613905,
+      lng: 121.2422655
     },
     {
-      origin: {
-        lat: 14.1598585,
-        lng: 121.2434548
-      },
-      destination: {
-        lat: 14.160215,
-        lng: 121.2446384
-      }
+      lat: 14.1598585,
+      lng: 121.2434548
     },
     {
-      origin: {
-        lat: 14.160215,
-        lng: 121.2446384
-      },
-      destination: {
-        lat: 14.1609052,
-        lng: 121.245038
-      }
+      lat: 14.160215,
+      lng: 121.2446384
     },
     {
-      origin: {
-        lat: 14.1609052,
-        lng: 121.245038
-      },
-      destination: {
-        lat: 14.1626702,
-        lng: 121.2438536
-      }
+      lat: 14.1609052,
+      lng: 121.245038
     },
     {
-      origin: {
-        lat: 14.1626702,
-        lng: 121.2438536
-      },
-      destination: {
-        lat: 14.1634643,
-        lng: 121.2437679
-      }
+      lat: 14.1626702,
+      lng: 121.2438536
     },
     {
-      origin: {
-        lat: 14.1634643,
-        lng: 121.2437679
-      },
-      destination: {
-        lat: 14.1650861,
-        lng: 121.2446069
-      }
+      lat: 14.1634643,
+      lng: 121.2437679
     },
     {
-      origin: {
-        lat: 14.1650861,
-        lng: 121.2446069
-      },
-      destination: {
-        lat: 14.1670048,
-        lng: 121.2437459
-      }
+      lat: 14.1650861,
+      lng: 121.2446069
+    },
+    {
+      lat: 14.1670048,
+      lng: 121.2437459
     }
   ]
 };
@@ -624,39 +433,102 @@ class Seeder {
         uid: "sxdtxH1nOiYizjEMFKjK2EtFruk1"
       }
     });
-    for (let route of seedData.stopRoutes) {
-      let { origin, destination } = route;
-      const searchString = `${origin.lng},${origin.lat};${destination.lng},${
-        destination.lat
-      }`;
-      const {
-        data: { routes: paths }
-      } = await axios.get(`${driving}/${searchString}?overview=full`);
-      const { geometry, distance, duration } = paths[0];
-      const startStop = await this.stopRepository.findOne(null, {
-        where: { ...origin }
+    const { kaliwaStops, kananStops } = seedData;
+    for (let i = 0; i < kaliwaStops.length; i++) {
+      const latLngs = [];
+      let totalDistance = 0;
+      let totalDuration = 0;
+      const routeOrigin = kaliwaStops[i];
+      const origin = await this.stopRepository.findOne(null, {
+        where: { ...routeOrigin }
       });
-      const endStop = await this.stopRepository.findOne(null, {
-        where: { ...destination }
+      for (let j = i + 1; j < kaliwaStops.length - 1; j++) {
+        const pathOrigin = kaliwaStops[j - 1];
+        const pathDestination = kaliwaStops[j];
+        const destination = await this.stopRepository.findOne(null, {
+          where: { ...pathDestination }
+        });
+        const searchString = `${pathOrigin.lng},${pathOrigin.lat};${
+          pathDestination.lng
+        },${pathDestination.lat}`;
+        const {
+          data: { routes: paths }
+        } = await axios.get(`${driving}/${searchString}?overview=full`);
+        const { geometry, distance, duration } = paths[0];
+        const legLatLngs = polyline.decode(geometry);
+        latLngs.push(...legLatLngs);
+        totalDistance += distance;
+        totalDuration += duration;
+        const totalGeometry = polyline.encode(latLngs);
+
+        const path = await this.pathRepository.save({
+          origin,
+          destination,
+          type: PathType.JEEP,
+          latLngs: polyline.decode(totalGeometry),
+          geometry: totalGeometry,
+          distance: totalDistance,
+          duration: totalDuration
+        });
+
+        await this.routeRepository.save({
+          origin,
+          destination,
+          paths: [path],
+          distance: totalDistance,
+          duration: totalDuration,
+          pathString: `${path.id}`,
+          contributor
+        });
+      }
+    }
+    for (let i = 0; i < kananStops.length; i++) {
+      const latLngs = [];
+      let totalDistance = 0;
+      let totalDuration = 0;
+      const routeOrigin = kananStops[i];
+      const origin = await this.stopRepository.findOne(null, {
+        where: { ...routeOrigin }
       });
-      const path = await this.pathRepository.save({
-        origin: startStop,
-        destination: endStop,
-        type: PathType.JEEP,
-        latLngs: polyline.decode(geometry),
-        geometry,
-        distance,
-        duration
-      });
-      await this.routeRepository.save({
-        origin: startStop,
-        destination: endStop,
-        paths: [path],
-        distance,
-        duration,
-        pathString: `${path.id}`,
-        contributor
-      });
+      for (let j = i + 1; j < kananStops.length - 1; j++) {
+        const pathOrigin = kananStops[j - 1];
+        const pathDestination = kananStops[j];
+        const destination = await this.stopRepository.findOne(null, {
+          where: { ...pathDestination }
+        });
+        const searchString = `${pathOrigin.lng},${pathOrigin.lat};${
+          pathDestination.lng
+        },${pathDestination.lat}`;
+        const {
+          data: { routes: paths }
+        } = await axios.get(`${driving}/${searchString}?overview=full`);
+        const { geometry, distance, duration } = paths[0];
+        const legLatLngs = polyline.decode(geometry);
+        latLngs.push(...legLatLngs);
+        totalDistance += distance;
+        totalDuration += duration;
+        const totalGeometry = polyline.encode(latLngs);
+
+        const path = await this.pathRepository.save({
+          origin,
+          destination,
+          type: PathType.JEEP,
+          latLngs: polyline.decode(totalGeometry),
+          geometry: totalGeometry,
+          distance: totalDistance,
+          duration: totalDuration
+        });
+
+        await this.routeRepository.save({
+          origin,
+          destination,
+          paths: [path],
+          distance: totalDistance,
+          duration: totalDuration,
+          pathString: `${path.id}`,
+          contributor
+        });
+      }
     }
   }
 }

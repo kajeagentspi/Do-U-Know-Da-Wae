@@ -37,6 +37,9 @@ export class Path {
   @Column({ type: "float", default: 0 })
   duration: number;
 
-  @Column({ default: null })
+  @Column({
+    type: "longtext",
+    default: null
+  })
   geometry: string;
 }
