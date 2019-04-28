@@ -1,7 +1,7 @@
 <template>
   <div v-if="!selectingOrigin && !selectingDestination">
     <q-card-actions>
-      <p class="text-h5">Add Indoor Path</p>
+      <p class="text-h5">Add Walking Path</p>
       <q-btn
         class="full-width godown"
         color="dukdw"
@@ -37,19 +37,25 @@
       />
     </q-card-actions>
     <q-card-section>
-      <q-input
-        class="godown"
-        v-model="instructions"
-        outlined
-        label="Enter Indoor Instructions Here"
-        type="textarea"
-        :disable="!origin && !destination"
+      <q-btn
+        class="full-width godown"
+        color="green"
+        label="Auto Mode"
+        :disable="!origin || !destination"
+        @click="autoMode"
+      />
+      <q-btn
+        class="full-width godown"
+        color="green"
+        label="Manual Mode"
+        :disable="!origin || !destination"
+        @click="manualMode"
       />
       <q-btn
         class="full-width"
         color="green"
         label="Add Path"
-        :disable="!origin && !destination && instructions.length === 0"
+        :disable="latLngs.length === 0"
         @click="addPath"
       />
     </q-card-section>
@@ -84,7 +90,7 @@ import L from "leaflet";
 import { mapMutations, mapState } from "vuex";
 
 export default {
-  name: "AddIndoorRoute",
+  name: "AddWalkRoute",
   props: ["oldDestination"],
   data() {
     return {
@@ -93,17 +99,37 @@ export default {
       destination: null,
       selectingOrigin: false,
       selectingDestination: false,
-      instructions: "",
+      latLngs: "",
       pois: null
     };
   },
   computed: {
-    ...mapState("map", ["mapInstance"])
+    ...mapState("map", ["mapInstance", "polygon"])
   },
   methods: {
     ...mapMutations("map", {
       changeView: CHANGE_VIEW
     }),
+    async autoMode() {
+      this.reset();
+      const origin = { ...this.origin };
+      const destination = { ...this.destination };
+      delete origin.marker;
+      delete destination.marker;
+      const { data } = await Api.allPath({
+        origin,
+        destination
+      });
+      this.latLngs = data[0].latLngs;
+      this.polyLine = L.polyline(this.latLngs, {
+        color: "blue"
+      }).addTo(this.mapInstance);
+    },
+    manualMode() {
+      this.reset();
+      const { lat, lng } = this.origin;
+      this.mapInstance.editTools.startPolyline(L.latLng(lat, lng));
+    },
     select(endType) {
       if (endType === "origin") {
         this.selectingOrigin = true;
@@ -114,55 +140,17 @@ export default {
       }
     },
     async POISearch(name) {
-      if (
-        this.origin &&
-        this.origin.type === "Building" &&
-        this.selectingDestination
-      ) {
-        return Api.allRoom({ name, buildingId: this.origin.id })
-          .then(result => {
-            this.pois = result.data;
-          })
-          .catch(() => {
-            this.$q.notify({
-              message: "An error occured",
-              color: "negative",
-              position: "top"
-            });
-          });
-      } else if (
-        this.origin &&
-        this.origin.type === "Room" &&
-        this.selectingDestination
-      ) {
-        return Api.allRoom({
-          name,
-          buildingId: this.origin.building.id,
-          building: true
+      return Api.buildingStop({ name })
+        .then(result => {
+          this.pois = result.data;
         })
-          .then(result => {
-            this.pois = result.data;
-          })
-          .catch(() => {
-            this.$q.notify({
-              message: "An error occured",
-              color: "negative",
-              position: "top"
-            });
+        .catch(() => {
+          this.$q.notify({
+            message: "An error occured",
+            color: "negative",
+            position: "top"
           });
-      } else {
-        return Api.roomBuilding({ name })
-          .then(result => {
-            this.pois = result.data;
-          })
-          .catch(() => {
-            this.$q.notify({
-              message: "An error occured",
-              color: "negative",
-              position: "top"
-            });
-          });
-      }
+        });
     },
     viewPOI(poi) {
       if (this.selectingOrigin) {
@@ -236,16 +224,34 @@ export default {
       const path = {
         origin: this.origin,
         destination: this.destination,
-        instructions: this.instructions,
-        type: "indoor"
+        latLngs: this.latLngs,
+        type: "walking"
       };
       this.$emit("addPath", path);
+    },
+    reset() {
+      if (this.polyLine) {
+        this.mapInstance.removeLayer(this.polyLine);
+      }
+      this.latLngs = [];
+    }
+  },
+  watch: {
+    async polygon(newValue) {
+      this.mapInstance.removeLayer(newValue);
+      this.latLngs = newValue.getLatLngs();
+      this.polyLine = L.polyline(this.latLngs, {
+        color: "blue"
+      }).addTo(this.mapInstance);
     }
   },
   mounted() {
     if (this.oldDestination) {
       this.origin = { ...this.oldDestination };
     }
+  },
+  beforeDestroy() {
+    // this.reset();
   }
 };
 </script>

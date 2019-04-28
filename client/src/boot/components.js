@@ -10,6 +10,7 @@ import {
   EditBuilding,
   AddRoute,
   AddIndoorRoute,
+  AddWalkRoute,
   ViewPathCard,
   User
 } from "../components";
@@ -27,5 +28,6 @@ export default ({ Vue }) => {
   Vue.component("view-path-card", ViewPathCard);
   Vue.component("add-route", AddRoute);
   Vue.component("add-indoor-route", AddIndoorRoute);
+  Vue.component("add-walk-route", AddWalkRoute);
   Vue.component("user", User);
 };

@@ -21,6 +21,7 @@ const map = {
 
     marker: null,
     polygon: null,
+    polyLine: null,
     drawing: false,
 
     viewing: false

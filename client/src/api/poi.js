@@ -9,3 +9,7 @@ export const allPOI = data => {
 export const roomBuilding = data => {
   return axios.get(`${baseURL}/api/roomBuilding?${qs.stringify(data)}`);
 };
+
+export const buildingStop = data => {
+  return axios.get(`${baseURL}/api/buildingStop?${qs.stringify(data)}`);
+};
