@@ -9,21 +9,23 @@ export class RoomController {
   private userRepository = getRepository(User);
 
   async all(request: Request, response: Response, next: NextFunction) {
-    let { name, buildingId, exact } = request.query;
+    let { name, buildingId, exact, building: flag } = request.query;
     if (!name) {
       name = "";
     }
-    if (buildingId) {
-      buildingId = "*";
-    }
+    const building = await this.buildingRepository.findOne(buildingId);
     if (exact) {
       return this.roomRepository.find({
-        where: { name, buildingId }
+        where: { name, building }
       });
     } else {
-      return this.roomRepository.find({
-        where: { name: Like(`%${name}%`), buildingId }
+      const rooms: any[] = await this.roomRepository.find({
+        where: { name: Like(`%${name}%`), building }
       });
+      if (flag) {
+        rooms.unshift(building);
+      }
+      return rooms;
     }
   }
 

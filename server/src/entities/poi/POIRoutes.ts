@@ -6,5 +6,11 @@ export const POIRoutes = [
     route: "/poi",
     controller: POIController,
     action: "all"
+  },
+  {
+    method: "get",
+    route: "/roomBuilding",
+    controller: POIController,
+    action: "roomBuilding"
   }
 ];

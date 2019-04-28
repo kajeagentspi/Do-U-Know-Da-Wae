@@ -33,4 +33,36 @@ export class POIController {
     );
     return pois;
   }
+
+  async rooms(request: Request, response: Response, next: NextFunction) {
+    const { buildingId } = request.query;
+    const { rooms } = await this.buildingRepository.findOne(buildingId, {
+      relations: ["rooms"]
+    });
+    console.log(rooms);
+  }
+
+  async roomBuilding(request: Request, response: Response, next: NextFunction) {
+    let { name } = request.query;
+    if (!name) {
+      name = "";
+    }
+    const pois = [];
+    pois.push(
+      ...(await this.buildingRepository.find({
+        where: [
+          {
+            name: Like(`%${name}%`)
+          },
+          { alternativeNames: Like(`%${name}%`) }
+        ],
+        relations: ["rooms"]
+      })),
+      ...(await this.roomRepository.find({
+        where: { name: Like(`%${name}%`) },
+        relations: ["building"]
+      }))
+    );
+    return pois;
+  }
 }
