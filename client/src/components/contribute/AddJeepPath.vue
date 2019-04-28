@@ -137,17 +137,31 @@ export default {
       }
     },
     async POISearch(name) {
-      return Api.buildingStop({ name })
-        .then(result => {
-          this.pois = result.data;
-        })
-        .catch(() => {
-          this.$q.notify({
-            message: "An error occured",
-            color: "negative",
-            position: "top"
+      if (this.origin) {
+        return Api.allStop({ name, direction: this.origin.direction })
+          .then(result => {
+            this.pois = result.data;
+          })
+          .catch(() => {
+            this.$q.notify({
+              message: "An error occured",
+              color: "negative",
+              position: "top"
+            });
           });
-        });
+      } else {
+        return Api.allStop({ name })
+          .then(result => {
+            this.pois = result.data;
+          })
+          .catch(() => {
+            this.$q.notify({
+              message: "An error occured",
+              color: "negative",
+              position: "top"
+            });
+          });
+      }
     },
     viewPOI(poi) {
       if (this.selectingOrigin) {
@@ -165,6 +179,7 @@ export default {
         this.selectingDestination = false;
         this.setDestination(poi);
       }
+      this.name = null;
       this.setView();
       if (this.origin && this.destination) {
         const origin = { ...this.origin };

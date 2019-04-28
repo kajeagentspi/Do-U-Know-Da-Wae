@@ -168,6 +168,7 @@ export default {
         this.selectingDestination = false;
         this.setDestination(poi);
       }
+      this.name = null;
       this.setView();
       if (this.origin && this.destination) {
         const origin = { ...this.origin };

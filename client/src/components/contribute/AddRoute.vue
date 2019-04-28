@@ -2,6 +2,12 @@
   <q-card-section v-if="mode === 'select'">
     <q-btn
       class="full-width godown"
+      color="green"
+      label="Submit"
+      :disabled="paths.length > 0"
+    />
+    <q-btn
+      class="full-width godown"
       color="dukdw"
       label="Add Indoor Path"
       @click="addIndoor"
