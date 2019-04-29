@@ -8,7 +8,7 @@
   "scripts": {
     "start": "quasar dev -m pwa -t mat",
     "build": "quasar build -m pwa -t mat",
-    "copy": "cp /home/kajeagentspi/dukdw/client/dist/pwa /home/kajeagentspi/dukdw/server/public -R",
+    "copy": "rm -rf /home/kajeagentspi/dukdw/server/public/*; cp /home/kajeagentspi/dukdw/client/dist/pwa/* /home/kajeagentspi/dukdw/server/public -R",
     "lint": "eslint --ext .js,.vue src --fix",
     "test": "echo \"No test specified\" && exit 0"
   },
