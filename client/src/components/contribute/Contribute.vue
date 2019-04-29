@@ -29,7 +29,13 @@
         class="full-width godown"
         color="dukdw"
         label="Add Room"
-        @click="changePage('room')"
+        @click="changePage('addroom')"
+      />
+      <q-btn
+        class="full-width godown"
+        color="dukdw"
+        label="Delete Room"
+        @click="changePage('deleteroom')"
       />
       <q-btn
         class="full-width godown"
@@ -44,7 +50,8 @@
         @click="changePage('jeepney')"
       />
     </q-card-section>
-    <add-room v-if="page === 'room'" />
+    <add-room v-if="page === 'addroom'" />
+    <delete-room v-else-if="page === 'deleteroom'" />
   </q-card>
 </template>
 

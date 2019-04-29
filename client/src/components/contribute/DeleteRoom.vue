@@ -15,22 +15,14 @@
       :rules="[roomSearch]"
       debounce="500"
     />
-    <q-input
-      class="godown"
-      outlined
-      type="number"
-      v-model.number="level"
-      label="Enter Room Level"
-      :disable="!selectedBuilding"
-    />
     <q-btn
       class="full-width"
       color="green"
-      label="Submit"
+      label="Delete Room"
       :disable="
-        !selectedBuilding || name.length === 0 || this.rooms.length !== 0
+        !selectedBuilding || name.length === 0 || this.rooms.length === 0
       "
-      @click="addRoom"
+      @click="deleteRoom"
     />
   </q-card-section>
 </template>
@@ -42,14 +34,13 @@ import { mapFields } from "vuex-map-fields";
 import * as Api from "../../api";
 
 export default {
-  name: "AddRoom",
+  name: "DeleteRoom",
   data() {
     return {
       selectedBuilding: null,
       buildings: [],
       rooms: [],
-      name: "",
-      level: 1
+      name: ""
     };
   },
   computed: {
@@ -65,9 +56,9 @@ export default {
         exact: true
       });
       this.rooms = request.data;
-      if (this.rooms.length !== 0) {
+      if (this.rooms.length === 0) {
         this.$q.notify({
-          message: "Room exists",
+          message: "Room does not exist",
           color: "negative"
         });
       }
@@ -88,16 +79,14 @@ export default {
         });
       }
     },
-    async addRoom() {
+    async deleteRoom() {
       try {
-        await Api.saveRoom({
-          buildingId: this.selectedBuilding.id,
+        await Api.removeRoom({
           accessToken: this.accessToken,
-          name: this.name,
-          level: this.level
+          id: this.rooms[0].id
         });
         this.$q.notify({
-          message: "Successfully added room",
+          message: "Successfully deleted room",
           color: "positive"
         });
       } catch (error) {

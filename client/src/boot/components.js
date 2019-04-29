@@ -5,6 +5,7 @@ import {
   Search,
   Contribute,
   AddRoom,
+  DeleteRoom,
   EditablePathCard,
   User
 } from "../components";
@@ -16,6 +17,7 @@ export default ({ Vue }) => {
   Vue.component("path-card", PathCard);
   Vue.component("contribute", Contribute);
   Vue.component("add-room", AddRoom);
+  Vue.component("delete-room", DeleteRoom);
   Vue.component("editable-path-card", EditablePathCard);
   Vue.component("user", User);
 };

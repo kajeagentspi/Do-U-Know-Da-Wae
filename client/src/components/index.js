@@ -6,5 +6,6 @@ export { default as RouteCard } from "./global/RouteCard";
 export { default as PathCard } from "./global/PathCard";
 export { default as Contribute } from "./contribute/Contribute";
 export { default as AddRoom } from "./contribute/AddRoom";
+export { default as DeleteRoom } from "./contribute/DeleteRoom";
 export { default as EditablePathCard } from "./global/EditablePathCard";
 export { default as User } from "./user/User";
