@@ -16,10 +16,7 @@
       />
     </q-page-sticky>
     <div id="map"></div>
-    <div
-      :class="drawing ? 'full' : viewing ? 'viewing' : 'search'"
-      ref="visibleMap"
-    ></div>
+    <div :class="drawing ? 'full' : viewing ? 'viewing' : 'search'" ref="visibleMap"></div>
   </div>
 </template>
 
@@ -170,7 +167,6 @@ export default {
     position: absolute;
     z-index: 10;
     pointer-events: none;
-    border-style: solid;
   }
   .full {
     top: 0px;
@@ -180,7 +176,6 @@ export default {
     position: absolute;
     z-index: 10;
     pointer-events: none;
-    border-style: solid;
   }
 }
 @media (max-width: 640px) {
@@ -192,7 +187,7 @@ export default {
     bottom: calc(60%);
     position: absolute;
     z-index: 10;
-    border-style: solid;
+
     pointer-events: none;
   }
   .full {
@@ -203,7 +198,6 @@ export default {
     position: absolute;
     z-index: 10;
     pointer-events: none;
-    border-style: solid;
   }
 }
 .front {
