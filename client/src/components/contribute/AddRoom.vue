@@ -12,6 +12,7 @@
       v-model="name"
       label="Enter Room Name"
       :disable="!selectedBuilding"
+      :rules="[roomSearch]"
     />
     <q-input
       class="godown"
@@ -25,7 +26,7 @@
       class="full-width"
       color="green"
       label="Submit"
-      :disable="!selectedBuilding && name.length === 0"
+      :disable="!selectedBuilding || name.length === 0 || this.rooms.length !== 0"
       @click="addRoom"
     />
   </q-card-section>
@@ -43,6 +44,7 @@ export default {
     return {
       selectedBuilding: null,
       buildings: [],
+      rooms: [],
       name: "",
       level: 1
     };
@@ -53,6 +55,20 @@ export default {
     ...mapFields("map", ["drawing", "marker"])
   },
   methods: {
+    async roomSearch() {
+      const request = await Api.allRoom({
+        name: this.name,
+        buildingId: this.selectedBuilding.id,
+        exact: true
+      });
+      this.rooms = request.data;
+      if (this.rooms.length !== 0) {
+        this.$q.notify({
+          message: "Room exists",
+          color: "negative"
+        });
+      }
+    },
     async getBuildings() {
       try {
         const { data } = await Api.allBuilding();
