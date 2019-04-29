@@ -204,7 +204,7 @@ export class RouteController {
         const origin = dbPaths[0].origin;
         const destination = dbPaths[dbPaths.length - 1].destination;
         const pathIDs = dbPaths.map(path => path.id);
-        await this.routeRepository.save({
+        const saved = await this.routeRepository.save({
           origin,
           destination,
           paths: dbPaths,
@@ -212,6 +212,16 @@ export class RouteController {
           contributor: user,
           distance,
           duration
+        });
+        return this.routeRepository.findOne(saved.id, {
+          relations: [
+            "origin",
+            "destination",
+            "paths",
+            "paths.origin",
+            "paths.destination",
+            "contributor"
+          ]
         });
       } else {
         return {
