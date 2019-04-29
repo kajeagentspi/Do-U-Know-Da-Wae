@@ -48,9 +48,8 @@ export class RoomController {
         accessToken,
         id
       } = request.body;
-      // const { uid } = await admin.auth().verifyIdToken(accessToken);
-      // const { type } = await this.userRepository.findOne({ uid });
-      const type = "admin"; //remove this boi
+      const { uid } = await admin.auth().verifyIdToken(accessToken);
+      const { type } = await this.userRepository.findOne({ uid });
       if (type === "admin" || type === "contributor") {
         if (id) {
           const room = await this.roomRepository.findOne(id);
