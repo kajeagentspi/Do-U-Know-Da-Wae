@@ -7,7 +7,8 @@ import {
   Building,
   Route,
   Path,
-  PathType
+  PathType,
+  Room
 } from "../entities";
 import buildings from "./buildings";
 import polygonCenter from "geojson-polygon-center";
@@ -379,6 +380,96 @@ const seedData = {
       lat: 14.1670048,
       lng: 121.2437459
     }
+  ],
+  rooms: [
+    { name: "CAS 101", level: 1, buildingCode: "way/33541786" },
+    { name: "CAS 102", level: 1, buildingCode: "way/33541786" },
+    { name: "CAS 103", level: 1, buildingCode: "way/33541786" },
+    { name: "CAS 108", level: 1, buildingCode: "way/33541786" },
+    { name: "CAS 109", level: 1, buildingCode: "way/33541786" },
+    { name: "CAS 110", level: 1, buildingCode: "way/33541786" },
+    { name: "CAS B01", level: -1, buildingCode: "way/33541786" },
+    { name: "CAS B02", level: -1, buildingCode: "way/33541786" },
+    { name: "CAS B03", level: -1, buildingCode: "way/33541786" },
+    { name: "CAS B04", level: -1, buildingCode: "way/33541786" },
+    { name: "CAS B05", level: -1, buildingCode: "way/33541786" },
+    { name: "CAS B06", level: -1, buildingCode: "way/33541786" },
+    { name: "CAS B07", level: -1, buildingCode: "way/33541786" },
+    { name: "CAS B08", level: -1, buildingCode: "way/33541786" },
+    { name: "CAS B09", level: -1, buildingCode: "way/33541786" },
+    { name: "CAS B10", level: -1, buildingCode: "way/33541786" },
+    { name: "CAS A1 302", level: 3, buildingCode: "relation/1066549" },
+    { name: "CAS A1 303", level: 3, buildingCode: "relation/1066549" },
+    { name: "CAS A1 304", level: 3, buildingCode: "relation/1066549" },
+    { name: "CAS A1 305", level: 3, buildingCode: "relation/1066549" },
+    { name: "CAS A1 306", level: 3, buildingCode: "relation/1066549" },
+    { name: "CAS A1 402", level: 4, buildingCode: "relation/1066549" },
+    { name: "CAS A1 403", level: 4, buildingCode: "relation/1066549" },
+    { name: "CAS A1 404", level: 4, buildingCode: "relation/1066549" },
+    { name: "CAS A1 405", level: 4, buildingCode: "relation/1066549" },
+    { name: "CAS A1 406", level: 4, buildingCode: "relation/1066549" },
+    { name: "CAS A1 407", level: 4, buildingCode: "relation/1066549" },
+    { name: "CAS A1 408", level: 4, buildingCode: "relation/1066549" },
+    { name: "CAS A1 409", level: 4, buildingCode: "relation/1066549" },
+    { name: "CAS A1 410", level: 4, buildingCode: "relation/1066549" },
+    { name: "CAS A1 Gal1", level: 1, buildingCode: "relation/1066549" },
+    { name: "CAS A1 Gal2", level: 1, buildingCode: "relation/1066549" },
+    { name: "CAS A2 101", level: 1, buildingCode: "way/486667196" },
+    { name: "CAS A2 102", level: 1, buildingCode: "way/486667196" },
+    { name: "CAS A2 103", level: 1, buildingCode: "way/486667196" },
+    { name: "CAS A2 201", level: 2, buildingCode: "way/486667196" },
+    { name: "CAS A2 202", level: 2, buildingCode: "way/486667196" },
+    { name: "CAS A2 203", level: 2, buildingCode: "way/486667196" },
+    { name: "CAS ANNEX 2 MPH 1", level: 1, buildingCode: "way/486667196" },
+    { name: "CAS ANNEX 2 MPH 2", level: 2, buildingCode: "way/486667196" },
+    { name: "ICS GS Rm", level: 3, buildingCode: "way/44076412" },
+    { name: "ICS PC1", level: 2, buildingCode: "way/44076412" },
+    { name: "ICS PC2", level: 2, buildingCode: "way/44076412" },
+    { name: "ICS PC3", level: 2, buildingCode: "way/44076412" },
+    { name: "ICS PC4", level: 2, buildingCode: "way/44076412" },
+    { name: "ICS PC5", level: 2, buildingCode: "way/44076412" },
+    { name: "ICS PC6", level: 3, buildingCode: "way/44076412" },
+    { name: "ICS PC7", level: 3, buildingCode: "way/44076412" },
+    { name: "ICS PC8", level: 3, buildingCode: "way/44076412" },
+    { name: "ICS PC9", level: 3, buildingCode: "way/44076412" },
+    { name: "ICS PS C-100", level: 2, buildingCode: "way/44076412" },
+    { name: "ICSLH3", level: 3, buildingCode: "way/44076412" },
+    { name: "ICSLH4", level: 3, buildingCode: "way/44076412" },
+    { name: "ICSMH", level: 2, buildingCode: "way/44076412" },
+    { name: "PS A-102", level: 1, buildingCode: "way/44076412" },
+    { name: "PS A-105", level: 1, buildingCode: "way/44076412" },
+    { name: "PS A-121", level: 1, buildingCode: "way/44076412" },
+    { name: "PS A-124", level: 1, buildingCode: "way/44076412" },
+    { name: "PS A-127", level: 1, buildingCode: "way/44076412" },
+    { name: "PS A-133", level: 1, buildingCode: "way/44076412" },
+    { name: "PS A-225", level: 2, buildingCode: "way/44076412" },
+    { name: "PS A-227", level: 2, buildingCode: "way/44076412" },
+    { name: "PS A-232", level: 2, buildingCode: "way/44076412" },
+    { name: "PS A-305", level: 3, buildingCode: "way/44076412" },
+    { name: "PS A-311", level: 3, buildingCode: "way/44076412" },
+    { name: "PS A-321", level: 3, buildingCode: "way/44076412" },
+    { name: "PS B-100", level: 1, buildingCode: "way/44076412" },
+    { name: "PS B-101", level: 1, buildingCode: "way/44076412" },
+    { name: "PS B-103", level: 1, buildingCode: "way/44076412" },
+    { name: "PS B-200", level: 2, buildingCode: "way/44076412" },
+    { name: "PS B-201", level: 2, buildingCode: "way/44076412" },
+    { name: "PS B-203", level: 2, buildingCode: "way/44076412" },
+    { name: "PS B-204", level: 2, buildingCode: "way/44076412" },
+    { name: "PS B-205", level: 2, buildingCode: "way/44076412" },
+    { name: "PS B-309", level: 3, buildingCode: "way/44076412" },
+    { name: "PS C-101", level: 1, buildingCode: "way/44076412" },
+    { name: "PS C-203", level: 2, buildingCode: "way/44076412" },
+    { name: "PS C-204", level: 2, buildingCode: "way/44076412" },
+    { name: "PS C-206", level: 2, buildingCode: "way/44076412" },
+    { name: "PS C-212", level: 2, buildingCode: "way/44076412" },
+    { name: "PS C-214", level: 2, buildingCode: "way/44076412" },
+    { name: "PS C-304", level: 3, buildingCode: "way/44076412" },
+    { name: "PS C-306", level: 3, buildingCode: "way/44076412" },
+    { name: "PS C-307", level: 3, buildingCode: "way/44076412" },
+    { name: "PS C-309", level: 3, buildingCode: "way/44076412" },
+    { name: "PS C-312", level: 3, buildingCode: "way/44076412" },
+    { name: "PSLH A", level: 1, buildingCode: "way/44076412" },
+    { name: "PSLH B", level: 1, buildingCode: "way/44076412" }
   ]
 };
 
@@ -388,7 +479,7 @@ class Seeder {
   private userRepository = getRepository(User);
   private routeRepository = getRepository(Route);
   private pathRepository = getRepository(Path);
-
+  private roomRepository = getRepository(Room);
   async seedUsers() {
     await Promise.all(
       seedData.users.map(user => {
@@ -529,6 +620,22 @@ class Seeder {
           contributor
         });
       }
+    }
+  }
+
+  async seedRooms() {
+    for (let room of seedData.rooms) {
+      const { name, buildingCode, level } = room;
+      const building = await this.buildingRepository.findOne(null, {
+        where: {
+          buildingCode
+        }
+      });
+      await this.roomRepository.save({
+        name,
+        level,
+        building
+      });
     }
   }
 }
