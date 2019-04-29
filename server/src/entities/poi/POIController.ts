@@ -17,18 +17,18 @@ export class POIController {
       ...(await this.buildingRepository.find({
         where: [
           {
-            name: Like(`${name}%`)
+            name: Like(`%${name}%`)
           },
-          { alternativeNames: Like(`${name}%`) }
+          { alternativeNames: Like(`%${name}%`) }
         ],
         relations: ["rooms"]
       })),
       ...(await this.roomRepository.find({
-        where: { name: Like(`${name}%`) },
+        where: { name: Like(`%${name}%`) },
         relations: ["building"]
       })),
       ...(await this.stopRepository.find({
-        where: { name: Like(`${name}%`) }
+        where: { name: Like(`%${name}%`) }
       }))
     );
     return pois;
@@ -52,14 +52,14 @@ export class POIController {
       ...(await this.buildingRepository.find({
         where: [
           {
-            name: Like(`${name}%`)
+            name: Like(`%${name}%`)
           },
-          { alternativeNames: Like(`${name}%`) }
+          { alternativeNames: Like(`%${name}%`) }
         ],
         relations: ["rooms"]
       })),
       ...(await this.stopRepository.find({
-        where: { name: Like(`${name}%`) }
+        where: { name: Like(`%${name}%`) }
       }))
     );
     return pois;
@@ -75,14 +75,14 @@ export class POIController {
       ...(await this.buildingRepository.find({
         where: [
           {
-            name: Like(`${name}%`)
+            name: Like(`%${name}%`)
           },
-          { alternativeNames: Like(`${name}%`) }
+          { alternativeNames: Like(`%${name}%`) }
         ],
         relations: ["rooms"]
       })),
       ...(await this.roomRepository.find({
-        where: { name: Like(`${name}%`) },
+        where: { name: Like(`%${name}%`) },
         relations: ["building"]
       }))
     );
