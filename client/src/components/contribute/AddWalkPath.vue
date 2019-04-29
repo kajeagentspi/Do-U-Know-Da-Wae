@@ -100,7 +100,9 @@ export default {
       selectingOrigin: false,
       selectingDestination: false,
       latLngs: "",
-      pois: null
+      pois: null,
+      distance: 0,
+      duration: 0
     };
   },
   computed: {
@@ -121,6 +123,8 @@ export default {
         destination
       });
       this.latLngs = data[0].latLngs;
+      this.distance = data[0].distance;
+      this.duration = data[0].duration;
       this.polyLine = L.polyline(this.latLngs, {
         color: "blue"
       }).addTo(this.mapInstance);
@@ -128,6 +132,8 @@ export default {
     manualMode() {
       this.reset();
       const { lat, lng } = this.origin;
+      this.duration = 0;
+      this.distance = 0;
       this.mapInstance.editTools.startPolyline(L.latLng(lat, lng));
     },
     select(endType) {
@@ -223,6 +229,8 @@ export default {
     },
     addPath() {
       const path = {
+        duration: this.duration,
+        distance: this.distance,
         origin: this.origin,
         destination: this.destination,
         latLngs: this.latLngs,

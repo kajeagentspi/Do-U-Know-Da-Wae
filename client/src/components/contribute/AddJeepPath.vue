@@ -93,6 +93,7 @@ export default {
       selectingOrigin: false,
       selectingDestination: false,
       latLngs: "",
+      id: null,
       pois: null
     };
   },
@@ -116,6 +117,7 @@ export default {
           type: "Jeep"
         });
         this.latLngs = data[0].latLngs;
+        this.id = data[0].id;
         this.polyLine = L.polyline(this.latLngs, {
           color: "blue"
         }).addTo(this.mapInstance);
@@ -234,6 +236,7 @@ export default {
     },
     addPath() {
       const path = {
+        id: this.id,
         origin: this.origin,
         destination: this.destination,
         latLngs: this.latLngs,

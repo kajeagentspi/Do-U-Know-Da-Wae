@@ -4,7 +4,8 @@
       class="full-width godown"
       color="green"
       label="Submit"
-      :disabled="paths.length > 0"
+      :disabled="paths.length === 0"
+      @click="submit"
     />
     <q-btn
       class="full-width godown"
@@ -56,6 +57,8 @@
 </template>
 
 <script>
+import * as Api from "../../api";
+import { mapState } from "vuex";
 export default {
   name: "AddRoute",
   data() {
@@ -63,6 +66,10 @@ export default {
       paths: [],
       mode: "select"
     };
+  },
+  computed: {
+    ...mapState("user", ["accessToken"]),
+    ...mapState("map", ["mapInstance"])
   },
   methods: {
     addIndoor() {
@@ -78,6 +85,65 @@ export default {
       this.paths.unshift(path);
       console.log(path);
       this.mode = "select";
+    },
+    async submit() {
+      this.paths.forEach(path => {
+        const { origin, destination, polyLine } = path;
+        if (origin && origin.marker) {
+          this.mapInstance.removeLayer(origin.marker);
+          delete path.origin.marker;
+        }
+        if (destination && destination.marker) {
+          this.mapInstance.removeLayer(destination.marker);
+          delete path.destination.marker;
+        }
+        if (polyLine) {
+          this.mapInstance.removeLayer(polyLine);
+          delete path.polyLine;
+        }
+      });
+      this.$q
+        .dialog({
+          title: "Confirm",
+          message:
+            "Submitting a fake route would result to a permanent ban. Would you like to continue?",
+          ok: {
+            push: true
+          },
+          cancel: {
+            color: "negative"
+          },
+          persistent: true
+        })
+        .onOk(async () => {
+          try {
+            await Api.saveRoute({
+              paths: this.paths,
+              accessToken: this.accessToken
+            });
+            this.$q.notify({
+              message: "Successfully created route",
+              color: "positive",
+              position: "top"
+            });
+          } catch (error) {
+            this.$q.notify({
+              message: "Create route failed",
+              color: "negative",
+              position: "top"
+            });
+          }
+          this.mapInstance.eachLayer(layer => {
+            this.mapInstance.removeLayer(layer);
+          });
+          this.paths = [];
+        });
+    },
+    reset() {
+      this.mapInstance.eachLayer(layer => {
+        this.mapInstance.removeLayer(layer);
+      });
+      this.paths = [];
     }
   }
 };
