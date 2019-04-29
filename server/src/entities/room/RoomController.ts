@@ -9,16 +9,22 @@ export class RoomController {
   private userRepository = getRepository(User);
 
   async all(request: Request, response: Response, next: NextFunction) {
-    let { name, buildingId } = request.query;
+    let { name, buildingId, exact } = request.query;
     if (!name) {
       name = "";
     }
     if (buildingId) {
       buildingId = "*";
     }
-    return this.roomRepository.find({
-      where: { name: Like(`%${name}%`), buildingId }
-    });
+    if (exact) {
+      return this.roomRepository.find({
+        where: { name, buildingId }
+      });
+    } else {
+      return this.roomRepository.find({
+        where: { name: Like(`%${name}%`), buildingId }
+      });
+    }
   }
 
   async one(request: Request, response: Response, next: NextFunction) {
