@@ -93,7 +93,8 @@ export default {
   data() {
     return {
       selectedRoute: null,
-      selectedRouteIndex: null
+      selectedRouteIndex: null,
+      routes: []
     };
   },
   methods: {
@@ -113,7 +114,6 @@ export default {
           /* forceRefresh */ true
         );
         await this.setUser({ profile, accessToken, user });
-        console.log("fdfefd");
         this.drawLines();
         this.$q.notify({
           message: "Successfully Logged in",
@@ -151,16 +151,16 @@ export default {
         this.changeView({
           coordinates: [
             {
-              lat: this.bookmarks[routeIndex].origin.lat,
-              lng: this.bookmarks[routeIndex].origin.lng
+              lat: this.routes[routeIndex].origin.lat,
+              lng: this.routes[routeIndex].origin.lng
             },
             {
-              lat: this.bookmarks[routeIndex].destination.lat,
-              lng: this.bookmarks[routeIndex].destination.lng
+              lat: this.routes[routeIndex].destination.lat,
+              lng: this.routes[routeIndex].destination.lng
             }
           ]
         });
-        this.bookmarks.forEach(route => {
+        this.routes.forEach(route => {
           route.paths.forEach(path => {
             if (path.polyLine) {
               path.polyLine.setStyle({ opacity: 1 });
@@ -171,24 +171,24 @@ export default {
         this.changeView({
           coordinates: [
             {
-              lat: this.bookmarks[routeIndex].origin.lat,
-              lng: this.bookmarks[routeIndex].origin.lng
+              lat: this.routes[routeIndex].origin.lat,
+              lng: this.routes[routeIndex].origin.lng
             },
             {
-              lat: this.bookmarks[routeIndex].destination.lat,
-              lng: this.bookmarks[routeIndex].destination.lng
+              lat: this.routes[routeIndex].destination.lat,
+              lng: this.routes[routeIndex].destination.lng
             }
           ]
         });
-        for (let i = 0; i < this.bookmarks.length; i++) {
+        for (let i = 0; i < this.routes.length; i++) {
           if (i === routeIndex) {
-            this.bookmarks[i].paths.forEach(path => {
+            this.routes[i].paths.forEach(path => {
               if (path.polyLine) {
                 path.polyLine.setStyle({ opacity: 1 });
               }
             });
           } else {
-            this.bookmarks[i].paths.forEach(path => {
+            this.routes[i].paths.forEach(path => {
               if (path.polyLine) {
                 path.polyLine.setStyle({ opacity: 0 });
               }
@@ -197,26 +197,26 @@ export default {
         }
       } else {
         let activePath;
-        for (let i = 0; i < this.bookmarks.length; i++) {
+        for (let i = 0; i < this.routes.length; i++) {
           if (i === routeIndex) {
-            for (let j = 0; j < this.bookmarks[i].paths.length; j++) {
+            for (let j = 0; j < this.routes[i].paths.length; j++) {
               if (j === pathIndex) {
-                activePath = this.bookmarks[i].paths[j];
-                if (this.bookmarks[i].paths[j].polyLine) {
-                  this.bookmarks[i].paths[j].polyLine.setStyle({
+                activePath = this.routes[i].paths[j];
+                if (this.routes[i].paths[j].polyLine) {
+                  this.routes[i].paths[j].polyLine.setStyle({
                     opacity: 1
                   });
                 }
               } else {
-                if (this.bookmarks[i].paths[j].polyLine) {
-                  this.bookmarks[i].paths[j].polyLine.setStyle({
+                if (this.routes[i].paths[j].polyLine) {
+                  this.routes[i].paths[j].polyLine.setStyle({
                     opacity: 0.5
                   });
                 }
               }
             }
           } else {
-            this.bookmarks[i].paths.forEach(path => {
+            this.routes[i].paths.forEach(path => {
               if (path.polyLine) {
                 path.polyLine.setStyle({ opacity: 0 });
               }
@@ -253,8 +253,8 @@ export default {
     },
     reset() {
       this.selectedRoute = null;
-      if (this.bookmarks) {
-        this.bookmarks.forEach(route => {
+      if (this.routes) {
+        this.routes.forEach(route => {
           route.paths.forEach(path => {
             if (path.polyLine) {
               this.mapInstance.removeLayer(path.polyLine);
@@ -265,37 +265,33 @@ export default {
     },
     drawLines() {
       const colors = [];
-      this.bookmarks = this.bookmarks.map(route => {
+      this.bookmarks.forEach(route => {
+        const newRoute = JSON.parse(JSON.stringify(route));
         let color = randomColor().hexString();
         while (color in colors) {
           color = randomColor(0.99, 0.99).hexString();
         }
-        route.color = color;
-        route.paths.forEach(path => {
+        newRoute.color = color;
+        newRoute.paths = newRoute.paths.map(path => {
           if (path.latLngs) {
             path.polyLine = L.polyline(path.latLngs, {
               color
             }).addTo(this.mapInstance);
           }
+          return path;
         });
-        return route;
+        this.routes.push(newRoute);
       });
     }
   },
   mounted() {
     if (this.accessToken) {
       this.getUser();
-      if (this.bookmarks) {
-        this.bookmarks.forEach(route => {
-          route.paths.forEach(path => {
-            if (path.polyLine) {
-              this.mapInstance.removeLayer(path.polyLine);
-            }
-          });
-        });
-      }
       this.drawLines();
     }
+  },
+  beforeDestroy() {
+    this.reset();
   }
 };
 </script>

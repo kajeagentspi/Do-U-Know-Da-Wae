@@ -43,7 +43,7 @@ module.exports = function(ctx) {
       directives: ["Ripple"],
 
       // Quasar plugins
-      plugins: ["Notify"]
+      plugins: ["Notify", "Dialog"]
 
       // iconSet: ctx.theme.mat ? 'material-icons' : 'ionicons'
       // i18n: 'de' // Quasar language
@@ -53,7 +53,7 @@ module.exports = function(ctx) {
 
     build: {
       scopeHoisting: true,
-      // vueRouterMode: "history",
+      vueRouterMode: "history",
       // vueCompiler: true,
       // gzip: true,
       // analyze: true,
@@ -85,9 +85,9 @@ module.exports = function(ctx) {
       workboxPluginMode: "InjectManifest",
       workboxOptions: {},
       manifest: {
-        // name: 'Quasar App',
-        // short_name: 'Quasar-PWA',
-        // description: 'Best PWA App in town!',
+        name: "Do U Know Da Wae",
+        short_name: "DUKDW",
+        description: "Crowdsourced UPLB Campus Map",
         display: "standalone",
         orientation: "portrait",
         background_color: "#ffffff",

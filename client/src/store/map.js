@@ -20,6 +20,8 @@ const map = {
     GPSTracking: false,
 
     marker: null,
+    polygon: null,
+    polyLine: null,
     drawing: false,
 
     viewing: false
@@ -32,7 +34,7 @@ const map = {
     [INITIALIZE_MAP]: state => {
       state.mapInstance = L.map("map", {
         zoomControl: false,
-        minZoom: 17,
+        minZoom: 14,
         maxZoom: 21,
         // maxBounds: [
         //   { lat: 14.171030846860607, lng: 121.26183271408082 },
@@ -66,25 +68,6 @@ const map = {
     }
   },
   actions: {
-    // createRoom: async (context, data) => {
-    //   try {
-    //     const { name, buildingName } = data;
-    //     const { accessToken } = context.rootState.auth;
-    //     await Api.addRoom({ ...data, accessToken });
-    //     Notify.create({
-    //       message: `Successfully created room ${name} on ${buildingName}`,
-    //       color: "positive",
-    //       position: "top"
-    //     });
-    //   } catch (error) {
-    //     console.log(error);
-    //     Notify.create({
-    //       message: "An error occured",
-    //       color: "negative",
-    //       position: "top"
-    //     });
-    //   }
-    // },
     initializeMap: async context => {
       context.commit(INITIALIZE_MAP);
     }

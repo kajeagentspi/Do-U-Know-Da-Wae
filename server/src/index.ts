@@ -7,7 +7,7 @@ import cors from "cors";
 import firebaseAccountCredentials from "./firebase.config.json";
 import { Request, Response } from "express";
 import { Routes } from "./routes";
-import { Stop, User, Building } from "./entities";
+import { Stop, User, Building, Route, Room } from "./entities";
 import Seeder from "./database/seeder";
 import serveStatic from "serve-static";
 createConnection()
@@ -17,6 +17,7 @@ createConnection()
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(cors());
+    // app.use(history());
     app.use(serveStatic("public"));
     // Initialize firebase-admin
     const serviceAccount = firebaseAccountCredentials as admin.ServiceAccount;
@@ -69,6 +70,20 @@ createConnection()
     if (buildings.length === 0) {
       console.log("Seeding Buildings");
       seeder.seedBuildings();
+    }
+
+    const routeRepository = getRepository(Route);
+    const routes = await routeRepository.find();
+    if (routes.length === 0) {
+      console.log("Seeding Stop Routes");
+      seeder.seedStopRoutes();
+    }
+
+    const roomRepository = getRepository(Room);
+    const rooms = await roomRepository.find();
+    if (rooms.length === 0) {
+      console.log("Seeding Rooms");
+      seeder.seedRooms();
     }
     // start express server
 

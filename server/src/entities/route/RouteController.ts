@@ -204,7 +204,7 @@ export class RouteController {
         const origin = dbPaths[0].origin;
         const destination = dbPaths[dbPaths.length - 1].destination;
         const pathIDs = dbPaths.map(path => path.id);
-        await this.routeRepository.save({
+        const saved = await this.routeRepository.save({
           origin,
           destination,
           paths: dbPaths,
@@ -212,6 +212,16 @@ export class RouteController {
           contributor: user,
           distance,
           duration
+        });
+        return this.routeRepository.findOne(saved.id, {
+          relations: [
+            "origin",
+            "destination",
+            "paths",
+            "paths.origin",
+            "paths.destination",
+            "contributor"
+          ]
         });
       } else {
         return {
@@ -298,7 +308,7 @@ export class RouteController {
     const paths = [];
     for (let OSRMPath of OSRMpaths) {
       const inRepo = await this.pathRepository.find({
-        where: { geometry: OSRMPath.geometry }
+        where: { geometry: OSRMPath.geometry, type: PathType.WALKING }
       });
       if (inRepo.length === 0) {
         paths.push(
@@ -437,8 +447,8 @@ export class RouteController {
       if (!(origin instanceof Marker) && !(destination instanceof Marker)) {
         const paths = await this.pathRepository.save(tempPaths);
         await Promise.all(
-          paths.map(path => {
-            this.routeRepository.save({
+          paths.map(async path => {
+            await this.routeRepository.save({
               origin,
               destination,
               paths: [path],

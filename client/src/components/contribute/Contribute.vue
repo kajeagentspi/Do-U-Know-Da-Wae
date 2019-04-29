@@ -16,29 +16,39 @@
       <q-btn
         class="full-width godown"
         color="dukdw"
+        label="Add Building"
+        @click="changePage('addbuilding')"
+      />
+      <q-btn
+        class="full-width godown"
+        color="dukdw"
+        label="Edit Building"
+        @click="changePage('editbuilding')"
+      />
+      <q-btn
+        class="full-width godown"
+        color="dukdw"
         label="Add Room"
-        @click="changePage('room')"
+        @click="changePage('addroom')"
       />
       <q-btn
         class="full-width godown"
         color="dukdw"
-        label="Add/Edit Building"
-        @click="changePage('building')"
-      />
-      <q-btn
-        class="full-width godown"
-        color="dukdw"
-        label="Add Jeepney Route"
-        @click="changePage('jeepney')"
+        label="Delete Room"
+        @click="changePage('deleteroom')"
       />
       <q-btn
         class="full-width godown"
         color="dukdw"
         label="Add Route"
-        @click="changePage('route')"
+        @click="changePage('addroute')"
       />
     </q-card-section>
-    <q-card-section></q-card-section>
+    <add-room v-if="page === 'addroom'" />
+    <delete-room v-else-if="page === 'deleteroom'" />
+    <add-building v-else-if="page === 'addbuilding'" />
+    <edit-building v-else-if="page === 'editbuilding'" />
+    <add-route v-else-if="page === 'addroute'" />
   </q-card>
 </template>
 
@@ -76,19 +86,7 @@ export default {
       }
     }
   },
-  watch: {
-    async marker(newValue) {
-      this.mapInstance.removeLayer(newValue);
-      const { lat, lng } = newValue.getLatLng();
-      const poi = {
-        lat,
-        lng,
-        type: "Marker",
-        name: await this.reverseGeocode(lat, lng)
-      };
-      console.log(poi);
-    }
-  },
+  watch: {},
   beforeDestroy() {
     this.reset();
   }

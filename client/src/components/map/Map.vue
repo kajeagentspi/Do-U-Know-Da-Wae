@@ -28,6 +28,8 @@ import L from "leaflet";
 import { mapActions, mapMutations } from "vuex";
 import { mapFields } from "vuex-map-fields";
 import { CHANGE_VIEW } from "../../store/types";
+// import * as Api from "../../api";
+
 export default {
   name: "Map",
   computed: {
@@ -41,6 +43,7 @@ export default {
       "GPSAvailable",
       "GPSTracking",
       "marker",
+      "polygon",
       "drawing",
       "viewing"
     ])
@@ -57,12 +60,12 @@ export default {
       }
     },
     draw({ layer }) {
+      this.drawing = false;
       if (layer instanceof L.Marker) {
         layer.dragging.disable();
-        this.drawing = false;
         this.marker = layer;
       } else if (layer instanceof L.Polyline) {
-        console.log(layer);
+        this.polygon = layer;
       }
     },
     located({ latlng }) {
@@ -93,7 +96,7 @@ export default {
       });
     }
   },
-  mounted() {
+  async mounted() {
     const {
       top,
       left,
@@ -108,6 +111,16 @@ export default {
     this.mapInstance.on("locationfound", this.located);
     this.mapInstance.on("locationerror", this.onLocationError);
     this.mapInstance.on("editable:drawing:end", this.draw);
+    // const { data } = await Api.allStop();
+    // console.log(data);
+    // data.forEach(stop => {
+    //   const { lat, lng } = stop;
+    //   new L.Marker({ lat, lng }, { color: "red" })
+    //     .addTo(this.mapInstance)
+    //     .on("click", () => {
+    //       console.log(stop);
+    //     });
+    // });
   },
   watch: {
     "$q.screen.width"() {
@@ -171,21 +184,12 @@ export default {
   }
 }
 @media (max-width: 640px) {
-  .search {
-    top: 0px;
-    left: 0px;
-    right: 0px;
-    bottom: calc(60%);
-    position: absolute;
-    z-index: 10;
-    border-style: solid;
-    pointer-events: none;
-  }
+  .search,
   .viewing {
     top: 0px;
     left: 0px;
     right: 0px;
-    bottom: calc(40%);
+    bottom: calc(60%);
     position: absolute;
     z-index: 10;
     border-style: solid;

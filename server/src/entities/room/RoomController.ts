@@ -9,16 +9,24 @@ export class RoomController {
   private userRepository = getRepository(User);
 
   async all(request: Request, response: Response, next: NextFunction) {
-    let { name, buildingId } = request.query;
+    let { name, buildingId, exact, building: flag } = request.query;
     if (!name) {
       name = "";
     }
-    if (buildingId) {
-      buildingId = "*";
+    const building = await this.buildingRepository.findOne(buildingId);
+    if (exact) {
+      return this.roomRepository.find({
+        where: { name, building }
+      });
+    } else {
+      const rooms: any[] = await this.roomRepository.find({
+        where: { name: Like(`%${name}%`), building }
+      });
+      if (flag) {
+        rooms.unshift(building);
+      }
+      return rooms;
     }
-    return this.roomRepository.find({
-      where: { name: Like(`%${name}%`), buildingId }
-    });
   }
 
   async one(request: Request, response: Response, next: NextFunction) {
@@ -42,9 +50,8 @@ export class RoomController {
         accessToken,
         id
       } = request.body;
-      // const { uid } = await admin.auth().verifyIdToken(accessToken);
-      // const { type } = await this.userRepository.findOne({ uid });
-      const type = "admin"; //remove this boi
+      const { uid } = await admin.auth().verifyIdToken(accessToken);
+      const { type } = await this.userRepository.findOne({ uid });
       if (type === "admin" || type === "contributor") {
         if (id) {
           const room = await this.roomRepository.findOne(id);

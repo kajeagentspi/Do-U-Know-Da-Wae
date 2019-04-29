@@ -27,11 +27,17 @@ export class PathController {
   }
 
   async all(request: Request, response: Response, next: NextFunction) {
-    let { origin, destination } = request.query;
+    let { origin, destination, type } = request.query;
     if (origin && destination) {
       origin = await this.typeCast(origin);
       destination = await this.typeCast(destination);
-      if (!(origin instanceof Room) || !(destination instanceof Room)) {
+      if (type && type === "Jeep") {
+        return this.pathRepository.find({
+          origin,
+          destination,
+          type: PathType.JEEP
+        });
+      } else if (!(origin instanceof Room) || !(destination instanceof Room)) {
         const OSRMPaths = await this.generateWalkingPathsFromOSRM(
           origin,
           destination
