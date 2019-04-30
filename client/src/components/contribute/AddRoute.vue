@@ -32,12 +32,7 @@
       @click="addJeep"
       :disabled="paths.length > 0 && paths[0].destination.type !== 'Stop'"
     />
-    <view-path-card
-      v-for="(path, index) in paths"
-      :key="index"
-      :path="path"
-      :index="index"
-    />
+    <view-path-card v-for="(path, index) in paths" :key="index" :path="path" :index="index"/>
   </q-card-section>
   <add-indoor-path
     v-else-if="mode === 'indoor'"
@@ -83,7 +78,6 @@ export default {
     },
     addPath(path) {
       this.paths.unshift(path);
-      console.log(path);
       this.mode = "select";
     },
     async submit() {
