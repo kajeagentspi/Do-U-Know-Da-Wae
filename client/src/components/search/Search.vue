@@ -111,6 +111,7 @@
           color="dukdw"
           @click="bookmark"
           label="Add to bookmarks"
+          v-if="accessToken && type !== 'banned'"
         />
       </q-card-section>
       <div class="path-body" v-if="selectedRoute">

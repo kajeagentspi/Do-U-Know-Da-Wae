@@ -16,7 +16,10 @@
       />
     </q-page-sticky>
     <div id="map"></div>
-    <div :class="drawing ? 'full' : viewing ? 'viewing' : 'search'" ref="visibleMap"></div>
+    <div
+      :class="drawing ? 'full' : viewing ? 'viewing' : 'search'"
+      ref="visibleMap"
+    ></div>
   </div>
 </template>
 
