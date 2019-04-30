@@ -111,16 +111,6 @@ export default {
     this.mapInstance.on("locationfound", this.located);
     this.mapInstance.on("locationerror", this.onLocationError);
     this.mapInstance.on("editable:drawing:end", this.draw);
-    // const { data } = await Api.allStop();
-    // console.log(data);
-    // data.forEach(stop => {
-    //   const { lat, lng } = stop;
-    //   new L.Marker({ lat, lng }, { color: "red" })
-    //     .addTo(this.mapInstance)
-    //     .on("click", () => {
-    //       console.log(stop);
-    //     });
-    // });
   },
   watch: {
     "$q.screen.width"() {

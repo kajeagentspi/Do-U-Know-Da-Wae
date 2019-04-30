@@ -32,7 +32,6 @@ export const saveRoute = data => {
 };
 
 export const bookmarkRoute = data => {
-  console.log(data);
   return axios.post(`${baseURL}/api/bookmark`, data);
 };
 

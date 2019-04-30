@@ -16,10 +16,7 @@
 <script>
 export default {
   name: "ViewPathCard",
-  props: ["path"],
-  mounted() {
-    console.log(this.path);
-  }
+  props: ["path"]
 };
 </script>
 

@@ -17,7 +17,6 @@ const user = {
   mutations: {
     updateField,
     [SET_USER]: (state, payload) => {
-      console.log(state.bookmarks);
       for (let key of Object.keys(payload)) {
         state[key] = payload[key];
       }
@@ -39,7 +38,6 @@ const user = {
           });
         } else {
           const type = "viewer";
-          console.log("logout");
           context.commit(SET_USER, {
             accessToken: null,
             profile: null,
