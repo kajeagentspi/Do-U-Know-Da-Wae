@@ -634,7 +634,9 @@ class Seeder {
       await this.roomRepository.save({
         name,
         level,
-        building
+        building,
+        lat: building.lat,
+        lng: building.lng
       });
     }
   }
