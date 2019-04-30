@@ -34,7 +34,7 @@ export class UserController {
   }
 
   async save(request: Request, response: Response, next: NextFunction) {
-    let { accessToken, type, permissionLevel } = request.body;
+    let { accessToken, type, permissionLevel, email: editMail } = request.body;
     const result = await admin.auth().verifyIdToken(accessToken);
     const { name, email, uid } = result;
     if (!type) {
@@ -45,7 +45,7 @@ export class UserController {
       }
     }
     const user = await this.userRepository.findOne({ uid });
-    if (user) {
+    if (user.type === UserType.ADMIN) {
       let type;
       switch (permissionLevel) {
         case "contributor":
@@ -61,8 +61,11 @@ export class UserController {
           type = UserType.VIEWER;
           break;
       }
-      await this.userRepository.update(user.id, { name, type });
-      return this.userRepository.findOne(user.id, {
+      const updateUser = await this.userRepository.findOne(null, {
+        where: { email: editMail }
+      });
+      await this.userRepository.update(updateUser.id, { type });
+      return this.userRepository.findOne(updateUser.id, {
         relations: [
           "bookmarks",
           "bookmarks.origin",
