@@ -2,6 +2,7 @@ import { getRepository } from "typeorm";
 import { NextFunction, Request, Response } from "express";
 import { User } from "./UserModel";
 import * as admin from "firebase-admin";
+import { UserType } from "..";
 
 export class UserController {
   private userRepository = getRepository(User);
@@ -33,7 +34,7 @@ export class UserController {
   }
 
   async save(request: Request, response: Response, next: NextFunction) {
-    let { accessToken, type } = request.body;
+    let { accessToken, type, permissionLevel } = request.body;
     const result = await admin.auth().verifyIdToken(accessToken);
     const { name, email, uid } = result;
     if (!type) {
@@ -45,8 +46,20 @@ export class UserController {
     }
     const user = await this.userRepository.findOne({ uid });
     if (user) {
-      if (user.type === "admin") {
-        type = "admin";
+      let type;
+      switch (permissionLevel) {
+        case "contributor":
+          type = UserType.CONTRIBUTOR;
+          break;
+        case "admin":
+          type = UserType.ADMIN;
+          break;
+        case "banned":
+          type = UserType.BANNED;
+          break;
+        case "viewer":
+          type = UserType.VIEWER;
+          break;
       }
       await this.userRepository.update(user.id, { name, type });
       return this.userRepository.findOne(user.id, {
