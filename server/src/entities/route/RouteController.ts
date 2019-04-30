@@ -15,6 +15,7 @@ import { walking } from "../config";
 import * as admin from "firebase-admin";
 import * as polyline from "@mapbox/polyline";
 import axios from "axios";
+import { UserType } from "../user/UserModel";
 
 export class RouteController {
   private pathRepository = getRepository(Path);
@@ -133,20 +134,22 @@ export class RouteController {
       where: { uid },
       relations: ["bookmarks"]
     });
-    const route = await this.routeRepository.findOne(routeId);
-    const bookmarkedIds = user.bookmarks.map(bookmark => bookmark.id);
-    if (route.id in bookmarkedIds) {
-      return {
-        message: "Route bookmarked already",
-        color: "negative"
-      };
-    } else if (user && route) {
-      user.bookmarks.push(route);
-      this.userRepository.save(user);
-      return {
-        message: "Added to bookmarks",
-        color: "positive"
-      };
+    if (user.type !== UserType.BANNED) {
+      const route = await this.routeRepository.findOne(routeId);
+      const bookmarkedIds = user.bookmarks.map(bookmark => bookmark.id);
+      if (route.id in bookmarkedIds) {
+        return {
+          message: "Route bookmarked already",
+          color: "negative"
+        };
+      } else if (user && route) {
+        user.bookmarks.push(route);
+        this.userRepository.save(user);
+        return {
+          message: "Added to bookmarks",
+          color: "positive"
+        };
+      }
     }
     return {
       message: "Failed to add to bookmarks",
