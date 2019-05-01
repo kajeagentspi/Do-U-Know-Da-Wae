@@ -235,10 +235,10 @@ export default {
       }
     },
     addPath() {
-      const { id, type } = this.origin;
-      const origin = { id, type };
-      const { id, type } = this.destination;
-      const destination = { id, type };
+      const { id: originId, type } = this.origin;
+      const origin = { id: originId, type };
+      const { id: destinationId, type } = this.destination;
+      const destination = { id: destinationId, type };
       const path = {
         id: this.id,
         origin,
