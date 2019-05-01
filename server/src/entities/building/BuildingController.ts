@@ -111,13 +111,15 @@ export class BuildingController {
       }
       return {
         message: "Invalid Operation",
-        type: "negative"
+        color: "negative",
+        position: "top"
       };
     } catch (error) {
       console.log(error);
       return {
         message: "An Error Occurred",
-        type: "negative"
+        color: "negative",
+        position: "top"
       };
     }
   }
@@ -137,13 +139,15 @@ export class BuildingController {
       }
       return {
         message: "Invalid Operation",
-        type: "negative"
+        color: "negative",
+        position: "top"
       };
     } catch (error) {
       console.log(error);
       return {
         message: "An Error Occurred",
-        type: "negative"
+        color: "negative",
+        position: "top"
       };
     }
   }

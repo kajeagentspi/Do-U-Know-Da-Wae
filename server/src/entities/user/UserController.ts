@@ -34,55 +34,78 @@ export class UserController {
   }
 
   async save(request: Request, response: Response, next: NextFunction) {
-    let { accessToken, type, permissionLevel, email: editMail } = request.body;
-    const result = await admin.auth().verifyIdToken(accessToken);
-    const { name, email, uid } = result;
-    if (!type) {
-      if (email.split("@").slice(-1)[0] === "up.edu.ph") {
-        type = "contributor";
-      } else {
-        type = "viewer";
+    try {
+      let { accessToken, type, email: editMail } = request.body;
+      const result = await admin.auth().verifyIdToken(accessToken);
+
+      if (!editMail) {
+        const { name, email, uid } = result;
+        if (!type) {
+          if (email.split("@").slice(-1)[0] === "up.edu.ph") {
+            type = "contributor";
+          } else {
+            type = "viewer";
+          }
+        }
+        const user = await this.userRepository.save({ name, email, type, uid });
+        return this.userRepository.findOne(user.id, {
+          relations: [
+            "bookmarks",
+            "bookmarks.origin",
+            "bookmarks.destination",
+            "bookmarks.paths",
+            "bookmarks.paths.origin",
+            "bookmarks.paths.destination",
+            "contributions",
+            "contributions.origin",
+            "contributions.destination",
+            "contributions.paths",
+            "contributions.paths.origin",
+            "contributions.paths.destination"
+          ]
+        });
+      } else if (result.type === UserType.ADMIN) {
+        const user = await this.userRepository.findOne(null, {
+          where: { email: editMail }
+        });
+        switch (type) {
+          case "contributor":
+            type = UserType.CONTRIBUTOR;
+            break;
+          case "admin":
+            type = UserType.ADMIN;
+            break;
+          case "banned":
+            type = UserType.BANNED;
+            break;
+          case "viewer":
+            type = UserType.VIEWER;
+            break;
+        }
+        await this.userRepository.update(user.id, { type });
+        return this.userRepository.findOne(user.id, {
+          relations: [
+            "bookmarks",
+            "bookmarks.origin",
+            "bookmarks.destination",
+            "bookmarks.paths",
+            "bookmarks.paths.origin",
+            "bookmarks.paths.destination",
+            "contributions",
+            "contributions.origin",
+            "contributions.destination",
+            "contributions.paths",
+            "contributions.paths.origin",
+            "contributions.paths.destination"
+          ]
+        });
       }
-    }
-    const user = await this.userRepository.findOne({ uid });
-    if (user.type === UserType.ADMIN) {
-      let type;
-      switch (permissionLevel) {
-        case "contributor":
-          type = UserType.CONTRIBUTOR;
-          break;
-        case "admin":
-          type = UserType.ADMIN;
-          break;
-        case "banned":
-          type = UserType.BANNED;
-          break;
-        case "viewer":
-          type = UserType.VIEWER;
-          break;
-      }
-      const updateUser = await this.userRepository.findOne(null, {
-        where: { email: editMail }
-      });
-      await this.userRepository.update(updateUser.id, { type });
-      return this.userRepository.findOne(updateUser.id, {
-        relations: [
-          "bookmarks",
-          "bookmarks.origin",
-          "bookmarks.destination",
-          "bookmarks.paths",
-          "bookmarks.paths.origin",
-          "bookmarks.paths.destination",
-          "contributions",
-          "contributions.origin",
-          "contributions.destination",
-          "contributions.paths",
-          "contributions.paths.origin",
-          "contributions.paths.destination"
-        ]
-      });
-    } else {
-      return this.userRepository.save({ name, email, type, uid });
+    } catch (error) {
+      return {
+        message: "An Error Occurred",
+        color: "negative",
+        position: "top"
+      };
     }
   }
 
@@ -96,18 +119,21 @@ export class UserController {
         await this.userRepository.remove(user);
         return {
           message: "Successfully Deleted User",
-          type: "positive"
+          type: "positive",
+          position: "top"
         };
       }
       return {
         message: "Invalid Operation",
-        type: "negative"
+        color: "negative",
+        position: "top"
       };
     } catch (error) {
       console.log(error);
       return {
         message: "An Error Occurred",
-        type: "negative"
+        color: "negative",
+        position: "top"
       };
     }
   }

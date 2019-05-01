@@ -6,7 +6,6 @@ import axios from "axios";
 import * as polyline from "@mapbox/polyline";
 
 export class PathController {
-  private POIRepository = getRepository(POI);
   private pathRepository = getRepository(Path);
   private buildingRepository = getRepository(Building);
   private roomRepository = getRepository(Room);

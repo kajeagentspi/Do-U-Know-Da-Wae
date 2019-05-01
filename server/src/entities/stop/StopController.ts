@@ -2,6 +2,7 @@ import { getRepository, Like } from "typeorm";
 import { NextFunction, Request, Response } from "express";
 import { User, Stop } from "..";
 import * as admin from "firebase-admin";
+import { UserType } from "../user/UserModel";
 
 export class StopController {
   private stopRepository = getRepository(Stop);
@@ -27,7 +28,8 @@ export class StopController {
     }
     return {
       message: "Stop not found",
-      color: "negative"
+      color: "negative",
+      position: "top"
     };
   }
 
@@ -35,8 +37,8 @@ export class StopController {
     try {
       const { lat, lng, accessToken, id } = request.body;
       const { uid } = await admin.auth().verifyIdToken(accessToken);
-      const { type } = await this.userRepository.findOne({ uid });
-      if (type === "admin") {
+      const user = await this.userRepository.findOne({ uid });
+      if (user.type === UserType.ADMIN) {
         const stop = await this.stopRepository.findOne(id);
         if (stop) {
           await this.stopRepository.update(stop.id, { lat, lng });
@@ -48,13 +50,15 @@ export class StopController {
       }
       return {
         message: "Invalid Operation",
-        color: "negative"
+        color: "negative",
+        position: "top"
       };
     } catch (error) {
       console.log(error);
       return {
         message: "An Error Occurred",
-        color: "negative"
+        color: "negative",
+        position: "top"
       };
     }
   }
@@ -63,24 +67,27 @@ export class StopController {
     try {
       const { accessToken } = request.body;
       const { uid } = await admin.auth().verifyIdToken(accessToken);
-      const { type } = await this.userRepository.findOne({ uid });
-      if (type === "admin") {
+      const user = await this.userRepository.findOne({ uid });
+      if (user.type === UserType.ADMIN) {
         let stop = await this.stopRepository.findOne(request.params.id);
         await this.stopRepository.remove(stop);
         return {
           message: "Successfully Deleted Stop",
-          color: "positive"
+          color: "positive",
+          position: "top"
         };
       }
       return {
         message: "Invalid Operation",
-        color: "negative"
+        color: "negative",
+        position: "top"
       };
     } catch (error) {
       console.log(error);
       return {
         message: "An Error Occurred",
-        color: "negative"
+        color: "negative",
+        position: "top"
       };
     }
   }

@@ -2,6 +2,7 @@ import { getRepository, Like } from "typeorm";
 import { NextFunction, Request, Response } from "express";
 import { Building, Room, User, Route } from "..";
 import * as admin from "firebase-admin";
+import { UserType } from "../user/UserModel";
 
 export class RoomController {
   private buildingRepository = getRepository(Building);
@@ -36,7 +37,8 @@ export class RoomController {
     }
     return {
       message: "Room not found",
-      color: "negative"
+      color: "negative",
+      position: "top"
     };
   }
 
@@ -51,8 +53,8 @@ export class RoomController {
         id
       } = request.body;
       const { uid } = await admin.auth().verifyIdToken(accessToken);
-      const { type } = await this.userRepository.findOne({ uid });
-      if (type === "admin" || type === "contributor") {
+      const user = await this.userRepository.findOne({ uid });
+      if (user.type === UserType.ADMIN || user.type === UserType.CONTRIBUTOR) {
         if (id) {
           const room = await this.roomRepository.findOne(id);
           await this.roomRepository.update(room.id, { name, level });
@@ -84,13 +86,15 @@ export class RoomController {
       }
       return {
         message: "Operation not permitted",
-        color: "negative"
+        color: "negative",
+        position: "top"
       };
     } catch (error) {
       console.log(error);
       return {
         message: "An Error Occurred",
-        color: "negative"
+        color: "negative",
+        position: "top"
       };
     }
   }
@@ -99,8 +103,8 @@ export class RoomController {
     try {
       const { accessToken } = request.body;
       const { uid } = await admin.auth().verifyIdToken(accessToken);
-      const { type } = await this.userRepository.findOne({ uid });
-      if (type === "admin") {
+      const user = await this.userRepository.findOne({ uid });
+      if (user.type === UserType.ADMIN) {
         let room = await this.roomRepository.findOne(request.params.id);
         await this.roomRepository.remove(room);
         return {
