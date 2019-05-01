@@ -228,11 +228,15 @@ export default {
       }
     },
     addPath() {
+      const { id, type } = this.origin;
+      const origin = { id, type };
+      const { id, type } = this.destination;
+      const destination = { id, type };
       const path = {
         duration: this.duration,
         distance: this.distance,
-        origin: this.origin,
-        destination: this.destination,
+        origin,
+        destination,
         latLngs: this.latLngs,
         type: "walking"
       };

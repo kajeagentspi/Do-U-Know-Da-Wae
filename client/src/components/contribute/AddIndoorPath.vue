@@ -234,9 +234,13 @@ export default {
       }
     },
     addPath() {
+      const { id, type } = this.origin;
+      const origin = { id, type };
+      const { id, type } = this.destination;
+      const destination = { id, type };
       const path = {
-        origin: this.origin,
-        destination: this.destination,
+        origin,
+        destination,
         instructions: this.instructions,
         type: "indoor"
       };
