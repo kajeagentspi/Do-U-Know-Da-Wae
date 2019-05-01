@@ -355,7 +355,9 @@ export class RouteController {
         destination,
         paths: [path],
         pathString: path.id.toString(),
-        contributor
+        contributor,
+        distance: 0,
+        duration: 0
       });
     }
     return this.routeRepository.find({
@@ -402,7 +404,9 @@ export class RouteController {
           origin,
           destination,
           paths: [path],
-          contributor
+          contributor,
+          distance: 0,
+          duration: 0
         })
       );
     }
