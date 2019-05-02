@@ -78,7 +78,7 @@ const map = {
       routes = routes.map(route => {
         let color = randomColor().hexString();
         while (color in colors) {
-          color = randomColor(0.99, 0.99).hexString();
+          color = randomColor({ lumunosity: "dark" }).hexString();
         }
         route.color = color;
         route.paths.forEach(path => {

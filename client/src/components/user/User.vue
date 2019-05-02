@@ -269,7 +269,7 @@ export default {
       this.active = pageName;
     },
     reset() {
-      this.routes = this.removeRoutes({ routes: this.bookmarks });
+      this.bookmarks = this.removeRoutes({ routes: this.bookmarks });
     },
     async drawBookmarks() {
       try {

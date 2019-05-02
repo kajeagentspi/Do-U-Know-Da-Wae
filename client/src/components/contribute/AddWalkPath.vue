@@ -102,7 +102,8 @@ export default {
       latLngs: "",
       pois: [],
       distance: 0,
-      duration: 0
+      duration: 0,
+      polyLine: null
     };
   },
   computed: {
@@ -113,11 +114,11 @@ export default {
       changeView: CHANGE_VIEW
     }),
     async autoMode() {
-      this.reset();
-      const origin = { ...this.origin };
-      const destination = { ...this.destination };
-      delete origin.marker;
-      delete destination.marker;
+      const origin = { id: this.origin.id, type: this.origin.type };
+      const destination = {
+        id: this.destination.id,
+        type: this.destination.type
+      };
       const { data } = await Api.allPath({
         origin,
         destination
@@ -172,17 +173,12 @@ export default {
         this.setOrigin(poi);
       } else {
         this.selectingDestination = false;
+
         this.setDestination(poi);
       }
       this.name = "";
       this.pois = [];
       this.setView();
-      if (this.origin && this.destination) {
-        const origin = { ...this.origin };
-        const destination = { ...this.destination };
-        delete origin.marker;
-        delete destination.marker;
-      }
     },
     setView() {
       if (this.origin && this.destination) {
@@ -229,24 +225,13 @@ export default {
       }
     },
     addPath() {
-      const { id: originId, type: originType, name: originName } = this.origin;
-      const origin = { id: originId, type: originType, name: originName };
-      const {
-        id: destinationId,
-        type: destinationType,
-        name: destinationName
-      } = this.destination;
-      const destination = {
-        id: destinationId,
-        type: destinationType,
-        name: destinationName
-      };
       const path = {
         duration: this.duration,
         distance: this.distance,
-        origin,
-        destination,
+        origin: this.origin,
+        destination: this.destination,
         latLngs: this.latLngs,
+        polyLine: this.polyLine,
         type: "walking"
       };
       this.$emit("addPath", path);

@@ -40,7 +40,6 @@ export default {
     }
   },
   mounted() {
-    console.log(this.route);
     this.timeStart = moment().format("LT");
     this.timeEnd = moment()
       .add(this.route.duration, "seconds")

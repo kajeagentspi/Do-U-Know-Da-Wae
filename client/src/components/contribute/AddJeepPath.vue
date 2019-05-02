@@ -94,7 +94,8 @@ export default {
       selectingDestination: false,
       latLngs: "",
       id: null,
-      pois: []
+      pois: [],
+      polyLine: null
     };
   },
   computed: {
@@ -107,10 +108,11 @@ export default {
     async autoMode() {
       this.reset();
       try {
-        const origin = { ...this.origin };
-        const destination = { ...this.destination };
-        delete origin.marker;
-        delete destination.marker;
+        const origin = { id: this.origin.id, type: this.origin.type };
+        const destination = {
+          id: this.destination.id,
+          type: this.destination.type
+        };
         const { data } = await Api.allPath({
           origin,
           destination,
@@ -236,23 +238,12 @@ export default {
       }
     },
     addPath() {
-      const { id: originId, type: originType, name: originName } = this.origin;
-      const origin = { id: originId, type: originType, name: originName };
-      const {
-        id: destinationId,
-        type: destinationType,
-        name: destinationName
-      } = this.destination;
-      const destination = {
-        id: destinationId,
-        type: destinationType,
-        name: destinationName
-      };
       const path = {
         id: this.id,
-        origin,
-        destination,
+        origin: this.origin,
+        destination: this.destination,
         latLngs: this.latLngs,
+        polyLine: this.polyLine,
         type: "jeep"
       };
       this.$emit("addPath", path);

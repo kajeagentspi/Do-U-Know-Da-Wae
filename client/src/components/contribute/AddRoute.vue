@@ -13,9 +13,8 @@
       label="Add Indoor Path"
       @click="addIndoor"
       :disabled="
-        paths.length > 0 &&
-          (paths[0].destination.type !== 'Room' ||
-            paths[0].destination.type !== 'Building')
+        paths[0].destination.type !== 'Room' ||
+          paths[0].destination.type !== 'Building'
       "
     />
     <q-btn
@@ -85,21 +84,6 @@ export default {
       this.mode = "select";
     },
     async submit() {
-      this.paths.forEach(path => {
-        const { origin, destination, polyLine } = path;
-        if (origin && origin.marker) {
-          this.mapInstance.removeLayer(origin.marker);
-          delete path.origin.marker;
-        }
-        if (destination && destination.marker) {
-          this.mapInstance.removeLayer(destination.marker);
-          delete path.destination.marker;
-        }
-        if (polyLine) {
-          this.mapInstance.removeLayer(polyLine);
-          delete path.polyLine;
-        }
-      });
       this.$q
         .dialog({
           title: "Confirm",
@@ -123,6 +107,7 @@ export default {
               color: "positive",
               position: "top"
             });
+            this.reset();
           } catch (error) {
             this.$q.notify({
               message: "Create route failed",
@@ -130,15 +115,23 @@ export default {
               position: "top"
             });
           }
-          // this.mapInstance.eachLayer(layer => {
-          //   this.mapInstance.removeLayer(layer);
-          // });
-          this.paths = [];
         });
     },
     reset() {
-      this.mapInstance.eachLayer(layer => {
-        this.mapInstance.removeLayer(layer);
+      this.paths.forEach(path => {
+        const { origin, destination, polyLine } = path;
+        if (origin && origin.marker) {
+          this.mapInstance.removeLayer(origin.marker);
+          delete path.origin.marker;
+        }
+        if (destination && destination.marker) {
+          this.mapInstance.removeLayer(destination.marker);
+          delete path.destination.marker;
+        }
+        if (polyLine) {
+          this.mapInstance.removeLayer(polyLine);
+          delete path.polyLine;
+        }
       });
       this.paths = [];
     }
