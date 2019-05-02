@@ -20,10 +20,22 @@ export const RouteRoutes = [
     action: "save"
   },
   {
+    method: "get",
+    route: "/reported",
+    controller: RouteController,
+    action: "reported"
+  },
+  {
     method: "post",
     route: "/report",
     controller: RouteController,
     action: "report"
+  },
+  {
+    method: "post",
+    route: "/processreport",
+    controller: RouteController,
+    action: "processReport"
   },
   {
     method: "post",

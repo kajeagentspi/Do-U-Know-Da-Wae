@@ -15,6 +15,7 @@ import { walking } from "../config";
 import * as admin from "firebase-admin";
 import * as polyline from "@mapbox/polyline";
 import axios from "axios";
+import { UserType } from "../user/UserModel";
 
 export class RouteController {
   private pathRepository = getRepository(Path);
@@ -124,6 +125,71 @@ export class RouteController {
       });
     }
     return routes;
+  }
+
+  async reported(request: Request, response: Response, next: NextFunction) {
+    return this.routeRepository.find({
+      where: { reported: true },
+      relations: [
+        "origin",
+        "destination",
+        "paths",
+        "paths.origin",
+        "paths.destination",
+        "contributor"
+      ]
+    });
+  }
+
+  async processReport(
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { token } = request.headers;
+      const { routeId, remove } = request.body;
+      const { uid } = await admin.auth().verifyIdToken(token);
+      const { type } = await this.userRepository.findOne(null, {
+        where: { uid }
+      });
+      const route = await this.routeRepository.findOne(routeId, {
+        relations: ["contributor"]
+      });
+      if (type !== UserType.ADMIN) {
+        return {
+          message: "You have no permission to perform this",
+          color: "negative",
+          position: "top"
+        };
+      }
+      if (remove) {
+        const { contributor } = route;
+        contributor.type = UserType.VIEWER;
+        await this.userRepository.save(contributor);
+        await this.routeRepository.delete(route);
+        return {
+          message:
+            "Successfully removed route and demoted contributor to viewer",
+          color: "positive",
+          position: "top"
+        };
+      } else {
+        route.reported = false;
+        await this.routeRepository.save(route);
+        return {
+          message: "Successfully removed report",
+          color: "positive",
+          position: "top"
+        };
+      }
+    } catch (error) {
+      return {
+        message: "An error occured",
+        color: "negative",
+        position: "top"
+      };
+    }
   }
 
   async removeBookmark(
