@@ -37,9 +37,11 @@ export class UserController {
     try {
       let { accessToken, type, email: editMail } = request.body;
       const result = await admin.auth().verifyIdToken(accessToken);
-
-      if (!editMail) {
-        const { name, email, uid } = result;
+      const { name, email, uid } = result;
+      let user = await this.userRepository.findOne(null, {
+        where: { uid }
+      });
+      if (!editMail && !user) {
         if (!type) {
           if (email.split("@").slice(-1)[0] === "up.edu.ph") {
             type = "contributor";
@@ -47,7 +49,7 @@ export class UserController {
             type = "viewer";
           }
         }
-        const user = await this.userRepository.save({ name, email, type, uid });
+        user = await this.userRepository.save({ name, email, type, uid });
         return this.userRepository.findOne(user.id, {
           relations: [
             "bookmarks",
@@ -64,8 +66,8 @@ export class UserController {
             "contributions.paths.destination"
           ]
         });
-      } else if (result.type === UserType.ADMIN) {
-        const user = await this.userRepository.findOne(null, {
+      } else if (editMail && user.type === UserType.ADMIN) {
+        user = await this.userRepository.findOne(null, {
           where: { email: editMail }
         });
         switch (type) {
@@ -83,23 +85,23 @@ export class UserController {
             break;
         }
         await this.userRepository.update(user.id, { type });
-        return this.userRepository.findOne(user.id, {
-          relations: [
-            "bookmarks",
-            "bookmarks.origin",
-            "bookmarks.destination",
-            "bookmarks.paths",
-            "bookmarks.paths.origin",
-            "bookmarks.paths.destination",
-            "contributions",
-            "contributions.origin",
-            "contributions.destination",
-            "contributions.paths",
-            "contributions.paths.origin",
-            "contributions.paths.destination"
-          ]
-        });
       }
+      return this.userRepository.findOne(user.id, {
+        relations: [
+          "bookmarks",
+          "bookmarks.origin",
+          "bookmarks.destination",
+          "bookmarks.paths",
+          "bookmarks.paths.origin",
+          "bookmarks.paths.destination",
+          "contributions",
+          "contributions.origin",
+          "contributions.destination",
+          "contributions.paths",
+          "contributions.paths.origin",
+          "contributions.paths.destination"
+        ]
+      });
     } catch (error) {
       return {
         message: "An Error Occurred",
