@@ -39,6 +39,14 @@ export const reportRoute = data => {
   return axios.post(`${baseURL}/api/report`, data);
 };
 
+export const reportedRoute = () => {
+  return axios.get(`${baseURL}/api/reported`);
+};
+
+export const processReportRoute = data => {
+  return axios.post(`${baseURL}/api/processReport`, data);
+};
+
 export const removeBookmark = data => {
   return axios.post(`${baseURL}/api/removebookmark`, data);
 };

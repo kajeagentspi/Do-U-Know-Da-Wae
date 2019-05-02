@@ -7,9 +7,21 @@
         readonly
         :value="path.destination.name"
       />
-      <q-input outlined class="text-capitalize" label="Type" readonly :value="path.type" />
+      <q-input
+        outlined
+        class="text-capitalize"
+        label="Type"
+        readonly
+        :value="path.type"
+      />
       <q-input outlined label="Origin" readonly :value="path.origin.name" />
-      <q-input outlined label="Instructions" readonly v-if="path.type === 'indoor'" :value="path.instructions"/>
+      <q-input
+        outlined
+        label="Instructions"
+        readonly
+        v-if="path.type === 'indoor'"
+        :value="path.instructions"
+      />
     </q-card-section>
   </q-card>
 </template>

@@ -52,6 +52,7 @@
           class="full-width godown"
           color="dukdw"
           label="View full route"
+          @click="highlight({ routeIndex: selectedRouteIndex })"
         />
       </q-card-section>
       <div class="path-body" v-if="selectedRoute">
@@ -103,9 +104,11 @@ export default {
         const {
           data: { contributions }
         } = await Api.getUser();
-        this.routes = this.removeRoutes({ routes: this.contributions });
+        this.contributions = this.removeRoutes({ routes: this.contributions });
         this.contributions = contributions;
-        this.routes = await this.drawRoutes({ routes: this.contributions });
+        this.contributions = await this.drawRoutes({
+          routes: this.contributions
+        });
       } catch (error) {
         this.$q.notify({
           message: "An error occured",
@@ -132,16 +135,16 @@ export default {
         this.changeView({
           coordinates: [
             {
-              lat: this.routes[routeIndex].origin.lat,
-              lng: this.routes[routeIndex].origin.lng
+              lat: this.contributions[routeIndex].origin.lat,
+              lng: this.contributions[routeIndex].origin.lng
             },
             {
-              lat: this.routes[routeIndex].destination.lat,
-              lng: this.routes[routeIndex].destination.lng
+              lat: this.contributions[routeIndex].destination.lat,
+              lng: this.contributions[routeIndex].destination.lng
             }
           ]
         });
-        this.routes.forEach(route => {
+        this.contributions.forEach(route => {
           route.paths.forEach(path => {
             if (path.polyLine) {
               path.polyLine.setStyle({ opacity: 1 });
@@ -152,24 +155,24 @@ export default {
         this.changeView({
           coordinates: [
             {
-              lat: this.routes[routeIndex].origin.lat,
-              lng: this.routes[routeIndex].origin.lng
+              lat: this.contributions[routeIndex].origin.lat,
+              lng: this.contributions[routeIndex].origin.lng
             },
             {
-              lat: this.routes[routeIndex].destination.lat,
-              lng: this.routes[routeIndex].destination.lng
+              lat: this.contributions[routeIndex].destination.lat,
+              lng: this.contributions[routeIndex].destination.lng
             }
           ]
         });
-        for (let i = 0; i < this.routes.length; i++) {
+        for (let i = 0; i < this.contributions.length; i++) {
           if (i === routeIndex) {
-            this.routes[i].paths.forEach(path => {
+            this.contributions[i].paths.forEach(path => {
               if (path.polyLine) {
                 path.polyLine.setStyle({ opacity: 1 });
               }
             });
           } else {
-            this.routes[i].paths.forEach(path => {
+            this.contributions[i].paths.forEach(path => {
               if (path.polyLine) {
                 path.polyLine.setStyle({ opacity: 0 });
               }
@@ -178,26 +181,26 @@ export default {
         }
       } else {
         let activePath;
-        for (let i = 0; i < this.routes.length; i++) {
+        for (let i = 0; i < this.contributions.length; i++) {
           if (i === routeIndex) {
-            for (let j = 0; j < this.routes[i].paths.length; j++) {
+            for (let j = 0; j < this.contributions[i].paths.length; j++) {
               if (j === pathIndex) {
-                activePath = this.routes[i].paths[j];
-                if (this.routes[i].paths[j].polyLine) {
-                  this.routes[i].paths[j].polyLine.setStyle({
+                activePath = this.contributions[i].paths[j];
+                if (this.contributions[i].paths[j].polyLine) {
+                  this.contributions[i].paths[j].polyLine.setStyle({
                     opacity: 1
                   });
                 }
               } else {
-                if (this.routes[i].paths[j].polyLine) {
-                  this.routes[i].paths[j].polyLine.setStyle({
+                if (this.contributions[i].paths[j].polyLine) {
+                  this.contributions[i].paths[j].polyLine.setStyle({
                     opacity: 0.5
                   });
                 }
               }
             }
           } else {
-            this.routes[i].paths.forEach(path => {
+            this.contributions[i].paths.forEach(path => {
               if (path.polyLine) {
                 path.polyLine.setStyle({ opacity: 0 });
               }
@@ -225,7 +228,6 @@ export default {
         this.viewing = false;
       } else {
         this.selectedRoute = this.contributions[routeIndex];
-        console.log(this.selectedRoute);
         this.selectedRouteIndex = routeIndex;
         this.viewing = true;
       }
