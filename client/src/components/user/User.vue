@@ -64,6 +64,12 @@
           @click="highlight({ routeIndex: selectedRouteIndex })"
           label="View full route"
         />
+        <q-btn
+          class="full-width godown"
+          color="dukdw"
+          label="Remove from bookmarks"
+          @click="removeBookmark"
+        />
       </q-card-section>
       <div class="path-body" v-if="selectedRoute">
         <path-card
@@ -106,6 +112,15 @@ export default {
     }),
     ...mapActions("map", ["drawRoutes", "removeRoutes"]),
     ...mapActions("user", ["setUser"]),
+    async removeBookmark() {
+      const { data } = await Api.removeBookmark({
+        routeId: this.selectedRoute.id
+      });
+      this.reset();
+      this.drawBookmarks();
+      this.setRoute();
+      this.$q.notify(data);
+    },
     async login() {
       try {
         const provider = new firebase.auth.GoogleAuthProvider();

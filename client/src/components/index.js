@@ -2,8 +2,6 @@ export { default as LeafletMap } from "./leaflet-map/LeafletMap";
 export { default as Wrapper } from "./wrapper/Wrapper";
 export { default as SearchPanel } from "./search-panel/SearchPanel";
 export { default as AdminPanel } from "./admin-panel/AdminPanel";
-export { default as AddRoom } from "./admin-panel/AddRoom";
-export { default as DeleteRoom } from "./admin-panel/DeleteRoom";
 export { default as AddBuilding } from "./admin-panel/AddBuilding";
 export { default as EditBuilding } from "./admin-panel/EditBuilding";
 

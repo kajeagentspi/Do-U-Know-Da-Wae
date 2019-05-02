@@ -53,7 +53,6 @@ export default {
   },
   computed: {
     ...mapState("map", ["mapInstance"]),
-    ...mapState("user", ["accessToken"]),
     ...mapFields("map", ["drawing", "polygon"])
   },
   methods: {
@@ -78,7 +77,6 @@ export default {
       try {
         await Api.saveBuilding({
           coordinates: this.newBuildingCoordinates,
-          accessToken: this.accessToken,
           name: this.name,
           alternativeNames: this.alternativeNames
         });

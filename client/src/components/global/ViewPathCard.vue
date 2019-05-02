@@ -1,5 +1,5 @@
 <template>
-  <q-card class="card">
+  <q-card class="card cursor-pointer">
     <q-card-section>
       <q-input
         outlined
@@ -16,7 +16,10 @@
 <script>
 export default {
   name: "ViewPathCard",
-  props: ["path"]
+  props: ["path"],
+  mounted() {
+    console.log(this.path);
+  }
 };
 </script>
 

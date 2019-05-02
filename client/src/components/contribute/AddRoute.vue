@@ -68,7 +68,6 @@ export default {
     };
   },
   computed: {
-    ...mapState("user", ["accessToken"]),
     ...mapState("map", ["mapInstance"])
   },
   methods: {
@@ -117,8 +116,7 @@ export default {
         .onOk(async () => {
           try {
             await Api.saveRoute({
-              paths: this.paths,
-              accessToken: this.accessToken
+              paths: this.paths
             });
             this.$q.notify({
               message: "Successfully created route",
@@ -132,9 +130,9 @@ export default {
               position: "top"
             });
           }
-          this.mapInstance.eachLayer(layer => {
-            this.mapInstance.removeLayer(layer);
-          });
+          // this.mapInstance.eachLayer(layer => {
+          //   this.mapInstance.removeLayer(layer);
+          // });
           this.paths = [];
         });
     },

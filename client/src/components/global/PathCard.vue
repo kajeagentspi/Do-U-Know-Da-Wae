@@ -1,6 +1,6 @@
 <template>
   <q-card
-    class="card"
+    class="card cursor-pointer"
     @click="highlight({ routeIndex: routeIndex, pathIndex: index })"
   >
     <q-card-section v-if="path.type === 'indoor'">

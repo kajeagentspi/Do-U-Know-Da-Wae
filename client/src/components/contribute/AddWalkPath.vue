@@ -100,7 +100,7 @@ export default {
       selectingOrigin: false,
       selectingDestination: false,
       latLngs: "",
-      pois: null,
+      pois: [],
       distance: 0,
       duration: 0
     };
@@ -174,7 +174,8 @@ export default {
         this.selectingDestination = false;
         this.setDestination(poi);
       }
-      this.name = null;
+      this.name = "";
+      this.pois = [];
       this.setView();
       if (this.origin && this.destination) {
         const origin = { ...this.origin };
@@ -228,10 +229,18 @@ export default {
       }
     },
     addPath() {
-      const { id: originId, type: originType } = this.origin;
-      const origin = { id: originId, type: originType };
-      const { id: destinationId, type: destinationType } = this.destination;
-      const destination = { id: destinationId, type: destinationType };
+      const { id: originId, type: originType, name: originName } = this.origin;
+      const origin = { id: originId, type: originType, name: originName };
+      const {
+        id: destinationId,
+        type: destinationType,
+        name: destinationName
+      } = this.destination;
+      const destination = {
+        id: destinationId,
+        type: destinationType,
+        name: destinationName
+      };
       const path = {
         duration: this.duration,
         distance: this.distance,

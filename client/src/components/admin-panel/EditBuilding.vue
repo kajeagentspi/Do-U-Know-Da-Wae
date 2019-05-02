@@ -137,7 +137,6 @@ export default {
   },
   computed: {
     ...mapState("map", ["mapInstance"]),
-    ...mapState("user", ["accessToken"]),
     ...mapFields("map", ["drawing", "marker"])
   },
   methods: {
@@ -192,7 +191,6 @@ export default {
       try {
         await Api.saveRoom({
           buildingId: this.selectedBuilding.id,
-          accessToken: this.accessToken,
           name: this.roomName,
           level: this.level
         });
@@ -252,7 +250,6 @@ export default {
       try {
         await Api.saveBuilding({
           id: this.selectedBuilding.id,
-          accessToken: this.accessToken,
           name: this.name,
           alternativeNames: this.alternativeNames
         });

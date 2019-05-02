@@ -35,6 +35,14 @@ export const bookmarkRoute = data => {
   return axios.post(`${baseURL}/api/bookmark`, data);
 };
 
+export const reportRoute = data => {
+  return axios.post(`${baseURL}/api/report`, data);
+};
+
+export const removeBookmark = data => {
+  return axios.post(`${baseURL}/api/removebookmark`, data);
+};
+
 export const removeRoute = id => {
   return axios.delete(`${baseURL}/api/route/${id}`);
 };

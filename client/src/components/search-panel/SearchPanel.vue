@@ -116,7 +116,14 @@
           color="dukdw"
           @click="bookmark"
           label="Add to bookmarks"
-          v-if="accessToken && type !== 'banned'"
+          v-if="isAuthenticated && selectedRoute.id"
+        />
+        <q-btn
+          class="full-width godown"
+          color="dukdw"
+          @click="report"
+          label="Report"
+          v-if="isAuthenticated && selectedRoute.id"
         />
       </q-card-section>
       <div class="path-body" v-if="selectedRoute">
@@ -145,7 +152,7 @@ export default {
   computed: {
     ...mapState("map", ["mapInstance", "GPSAvailable", "userMarker"]),
     ...mapFields("map", ["marker", "drawing", "viewing", "active"]),
-    ...mapState("user", ["type", "accessToken"])
+    ...mapState("user", ["type", "isAuthenticated"])
   },
   data() {
     return {
@@ -153,9 +160,9 @@ export default {
       destination: null,
       selectingOrigin: false,
       selectingDestination: false,
-      name: null,
-      pois: null,
-      routes: null,
+      name: "",
+      pois: [],
+      routes: [],
       selectedRoute: null,
       selectedRouteIndex: null
     };
@@ -190,6 +197,8 @@ export default {
         this.selectingDestination = false;
         this.setDestination(poi);
       }
+      this.name = "";
+      this.pois = [];
       this.setView();
       if (this.origin && this.destination) {
         const origin = { ...this.origin };
@@ -243,9 +252,14 @@ export default {
         );
       }
     },
+    async report() {
+      const { data } = await Api.reportRoute({
+        routeId: this.selectedRoute.id
+      });
+      this.$q.notify(data);
+    },
     async bookmark() {
       const { data } = await Api.bookmarkRoute({
-        accessToken: this.accessToken,
         routeId: this.selectedRoute.id
       });
       this.$q.notify(data);
@@ -378,8 +392,8 @@ export default {
       this.destination = null;
       this.selectingOrigin = false;
       this.selectingDestination = false;
-      this.name = null;
-      this.pois = null;
+      this.name = "";
+      this.pois = [];
       this.routes = null;
       this.selectedRoute = null;
     },
@@ -439,7 +453,7 @@ export default {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   position: absolute;
-  top: 207px;
+  top: 248px;
   bottom: 0;
   left: 0;
   right: 0;
