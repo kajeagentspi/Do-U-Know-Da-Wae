@@ -25,8 +25,8 @@
 
 <script>
 import L from "leaflet";
-import { mapActions, mapMutations } from "vuex";
 import { mapFields } from "vuex-map-fields";
+import { mapActions, mapMutations } from "vuex";
 import { CHANGE_VIEW } from "../../store/types";
 // import * as Api from "../../api";
 

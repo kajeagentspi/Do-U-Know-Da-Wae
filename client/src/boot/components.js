@@ -1,9 +1,13 @@
 import {
+  LeafletMap,
+  Wrapper,
+  SearchPanel,
+  AdminPanel,
+  Contribute,
+  User,
   POIItem,
   RouteCard,
   PathCard,
-  Search,
-  Contribute,
   AddRoom,
   DeleteRoom,
   AddBuilding,
@@ -12,12 +16,14 @@ import {
   AddIndoorPath,
   AddWalkPath,
   AddJeepPath,
-  ViewPathCard,
-  User
+  ViewPathCard
 } from "../components";
 
 export default ({ Vue }) => {
-  Vue.component("search", Search);
+  Vue.component("leaflet-map", LeafletMap);
+  Vue.component("wrapper", Wrapper);
+  Vue.component("search-panel", SearchPanel);
+  Vue.component("admin-panel", AdminPanel);
   Vue.component("poi-item", POIItem);
   Vue.component("route-card", RouteCard);
   Vue.component("path-card", PathCard);

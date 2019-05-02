@@ -1,8 +1,8 @@
 import L from "leaflet";
-import { Notify } from "quasar";
+import randomColor from "random-color";
 import { getField, updateField } from "vuex-map-fields";
 import { INITIALIZE_MAP, CHANGE_VIEW } from "./types";
-import * as Api from "../api";
+import { isArray } from "util";
 
 const map = {
   namespaced: true,
@@ -22,8 +22,8 @@ const map = {
     marker: null,
     polygon: null,
     polyLine: null,
-    drawing: false,
 
+    drawing: false,
     viewing: false
   },
   getters: {
@@ -70,6 +70,41 @@ const map = {
   actions: {
     initializeMap: async context => {
       context.commit(INITIALIZE_MAP);
+    },
+    drawRoutes: (context, payload) => {
+      const { mapInstance } = context.state;
+      let { routes } = payload;
+      const colors = [];
+      routes = routes.map(route => {
+        let color = randomColor().hexString();
+        while (color in colors) {
+          color = randomColor(0.99, 0.99).hexString();
+        }
+        route.color = color;
+        route.paths.forEach(path => {
+          if (path.latLngs) {
+            path.polyLine = L.polyline(path.latLngs, {
+              color
+            }).addTo(mapInstance);
+          }
+        });
+        return route;
+      });
+      return routes;
+    },
+    removeRoutes: (context, payload) => {
+      const { mapInstance } = context.state;
+      let { routes } = payload;
+      if (isArray(routes)) {
+        routes.forEach(route => {
+          route.paths.forEach(path => {
+            if (path.polyLine) {
+              mapInstance.removeLayer(path.polyLine);
+            }
+          });
+        });
+      }
+      return routes;
     }
   }
 };

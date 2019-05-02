@@ -3,7 +3,7 @@
 module.exports = function(ctx) {
   return {
     // app plugins (/src/plugins)
-    boot: ["leaflet", "vue-fragment", "firebase", "components"],
+    boot: ["leaflet", "vue-fragment", "firebase", "components", "axios"],
 
     css: ["app.styl"],
 
@@ -37,10 +37,11 @@ module.exports = function(ctx) {
         "QLayout",
         "QPageSticky",
         "QIcon",
-        "QExpansionItem"
+        "QExpansionItem",
+        "QDialog"
       ],
 
-      directives: ["Ripple"],
+      directives: ["Ripple", "ClosePopup"],
 
       // Quasar plugins
       plugins: ["Notify", "Dialog"]

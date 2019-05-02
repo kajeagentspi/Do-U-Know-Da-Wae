@@ -14,8 +14,6 @@ export const saveStop = data => {
   return axios.post(`${baseURL}/api/stop`, data);
 };
 
-export const removeStop = ({ id, accessToken }) => {
-  return axios.delete(`${baseURL}/api/stop/${id}`, {
-    data: { accessToken }
-  });
+export const removeStop = id => {
+  return axios.delete(`${baseURL}/api/stop/${id}`);
 };

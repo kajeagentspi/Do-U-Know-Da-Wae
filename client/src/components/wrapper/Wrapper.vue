@@ -1,5 +1,5 @@
 <template>
-  <search
+  <search-panel
     v-if="active === 'search'"
     class="wrapper"
     :class="viewing ? 'viewing' : 'search'"
@@ -13,6 +13,11 @@
     v-else-if="active === 'user'"
     class="wrapper"
     :class="viewing ? 'viewing' : 'user'"
+  />
+  <admin-panel
+    v-else-if="active === 'admin'"
+    class="wrapper"
+    :class="viewing ? 'viewing' : 'contribute'"
   />
 </template>
 <script>

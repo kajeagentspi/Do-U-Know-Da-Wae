@@ -5,11 +5,9 @@ import { SET_USER } from "./types";
 const user = {
   namespaced: true,
   state: {
-    accessToken: null,
+    isAuthenticated: false,
     profile: null,
-    type: "viewer",
-    bookmarks: [],
-    contributions: []
+    type: "viewer"
   },
   getters: {
     getField
@@ -24,38 +22,23 @@ const user = {
   },
   actions: {
     setUser: async (context, payload) => {
-      const { accessToken, profile } = payload;
+      const { isAuthenticated, profile } = payload;
       try {
-        if (accessToken) {
-          const result = await Api.saveUser({ accessToken });
-          const { type, bookmarks, contributions } = result.data;
+        if (isAuthenticated) {
+          const result = await Api.saveUser();
+          const { type } = result.data;
           context.commit(SET_USER, {
-            accessToken,
+            isAuthenticated,
             profile,
-            type,
-            bookmarks,
-            contributions
+            type
           });
         } else {
-          const type = "viewer";
           context.commit(SET_USER, {
-            accessToken: null,
+            isAuthenticated,
             profile: null,
-            type: "viewer",
-            bookmarks: [],
-            contributions: []
+            type: "viewer"
           });
         }
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    getUser: async context => {
-      try {
-        const { accessToken } = context.state;
-        const { data } = await Api.getUser({ accessToken });
-        const { bookmarks, contributions } = data;
-        context.commit(SET_USER, { bookmarks, contributions });
       } catch (error) {
         console.log(error);
       }

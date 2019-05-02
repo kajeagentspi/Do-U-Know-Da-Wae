@@ -35,8 +35,6 @@ export const bookmarkRoute = data => {
   return axios.post(`${baseURL}/api/bookmark`, data);
 };
 
-export const removeRoute = ({ id, accessToken }) => {
-  return axios.delete(`${baseURL}/api/route/${id}`, {
-    data: { accessToken }
-  });
+export const removeRoute = id => {
+  return axios.delete(`${baseURL}/api/route/${id}`);
 };

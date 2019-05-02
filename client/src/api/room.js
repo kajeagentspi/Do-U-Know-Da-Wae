@@ -14,8 +14,6 @@ export const saveRoom = data => {
   return axios.post(`${baseURL}/api/room`, data);
 };
 
-export const removeRoom = ({ id, accessToken }) => {
-  return axios.delete(`${baseURL}/api/room/${id}`, {
-    data: { accessToken }
-  });
+export const removeRoom = id => {
+  return axios.delete(`${baseURL}/api/room/${id}`);
 };

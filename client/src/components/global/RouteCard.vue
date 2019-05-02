@@ -1,14 +1,19 @@
 <template>
-  <q-card class="card" @click="setRoute">
+  <q-card class="card bg-dukdw text-white cursor-pointer" @click="setRoute">
     <q-card-section class="text-h6">
-      <p class="text-h6">Route Summary</p>
-      <p class="text-subtitle2">{{ `Origin: ${route.origin.name}` }}</p>
-      <p class="text-subtitle2">
+      <div class="text-h6">Route Summary</div>
+      <div class="text-subtitle2">{{ `Origin: ${route.origin.name}` }}</div>
+      <div class="text-subtitle2">
         {{ `Destination: ${route.destination.name}` }}
-      </p>
-      <p class="text-subtitle2">{{ `Total Distance: ${route.distance}m` }}</p>
-      <p class="text-subtitle2">{{ `Departure Time: ${timeStart}` }}</p>
-      <p class="text-subtitle2">{{ `Arrival Time: ${timeEnd}` }}</p>
+      </div>
+      <div class="text-subtitle2">
+        {{ `Total Distance: ${route.distance}m` }}
+      </div>
+      <div class="text-subtitle2">{{ `Departure Time: ${timeStart}` }}</div>
+      <div class="text-subtitle2">{{ `Arrival Time: ${timeEnd}` }}</div>
+      <div class="text-subtitle2" v-if="!route.id">
+        This route is incomplete
+      </div>
     </q-card-section>
   </q-card>
 </template>
@@ -26,15 +31,16 @@ export default {
     };
   },
   methods: {
-    highLight(data) {
-      this.$emit("highLight", data);
+    highlight(data) {
+      this.$emit("highlight", data);
     },
     setRoute() {
-      this.highLight({ routeIndex: this.index });
+      this.highlight({ routeIndex: this.index });
       this.$emit("setRoute", this.index);
     }
   },
   mounted() {
+    console.log(this.route);
     this.timeStart = moment().format("LT");
     this.timeEnd = moment()
       .add(this.route.duration, "seconds")

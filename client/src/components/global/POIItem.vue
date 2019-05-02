@@ -5,27 +5,27 @@
         color="dukdw"
         text-color="white"
         :icon="
-          !poi.type
-            ? 'fas fa-building'
-            : poi.type === 'Stop'
+          poi.type === 'Stop'
             ? 'fas fa-bus'
-            : poi.type === 'Marker'
-            ? 'fas fa-map-marker-alt'
-            : 'fas fa-door-open'
+            : poi.type === 'Room'
+            ? 'fas fa-door-open'
+            : poi.type === 'Building'
+            ? 'fas fa-building'
+            : 'fas fa-map-marker-alt'
         "
       />
     </q-item-section>
     <q-item-section>
       <q-item-label>{{ poi.name }}</q-item-label>
-      <q-item-label v-if="poi.direction">{{
-        `${poi.direction} Stop`
-      }}</q-item-label>
-      <q-item-label v-if="poi.building">{{
-        `Level ${poi.level} of ${poi.building.name}`
-      }}</q-item-label>
+      <q-item-label v-if="poi.direction">
+        {{ `${poi.direction} Stop` }}
+      </q-item-label>
+      <q-item-label v-if="poi.building">
+        {{ `Level ${poi.level} of ${poi.building.name}` }}
+      </q-item-label>
     </q-item-section>
     <q-item-section side>
-      <q-btn label="Select" color="dukdw" @click="selectPOI" />
+      <q-btn :label="text ? text : 'Select'" color="dukdw" @click="selectPOI" />
     </q-item-section>
   </q-item>
 </template>
@@ -33,7 +33,7 @@
 <script>
 export default {
   name: "POIItem",
-  props: ["poi"],
+  props: ["poi", "type", "text"],
   methods: {
     viewPOI() {
       this.$emit("viewPOI", this.poi);

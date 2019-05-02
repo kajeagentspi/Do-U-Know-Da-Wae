@@ -2,22 +2,17 @@
   <div id="q-app">
     <q-layout>
       <q-page-container :style="pageStyle">
-        <Map />
-        <Wrapper />
+        <leaflet-map />
+        <wrapper />
       </q-page-container>
     </q-layout>
   </div>
 </template>
 
 <script>
-import { Map, Wrapper } from "./components";
 import Vue from "vue";
 export default {
   name: "App",
-  components: {
-    Map,
-    Wrapper
-  },
   computed: {
     pageStyle() {
       const paddingTop = this.heightHeader + "px !important";

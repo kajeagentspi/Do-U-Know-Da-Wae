@@ -1,7 +1,7 @@
 <template>
   <q-card
     class="card"
-    @click="highLight({ routeIndex: routeIndex, pathIndex: index })"
+    @click="highlight({ routeIndex: routeIndex, pathIndex: index })"
   >
     <q-card-section v-if="path.type === 'indoor'">
       <p class="text-h6">{{ path.instructions }}</p>
@@ -30,8 +30,8 @@ export default {
   name: "PathCard",
   props: ["path", "index", "routeIndex"],
   methods: {
-    highLight(data) {
-      this.$emit("highLight", data);
+    highlight(data) {
+      this.$emit("highlight", data);
     }
   }
 };

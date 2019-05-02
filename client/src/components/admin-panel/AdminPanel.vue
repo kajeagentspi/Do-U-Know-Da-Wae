@@ -4,28 +4,43 @@
       <q-btn-group flat>
         <q-btn disabled flat icon="explore" />
         <q-btn label="Search" @click="changeActive('search')" />
-        <q-btn label="Contribute" @click="reset" v-if="type !== 'viewer'" />
-        <q-btn label="User" @click="changeActive('user')" />
         <q-btn
-          label="Admin"
-          v-if="type === 'admin'"
-          @click="changeActive('admin')"
+          label="Contribute"
+          @click="changeActive('contribute')"
+          v-if="type !== 'viewer'"
         />
+        <q-btn label="User" @click="changeActive('user')" />
+        <q-btn label="Admin" v-if="type === 'admin'" @click="reset" />
       </q-btn-group>
     </q-card-actions>
     <q-card-section v-if="page === 'select'">
       <q-btn
         class="full-width godown"
         color="dukdw"
-        label="Add Route"
-        @click="changePage('addroute')"
+        label="Add Building"
+        @click="changePage('addbuilding')"
+      />
+      <q-btn
+        class="full-width godown"
+        color="dukdw"
+        label="Edit Building"
+        @click="changePage('editbuilding')"
+      />
+      <q-btn
+        class="full-width godown"
+        color="dukdw"
+        label="Change User Permission"
+        @click="changePage('changepermission')"
+      />
+      <q-btn
+        class="full-width godown"
+        color="dukdw"
+        label="View Reported Routes"
+        @click="changePage('reported')"
       />
     </q-card-section>
-    <add-room v-if="page === 'addroom'" />
-    <delete-room v-else-if="page === 'deleteroom'" />
     <add-building v-else-if="page === 'addbuilding'" />
     <edit-building v-else-if="page === 'editbuilding'" />
-    <add-route v-else-if="page === 'addroute'" />
     <q-card-section v-else-if="page === 'changepermission'">
       <q-input
         class="full-width godown"
@@ -63,11 +78,6 @@ export default {
       permissionLevel: "viewer"
     };
   },
-  mounted() {
-    if (this.type === "contributor") {
-      this.page = "route";
-    }
-  },
   methods: {
     changePermission() {
       switch (this.permissionLevel) {
@@ -78,9 +88,6 @@ export default {
           this.permissionLevel = "admin";
           break;
         case "admin":
-          this.permissionLevel = "banned";
-          break;
-        case "banned":
           this.permissionLevel = "viewer";
           break;
       }
@@ -98,11 +105,7 @@ export default {
       this.active = pageName;
     },
     reset() {
-      if (this.type === "contributor") {
-        this.page = "route";
-      } else {
-        this.page = "select";
-      }
+      this.page = "select";
     }
   },
   watch: {},

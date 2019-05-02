@@ -7,9 +7,14 @@
         <q-btn
           label="Contribute"
           @click="changeActive('contribute')"
-          :disable="type !== 'admin' && type !== 'contributor'"
+          v-if="type !== 'viewer'"
         />
         <q-btn label="User" @click="reset" />
+        <q-btn
+          label="Admin"
+          v-if="type === 'admin'"
+          @click="changeActive('admin')"
+        />
       </q-btn-group>
     </q-card-actions>
     <div v-if="!selectedRoute">
@@ -17,7 +22,7 @@
         <q-btn
           class="full-width godown"
           color="dukdw"
-          v-if="accessToken === null"
+          v-if="!isAuthenticated"
           label="Login"
           @click="login"
         />
@@ -40,7 +45,7 @@
           :key="index"
           :index="index"
           :route="route"
-          @highLight="highLight"
+          @highlight="highlight"
           @setRoute="setRoute"
         />
       </div>
@@ -56,7 +61,7 @@
         <q-btn
           class="full-width godown"
           color="dukdw"
-          @click="highLight({ routeIndex: selectedRouteIndex })"
+          @click="highlight({ routeIndex: selectedRouteIndex })"
           label="View full route"
         />
       </q-card-section>
@@ -67,7 +72,7 @@
           :path="path"
           :index="index"
           :routeIndex="selectedRouteIndex"
-          @highLight="highLight"
+          @highlight="highlight"
         />
       </div>
     </div>
@@ -76,17 +81,15 @@
 
 <script>
 import firebase from "firebase/app";
-import randomColor from "random-color";
-import L from "leaflet";
 import { mapState, mapActions, mapMutations } from "vuex";
 import { mapFields } from "vuex-map-fields";
 import { CHANGE_VIEW } from "../../store/types";
+import * as Api from "../../api";
 
 export default {
   name: "User",
   computed: {
-    ...mapState("user", ["accessToken", "profile", "type"]),
-    ...mapFields("user", ["bookmarks"]),
+    ...mapState("user", ["isAuthenticated", "profile", "type"]),
     ...mapFields("map", ["active", "viewing"]),
     ...mapState("map", ["mapInstance"])
   },
@@ -94,14 +97,15 @@ export default {
     return {
       selectedRoute: null,
       selectedRouteIndex: null,
-      routes: []
+      bookmarks: []
     };
   },
   methods: {
     ...mapMutations("map", {
       changeView: CHANGE_VIEW
     }),
-    ...mapActions("user", ["setUser", "getUser"]),
+    ...mapActions("map", ["drawRoutes", "removeRoutes"]),
+    ...mapActions("user", ["setUser"]),
     async login() {
       try {
         const provider = new firebase.auth.GoogleAuthProvider();
@@ -110,17 +114,15 @@ export default {
           additionalUserInfo: { profile },
           user
         } = result;
-        const accessToken = await this.$auth.currentUser.getIdToken(
-          /* forceRefresh */ true
-        );
-        await this.setUser({ profile, accessToken, user });
-        this.drawLines();
+        await this.setUser({ profile, isAuthenticated: true, user });
+        this.drawBookmarks();
         this.$q.notify({
           message: "Successfully Logged in",
           color: "positive",
           position: "top"
         });
       } catch (error) {
+        console.log(error);
         this.$q.notify({
           message: "Error Logging in",
           color: "negative",
@@ -137,7 +139,7 @@ export default {
           position: "top"
         });
         this.reset();
-        this.setUser({ accessToken: null });
+        this.setUser({ isAuthenticated: false });
       } catch (error) {
         this.$q.notify({
           message: "Error Logging out",
@@ -146,7 +148,7 @@ export default {
         });
       }
     },
-    highLight({ routeIndex, pathIndex }) {
+    highlight({ routeIndex, pathIndex }) {
       if (isNaN(routeIndex) && isNaN(pathIndex)) {
         this.changeView({
           coordinates: [
@@ -252,42 +254,28 @@ export default {
       this.active = pageName;
     },
     reset() {
-      this.selectedRoute = null;
-      if (this.routes) {
-        this.routes.forEach(route => {
-          route.paths.forEach(path => {
-            if (path.polyLine) {
-              this.mapInstance.removeLayer(path.polyLine);
-            }
-          });
+      this.routes = this.removeRoutes({ routes: this.bookmarks });
+    },
+    async drawBookmarks() {
+      try {
+        const {
+          data: { bookmarks }
+        } = await Api.getUser();
+        this.routes = this.removeRoutes({ routes: this.bookmarks });
+        this.bookmarks = bookmarks;
+        this.routes = await this.drawRoutes({ routes: this.bookmarks });
+      } catch (error) {
+        this.$q.notify({
+          message: "An error occured",
+          color: "negative",
+          position: "top"
         });
       }
-    },
-    drawLines() {
-      const colors = [];
-      this.bookmarks.forEach(route => {
-        const newRoute = JSON.parse(JSON.stringify(route));
-        let color = randomColor().hexString();
-        while (color in colors) {
-          color = randomColor(0.99, 0.99).hexString();
-        }
-        newRoute.color = color;
-        newRoute.paths = newRoute.paths.map(path => {
-          if (path.latLngs) {
-            path.polyLine = L.polyline(path.latLngs, {
-              color
-            }).addTo(this.mapInstance);
-          }
-          return path;
-        });
-        this.routes.push(newRoute);
-      });
     }
   },
   mounted() {
-    if (this.accessToken) {
-      this.getUser();
-      this.drawLines();
+    if (this.isAuthenticated) {
+      this.drawBookmarks();
     }
   },
   beforeDestroy() {

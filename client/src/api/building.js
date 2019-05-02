@@ -18,8 +18,6 @@ export const saveBuilding = data => {
   return axios.post(`${baseURL}/api/building`, data);
 };
 
-export const removeBuilding = ({ id, accessToken }) => {
-  return axios.delete(`${baseURL}/api/building/${id}`, {
-    data: { accessToken }
-  });
+export const removeBuilding = id => {
+  return axios.delete(`${baseURL}/api/building/${id}`);
 };

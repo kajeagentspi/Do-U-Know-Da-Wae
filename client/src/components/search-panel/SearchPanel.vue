@@ -7,9 +7,14 @@
         <q-btn
           label="Contribute"
           @click="changeActive('contribute')"
-          :disable="type !== 'admin' && type !== 'contributor'"
+          v-if="type !== 'viewer'"
         />
         <q-btn label="User" @click="changeActive('user')" />
+        <q-btn
+          label="Admin"
+          v-if="type === 'admin'"
+          @click="changeActive('admin')"
+        />
       </q-btn-group>
     </q-card-actions>
     <div v-if="!selectedRoute">
@@ -78,7 +83,7 @@
           :key="index"
           :index="index"
           :route="route"
-          @highLight="highLight"
+          @highlight="highlight"
           @setRoute="setRoute"
         />
       </div>
@@ -103,7 +108,7 @@
         <q-btn
           class="full-width godown"
           color="dukdw"
-          @click="highLight({ routeIndex: selectedRouteIndex })"
+          @click="highlight({ routeIndex: selectedRouteIndex })"
           label="View full route"
         />
         <q-btn
@@ -121,7 +126,7 @@
           :path="path"
           :index="index"
           :routeIndex="selectedRouteIndex"
-          @highLight="highLight"
+          @highlight="highlight"
         />
       </div>
     </div>
@@ -130,14 +135,13 @@
 
 <script>
 import { CHANGE_VIEW } from "../../store/types";
-import { mapState, mapMutations } from "vuex";
+import { mapState, mapMutations, mapActions } from "vuex";
 import { mapFields } from "vuex-map-fields";
 import * as Api from "../../api";
-import randomColor from "random-color";
 import L from "leaflet";
 
 export default {
-  name: "Search",
+  name: "SearchPanel",
   computed: {
     ...mapState("map", ["mapInstance", "GPSAvailable", "userMarker"]),
     ...mapFields("map", ["marker", "drawing", "viewing", "active"]),
@@ -160,6 +164,7 @@ export default {
     ...mapMutations("map", {
       changeView: CHANGE_VIEW
     }),
+    ...mapActions("map", ["drawRoutes", "removeRoutes"]),
     select(endType) {
       if (endType === "origin") {
         this.selectingOrigin = true;
@@ -268,34 +273,21 @@ export default {
         });
     },
     async routeSearch(origin, destination) {
-      const colors = [];
-      const { data } = await Api.allRoute({ origin, destination });
-      if (this.routes) {
-        this.routes.forEach(route => {
-          route.paths.forEach(path => {
-            if (path.polyLine) {
-              this.mapInstance.removeLayer(path.polyLine);
-            }
-          });
+      try {
+        const { data } = await Api.allRoute({ origin, destination });
+        this.routes = this.removeRoutes({ routes: this.routes });
+        this.routes = data;
+        this.routes = await this.drawRoutes({ routes: this.routes });
+      } catch (error) {
+        this.$q.notify({
+          message: "An error occured",
+          color: "negative",
+          position: "top"
         });
+        console.log(error);
       }
-      this.routes = data.map(route => {
-        let color = randomColor().hexString();
-        while (color in colors) {
-          color = randomColor(0.99, 0.99).hexString();
-        }
-        route.color = color;
-        route.paths.forEach(path => {
-          if (path.latLngs) {
-            path.polyLine = L.polyline(path.latLngs, {
-              color
-            }).addTo(this.mapInstance);
-          }
-        });
-        return route;
-      });
     },
-    highLight({ routeIndex, pathIndex }) {
+    highlight({ routeIndex, pathIndex }) {
       if (isNaN(routeIndex) && isNaN(pathIndex)) {
         this.setView();
         this.routes.forEach(route => {
@@ -372,6 +364,7 @@ export default {
       if (this.destination) {
         this.mapInstance.removeLayer(this.destination.marker);
       }
+      console.log(this.routes);
       if (this.routes) {
         this.routes.forEach(route => {
           route.paths.forEach(path => {

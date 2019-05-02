@@ -3,33 +3,32 @@
     <q-btn
       class="full-width godown"
       color="dukdw"
-      label="Draw Building"
+      :label="selectedBuilding ? selectedBuilding.name : 'Select Building'"
       @click="mark"
     />
     <q-input
       class="godown"
       outlined
       v-model="name"
-      placeholder="Francisco O. Santos Hall"
-      label="Enter Building Name"
-      :disable="!newBuilding || newBuildingCoordinates.length === 0"
+      label="Enter Room Name"
+      :disable="!selectedBuilding"
+      :rules="[roomSearch]"
+      debounce="500"
     />
     <q-input
       class="godown"
       outlined
-      v-model="alternativeNames"
-      placeholder="ICS,IMSP,IC,Physci"
-      label="Enter Building Alternative Names"
-      :disable="
-        !newBuilding || newBuildingCoordinates.length === 0 || name.length === 0
-      "
+      type="number"
+      v-model.number="level"
+      label="Enter Room Level"
+      :disable="!selectedBuilding"
     />
     <q-btn
       class="full-width"
       color="green"
       label="Submit"
-      :disable="!newBuilding || name.length === 0"
-      @click="addBuilding"
+      :disable="!selectedBuilding || name.length === 0 || rooms.length !== 0"
+      @click="addRoom"
     />
   </q-card-section>
 </template>
@@ -41,22 +40,37 @@ import { mapFields } from "vuex-map-fields";
 import * as Api from "../../api";
 
 export default {
-  name: "AddBuilding",
+  name: "AddRoom",
   data() {
     return {
-      newBuildingCoordinates: [],
-      newBuilding: null,
+      selectedBuilding: null,
       buildings: [],
+      rooms: [],
       name: "",
-      alternativeNames: ""
+      level: 1
     };
   },
   computed: {
     ...mapState("map", ["mapInstance"]),
     ...mapState("user", ["accessToken"]),
-    ...mapFields("map", ["drawing", "polygon"])
+    ...mapFields("map", ["drawing", "marker"])
   },
   methods: {
+    async roomSearch() {
+      const request = await Api.allRoom({
+        name: this.name,
+        buildingId: this.selectedBuilding.id,
+        exact: true
+      });
+      this.rooms = request.data;
+      if (this.rooms.length !== 0) {
+        this.$q.notify({
+          message: "Room exists",
+          color: "negative",
+          position: "top"
+        });
+      }
+    },
     async getBuildings() {
       try {
         const { data } = await Api.allBuilding();
@@ -69,26 +83,29 @@ export default {
       } catch (error) {
         this.$q.notify({
           message: "An error occured",
-          color: "negative"
+          color: "negative",
+          position: "top"
         });
       }
     },
-    async addBuilding() {
+    async addRoom() {
       try {
-        await Api.saveBuilding({
-          coordinates: this.newBuildingCoordinates,
+        await Api.saveRoom({
+          buildingId: this.selectedBuilding.id,
           accessToken: this.accessToken,
           name: this.name,
-          alternativeNames: this.alternativeNames
+          level: this.level
         });
         this.$q.notify({
-          message: "Successfully added building",
-          color: "positive"
+          message: "Successfully added room",
+          color: "positive",
+          position: "top"
         });
       } catch (error) {
         this.$q.notify({
           message: "An error occured",
-          color: "negative"
+          color: "negative",
+          position: "top"
         });
       }
     },
@@ -96,21 +113,25 @@ export default {
       this.buildings.forEach(building => {
         this.mapInstance.removeLayer(building.polygon);
       });
-      if (this.newBuilding) {
-        this.mapInstance.removeLayer(this.newBuilding);
-      }
     },
     mark() {
-      this.mapInstance.editTools.startPolygon();
+      this.mapInstance.editTools.startMarker();
     }
   },
   watch: {
-    async polygon(newValue) {
+    async marker(newValue) {
       this.mapInstance.removeLayer(newValue);
-      this.newBuildingCoordinates = newValue.getLatLngs();
-      this.newBuilding = L.polygon(this.newBuildingCoordinates, {
-        color: "blue"
-      }).addTo(this.mapInstance);
+      const { lat, lng } = newValue.getLatLng();
+      const { data } = await Api.identifyBuilding({ lat, lng });
+      if (data.type === "Building") {
+        this.selectedBuilding = data;
+      } else {
+        this.$q.notify({
+          message: "Not a building",
+          color: "negative",
+          position: "top"
+        });
+      }
     }
   },
   async mounted() {
