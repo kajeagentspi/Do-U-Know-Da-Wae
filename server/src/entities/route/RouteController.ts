@@ -44,6 +44,12 @@ export class RouteController {
           "contributor"
         ]
       });
+      routes.forEach(route => {
+        const pathSequence = JSON.parse(`[${route.pathString}]`);
+        route.paths.sort((a, b) => {
+          return pathSequence.indexOf(a.id) - pathSequence.indexOf(b.id);
+        });
+      });
       if (routes.length === 0) {
         if (origin instanceof Room && destination instanceof Room) {
           if (origin.building === destination.building) {
@@ -123,7 +129,14 @@ export class RouteController {
           "contributor"
         ]
       });
+      routes.forEach(route => {
+        const pathSequence = JSON.parse(`[${route.pathString}]`);
+        route.paths.sort((a, b) => {
+          return pathSequence.indexOf(a.id) - pathSequence.indexOf(b.id);
+        });
+      });
     }
+
     return routes;
   }
 
@@ -343,7 +356,7 @@ export class RouteController {
           distance,
           duration
         });
-        return this.routeRepository.findOne(saved.id, {
+        const newroute = await this.routeRepository.findOne(saved.id, {
           relations: [
             "origin",
             "destination",
@@ -353,6 +366,11 @@ export class RouteController {
             "contributor"
           ]
         });
+        const pathSequence = JSON.parse(`[${newroute.pathString}]`);
+        newroute.paths.sort((a, b) => {
+          return pathSequence.indexOf(a.id) - pathSequence.indexOf(b.id);
+        });
+        return newroute;
       } else {
         return {
           message: "UP Mail required to contribute",
@@ -471,7 +489,12 @@ export class RouteController {
       destination,
       contributor
     });
-
+    systemGeneratedRoutes.forEach(route => {
+      const pathSequence = JSON.parse(`[${route.pathString}]`);
+      route.paths.sort((a, b) => {
+        return pathSequence.indexOf(a.id) - pathSequence.indexOf(b.id);
+      });
+    });
     if (systemGeneratedRoutes.length === 0) {
       const path = await this.pathRepository.save({
         type: PathType.INDOOR,
@@ -489,7 +512,7 @@ export class RouteController {
         duration: 0
       });
     }
-    return this.routeRepository.find({
+    const routes = await this.routeRepository.find({
       where: { origin, destination },
       relations: [
         "origin",
@@ -500,6 +523,13 @@ export class RouteController {
         "contributor"
       ]
     });
+    routes.forEach(route => {
+      const pathSequence = JSON.parse(`[${route.pathString}]`);
+      route.paths.sort((a, b) => {
+        return pathSequence.indexOf(a.id) - pathSequence.indexOf(b.id);
+      });
+    });
+    return routes;
   }
 
   // originBuilding === destinationRoom.building
@@ -520,6 +550,12 @@ export class RouteController {
         "paths.destination",
         "contributor"
       ]
+    });
+    routes.forEach(route => {
+      const pathSequence = JSON.parse(`[${route.pathString}]`);
+      route.paths.sort((a, b) => {
+        return pathSequence.indexOf(a.id) - pathSequence.indexOf(b.id);
+      });
     });
     if (routes.length === 0) {
       const path = this.pathRepository.create({
@@ -561,6 +597,12 @@ export class RouteController {
         "contributor"
       ]
     });
+    systemGeneratedRoutes.forEach(route => {
+      const pathSequence = JSON.parse(`[${route.pathString}]`);
+      route.paths.sort((a, b) => {
+        return pathSequence.indexOf(a.id) - pathSequence.indexOf(b.id);
+      });
+    });
     let routes = await this.routeRepository.find({
       where: { origin, destination },
       relations: [
@@ -571,6 +613,12 @@ export class RouteController {
         "paths.destination",
         "contributor"
       ]
+    });
+    routes.forEach(route => {
+      const pathSequence = JSON.parse(`[${route.pathString}]`);
+      route.paths.sort((a, b) => {
+        return pathSequence.indexOf(a.id) - pathSequence.indexOf(b.id);
+      });
     });
     if (systemGeneratedRoutes.length === 0) {
       const OSRMPaths = await this.generateWalkingPathsFromOSRM(
@@ -607,6 +655,12 @@ export class RouteController {
             "paths.destination",
             "contributor"
           ]
+        });
+        routes.forEach(route => {
+          const pathSequence = JSON.parse(`[${route.pathString}]`);
+          route.paths.sort((a, b) => {
+            return pathSequence.indexOf(a.id) - pathSequence.indexOf(b.id);
+          });
         });
       } else {
         routes.push(
@@ -645,7 +699,7 @@ export class RouteController {
     const newRoutes = await this.deduplicateRoutes(tempRoutes);
     if (!(destination instanceof Marker)) {
       await this.routeRepository.save(newRoutes);
-      return this.routeRepository.find({
+      const routes = await this.routeRepository.find({
         where: { origin, destination },
         relations: [
           "origin",
@@ -656,6 +710,13 @@ export class RouteController {
           "contributor"
         ]
       });
+      routes.forEach(route => {
+        const pathSequence = JSON.parse(`[${route.pathString}]`);
+        route.paths.sort((a, b) => {
+          return pathSequence.indexOf(a.id) - pathSequence.indexOf(b.id);
+        });
+      });
+      return routes;
     } else {
       return newRoutes;
     }
@@ -683,7 +744,7 @@ export class RouteController {
       )
     ) {
       await this.routeRepository.save(newRoutes);
-      return this.routeRepository.find({
+      const routes = await this.routeRepository.find({
         where: { origin, destination },
         relations: [
           "origin",
@@ -694,6 +755,13 @@ export class RouteController {
           "contributor"
         ]
       });
+      routes.forEach(route => {
+        const pathSequence = JSON.parse(`[${route.pathString}]`);
+        route.paths.sort((a, b) => {
+          return pathSequence.indexOf(a.id) - pathSequence.indexOf(b.id);
+        });
+      });
+      return routes;
     } else {
       return newRoutes;
     }
@@ -721,7 +789,7 @@ export class RouteController {
       )
     ) {
       await this.routeRepository.save(newRoutes);
-      return this.routeRepository.find({
+      const routes = await this.routeRepository.find({
         where: { origin, destination },
         relations: [
           "origin",
@@ -732,6 +800,13 @@ export class RouteController {
           "contributor"
         ]
       });
+      routes.forEach(route => {
+        const pathSequence = JSON.parse(`[${route.pathString}]`);
+        route.paths.sort((a, b) => {
+          return pathSequence.indexOf(a.id) - pathSequence.indexOf(b.id);
+        });
+      });
+      return routes;
     } else {
       return newRoutes;
     }

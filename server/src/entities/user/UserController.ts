@@ -71,6 +71,7 @@ export class UserController {
         user = await this.userRepository.findOne(null, {
           where: { email: editMail }
         });
+        console.log(type);
         switch (type) {
           case "contributor":
             type = UserType.CONTRIBUTOR;
