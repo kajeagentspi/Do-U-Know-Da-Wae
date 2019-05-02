@@ -180,7 +180,7 @@ export class RouteController {
         const { contributor } = route;
         contributor.type = UserType.VIEWER;
         await this.userRepository.save(contributor);
-        await this.routeRepository.delete(route);
+        await this.routeRepository.delete(route.id);
         return {
           message:
             "Successfully removed route and demoted contributor to viewer",
