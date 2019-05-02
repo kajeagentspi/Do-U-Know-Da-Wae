@@ -1,30 +1,7 @@
 <template>
-  <q-card v-if="!drawing">
-    <q-card-actions class="navbar">
-      <q-btn-group flat>
-        <q-btn disabled flat icon="explore" />
-        <q-btn label="Search" @click="changeActive('search')" />
-        <q-btn
-          label="Contribute"
-          @click="changeActive('contribute')"
-          v-if="type !== 'viewer'"
-        />
-        <q-btn label="User" @click="changeActive('user')" />
-        <q-btn
-          label="Admin"
-          v-if="type === 'admin'"
-          @click="changeActive('admin')"
-        />
-      </q-btn-group>
-    </q-card-actions>
     <div v-if="page === 'select' && !selectedRoute">
       <q-card-section>
-        <q-btn
-          class="full-width godown"
-          color="dukdw"
-          label="Add Route"
-          @click="changePage('addroute')"
-        />
+        <q-btn class="full-width godown" color="dukdw" label="Go Back" />
       </q-card-section>
       <q-separator />
       <div class="text-subtitle2 godown">Contributions</div>
@@ -65,7 +42,6 @@
         />
       </div>
     </div>
-  </q-card>
 </template>
 
 <script>

@@ -2,11 +2,15 @@
   <q-card v-if="!drawing">
     <q-card-actions class="navbar">
       <q-btn-group flat>
-        <q-btn disabled flat icon="explore"/>
-        <q-btn label="Search" @click="changeActive('search')"/>
-        <q-btn label="Contribute" @click="changeActive('contribute')" v-if="type !== 'viewer'"/>
-        <q-btn label="User" @click="changeActive('user')"/>
-        <q-btn label="Admin" v-if="type === 'admin'" @click="reset"/>
+        <q-btn disabled flat icon="explore" />
+        <q-btn label="Search" @click="changeActive('search')" />
+        <q-btn
+          label="Contribute"
+          @click="changeActive('contribute')"
+          v-if="type !== 'viewer'"
+        />
+        <q-btn label="User" @click="changeActive('user')" />
+        <q-btn label="Admin" v-if="type === 'admin'" @click="reset" />
       </q-btn-group>
     </q-card-actions>
     <q-card-section v-if="page === 'select'">
@@ -35,8 +39,8 @@
         @click="changePage('reported')"
       />
     </q-card-section>
-    <add-building v-else-if="page === 'addbuilding'"/>
-    <edit-building v-else-if="page === 'editbuilding'"/>
+    <add-building v-else-if="page === 'addbuilding'" />
+    <edit-building v-else-if="page === 'editbuilding'" />
     <q-card-section v-else-if="page === 'changepermission'">
       <q-input
         class="full-width godown"
@@ -58,6 +62,7 @@
         @click="submitChangePermission"
       />
     </q-card-section>
+    <view-reported v-else-if="page === 'reported'" />
   </q-card>
 </template>
 

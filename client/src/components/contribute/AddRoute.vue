@@ -12,7 +12,11 @@
       color="dukdw"
       label="Add Indoor Path"
       @click="addIndoor"
-      :disabled="paths.length > 0 && paths[0].destination.type !== 'Room' && paths[0].destination.type !== 'Building'"
+      :disabled="
+        paths.length > 0 &&
+          paths[0].destination.type !== 'Room' &&
+          paths[0].destination.type !== 'Building'
+      "
     />
     <q-btn
       class="full-width godown"
@@ -28,7 +32,12 @@
       @click="addJeep"
       :disabled="paths.length > 0 && paths[0].destination.type !== 'Stop'"
     />
-    <view-path-card v-for="(path, index) in paths" :key="index" :path="path" :index="index"/>
+    <view-path-card
+      v-for="(path, index) in paths"
+      :key="index"
+      :path="path"
+      :index="index"
+    />
   </q-card-section>
   <add-indoor-path
     v-else-if="mode === 'indoor'"

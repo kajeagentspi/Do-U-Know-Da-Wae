@@ -3,6 +3,7 @@ import {
   Wrapper,
   SearchPanel,
   AdminPanel,
+  ViewReported,
   Contribute,
   User,
   POIItem,
@@ -24,7 +25,7 @@ export default ({ Vue }) => {
   Vue.component("admin-panel", AdminPanel);
   Vue.component("add-building", AddBuilding);
   Vue.component("edit-building", EditBuilding);
-
+  Vue.component("view-reported", ViewReported);
   Vue.component("poi-item", POIItem);
   Vue.component("route-card", RouteCard);
   Vue.component("path-card", PathCard);
