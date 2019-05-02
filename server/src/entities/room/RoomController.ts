@@ -103,18 +103,21 @@ export class RoomController {
         await this.roomRepository.remove(room);
         return {
           message: "Successfully Deleted Room",
-          color: "positive"
+          color: "positive",
+          position: "top"
         };
       }
       return {
         message: "Operation not permitted",
-        color: "negative"
+        color: "negative",
+        position: "top"
       };
     } catch (error) {
       console.log(error);
       return {
         message: "An Error Occurred",
-        color: "negative"
+        color: "negative",
+        position: "top"
       };
     }
   }

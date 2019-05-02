@@ -15,7 +15,6 @@ import { walking } from "../config";
 import * as admin from "firebase-admin";
 import * as polyline from "@mapbox/polyline";
 import axios from "axios";
-import { UserType } from "../user/UserModel";
 
 export class RouteController {
   private pathRepository = getRepository(Path);
@@ -127,6 +126,42 @@ export class RouteController {
     return routes;
   }
 
+  async removeBookmark(
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { token } = request.headers;
+      const { routeId } = request.body;
+      const { uid } = await admin.auth().verifyIdToken(token);
+      const user = await this.userRepository.findOne(null, {
+        where: { uid },
+        relations: ["bookmarks"]
+      });
+      const route = await this.routeRepository.findOne(routeId);
+      const bookmarks = [];
+      user.bookmarks.forEach(bookmark => {
+        if (bookmark.id !== route.id) {
+          bookmarks.push(bookmark);
+        }
+      });
+      user.bookmarks = bookmarks;
+      this.userRepository.save(user);
+      return {
+        message: "Removed bookmark",
+        color: "positive",
+        position: "top"
+      };
+    } catch (error) {
+      return {
+        message: "Failed to remove bookmark",
+        color: "negative",
+        position: "top"
+      };
+    }
+  }
+
   async bookmark(request: Request, response: Response, next: NextFunction) {
     const { token } = request.headers;
     const { routeId } = request.body;
@@ -140,19 +175,45 @@ export class RouteController {
     if (route.id in bookmarkedIds) {
       return {
         message: "Route bookmarked already",
-        color: "negative"
+        color: "negative",
+        position: "top"
       };
     } else if (user && route) {
       user.bookmarks.push(route);
       this.userRepository.save(user);
       return {
         message: "Added to bookmarks",
-        color: "positive"
+        color: "positive",
+        position: "top"
       };
     }
     return {
       message: "Failed to add to bookmarks",
-      color: "negative"
+      color: "negative",
+      position: "top"
+    };
+  }
+
+  async report(request: Request, response: Response, next: NextFunction) {
+    const { token } = request.headers;
+    const { routeId } = request.body;
+    const { uid } = await admin.auth().verifyIdToken(token);
+    const user = await this.userRepository.findOne(null, {
+      where: { uid },
+      relations: ["bookmarks"]
+    });
+    if (user) {
+      await this.routeRepository.update(routeId, { reported: true });
+      return {
+        message: "Successfully reported",
+        color: "positive",
+        position: "top"
+      };
+    }
+    return {
+      message: "Failed to report route",
+      color: "negative",
+      position: "top"
     };
   }
 
@@ -229,13 +290,15 @@ export class RouteController {
       } else {
         return {
           message: "UP Mail required to contribute",
-          color: "negative"
+          color: "negative",
+          position: "top"
         };
       }
     } catch (error) {
       return {
         message: "An error occured",
-        color: "negative"
+        color: "negative",
+        position: "top"
       };
     }
   }
@@ -395,7 +458,9 @@ export class RouteController {
     if (routes.length === 0) {
       const path = this.pathRepository.create({
         type: PathType.INDOOR,
-        instructions: `No indoor paths available yet.`,
+        instructions: `No indoor paths available yet. The room can be found on level ${
+          destination.level
+        }`,
         origin,
         destination
       });
@@ -547,8 +612,9 @@ export class RouteController {
 
     const newRoutes = await this.deduplicateRoutes(tempRoutes);
     if (
-      destBuildingtoDestRoomRoutes[0].paths[0].instructions !==
-      "No indoor paths available yet."
+      !destBuildingtoDestRoomRoutes[0].paths[0].instructions.startsWith(
+        "No indoor paths available yet."
+      )
     ) {
       await this.routeRepository.save(newRoutes);
       return this.routeRepository.find({
@@ -580,11 +646,13 @@ export class RouteController {
       poiToBuildingRoutes,
       destBuildingtoDestRoomRoutes
     );
+
     const newRoutes = await this.deduplicateRoutes(tempRoutes);
     if (
       !(origin instanceof Marker) &&
-      destBuildingtoDestRoomRoutes[0].paths[0].instructions !==
+      !destBuildingtoDestRoomRoutes[0].paths[0].instructions.startsWith(
         "No indoor paths available yet."
+      )
     ) {
       await this.routeRepository.save(newRoutes);
       return this.routeRepository.find({

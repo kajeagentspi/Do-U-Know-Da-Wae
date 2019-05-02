@@ -41,6 +41,6 @@ export class Route {
   })
   contributor: User;
 
-  @Column()
+  @Column({ default: false })
   reported: boolean;
 }

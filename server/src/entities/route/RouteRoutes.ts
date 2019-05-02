@@ -21,9 +21,21 @@ export const RouteRoutes = [
   },
   {
     method: "post",
+    route: "/report",
+    controller: RouteController,
+    action: "report"
+  },
+  {
+    method: "post",
     route: "/bookmark",
     controller: RouteController,
     action: "bookmark"
+  },
+  {
+    method: "post",
+    route: "/removebookmark",
+    controller: RouteController,
+    action: "removeBookmark"
   },
   {
     method: "delete",

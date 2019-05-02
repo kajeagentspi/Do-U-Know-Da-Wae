@@ -37,7 +37,8 @@ export class BuildingController {
     }
     return {
       message: "Building not found",
-      color: "negative"
+      color: "negative",
+      position: "top"
     };
   }
 
@@ -132,7 +133,8 @@ export class BuildingController {
         await this.buildingRepository.remove(building);
         return {
           message: "Successfully Deleted Building",
-          type: "positive"
+          type: "positive",
+          position: "top"
         };
       }
       return {

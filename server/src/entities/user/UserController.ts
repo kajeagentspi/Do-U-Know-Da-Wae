@@ -78,9 +78,6 @@ export class UserController {
           case "admin":
             type = UserType.ADMIN;
             break;
-          case "banned":
-            type = UserType.BANNED;
-            break;
           case "viewer":
             type = UserType.VIEWER;
             break;
