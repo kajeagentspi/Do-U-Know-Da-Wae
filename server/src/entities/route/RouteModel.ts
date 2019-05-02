@@ -40,4 +40,7 @@ export class Route {
     onDelete: "CASCADE"
   })
   contributor: User;
+
+  @Column()
+  reported: boolean;
 }

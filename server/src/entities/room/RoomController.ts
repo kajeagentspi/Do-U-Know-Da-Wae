@@ -44,20 +44,14 @@ export class RoomController {
 
   async save(request: Request, response: Response, next: NextFunction) {
     try {
-      const {
-        buildingId,
-        buildingCode,
-        name,
-        level,
-        accessToken,
-        id
-      } = request.body;
-      const { uid } = await admin.auth().verifyIdToken(accessToken);
+      const { buildingId, buildingCode, name, level, id } = request.body;
+      const { token } = request.headers;
+      const { uid } = await admin.auth().verifyIdToken(token);
       const user = await this.userRepository.findOne({ uid });
       if (user.type === UserType.ADMIN || user.type === UserType.CONTRIBUTOR) {
         if (id) {
           const room = await this.roomRepository.findOne(id);
-          await this.roomRepository.update(room.id, { name, level });
+          await this.roomRepository.update(room.id, { name });
           return this.roomRepository.findOne(room.id, {
             relations: ["building"]
           });
@@ -101,8 +95,8 @@ export class RoomController {
 
   async remove(request: Request, response: Response, next: NextFunction) {
     try {
-      const { accessToken } = request.body;
-      const { uid } = await admin.auth().verifyIdToken(accessToken);
+      const { token } = request.headers;
+      const { uid } = await admin.auth().verifyIdToken(token);
       const user = await this.userRepository.findOne({ uid });
       if (user.type === UserType.ADMIN) {
         let room = await this.roomRepository.findOne(request.params.id);

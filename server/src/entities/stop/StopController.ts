@@ -35,8 +35,9 @@ export class StopController {
 
   async save(request: Request, response: Response, next: NextFunction) {
     try {
-      const { lat, lng, accessToken, id } = request.body;
-      const { uid } = await admin.auth().verifyIdToken(accessToken);
+      const { lat, lng, id } = request.body;
+      const { token } = request.headers;
+      const { uid } = await admin.auth().verifyIdToken(token);
       const user = await this.userRepository.findOne({ uid });
       if (user.type === UserType.ADMIN) {
         const stop = await this.stopRepository.findOne(id);
@@ -65,8 +66,8 @@ export class StopController {
 
   async remove(request: Request, response: Response, next: NextFunction) {
     try {
-      const { accessToken } = request.body;
-      const { uid } = await admin.auth().verifyIdToken(accessToken);
+      const { token } = request.headers;
+      const { uid } = await admin.auth().verifyIdToken(token);
       const user = await this.userRepository.findOne({ uid });
       if (user.type === UserType.ADMIN) {
         let stop = await this.stopRepository.findOne(request.params.id);

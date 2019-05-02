@@ -77,14 +77,9 @@ export class BuildingController {
 
   async save(request: Request, response: Response, next: NextFunction) {
     try {
-      const {
-        accessToken,
-        name,
-        coordinates,
-        alternativeNames,
-        id
-      } = request.body;
-      const { uid } = await admin.auth().verifyIdToken(accessToken);
+      let { name, coordinates, alternativeNames, id } = request.body;
+      const { token } = request.headers;
+      const { uid } = await admin.auth().verifyIdToken(token);
       const { type } = await this.userRepository.findOne({ uid });
       if (type === "admin") {
         if (id) {
@@ -96,6 +91,9 @@ export class BuildingController {
             relations: ["rooms"]
           });
         } else {
+          coordinates = coordinates.map(coordinate =>
+            coordinate.map(latlngs => [latlngs.lat, latlngs.lng])
+          );
           const {
             coordinates: [lat, lng]
           } = polygonCenter(coordinates);
@@ -126,8 +124,8 @@ export class BuildingController {
 
   async remove(request: Request, response: Response, next: NextFunction) {
     try {
-      const { accessToken } = request.body;
-      const { uid } = await admin.auth().verifyIdToken(accessToken);
+      const { token } = request.headers;
+      const { uid } = await admin.auth().verifyIdToken(token);
       const { type } = await this.userRepository.findOne({ uid });
       if (type === "admin") {
         let building = await this.buildingRepository.findOne(request.params.id);

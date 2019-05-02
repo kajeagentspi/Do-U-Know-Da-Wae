@@ -11,8 +11,7 @@ import { Route } from "..";
 export enum UserType {
   VIEWER = "viewer",
   CONTRIBUTOR = "contributor",
-  ADMIN = "admin",
-  BANNED = "banned"
+  ADMIN = "admin"
 }
 
 @Entity()

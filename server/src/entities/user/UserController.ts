@@ -12,8 +12,8 @@ export class UserController {
   }
 
   async one(request: Request, response: Response, next: NextFunction) {
-    const { accessToken } = request.body;
-    const { uid } = await admin.auth().verifyIdToken(accessToken);
+    const { token } = request.headers;
+    const { uid } = await admin.auth().verifyIdToken(token);
     return await this.userRepository.findOne(null, {
       where: { uid },
       relations: [
@@ -35,8 +35,9 @@ export class UserController {
 
   async save(request: Request, response: Response, next: NextFunction) {
     try {
-      let { accessToken, type, email: editMail } = request.body;
-      const result = await admin.auth().verifyIdToken(accessToken);
+      const { token } = request.headers;
+      let { type, email: editMail } = request.body;
+      const result = await admin.auth().verifyIdToken(token);
       const { name, email, uid } = result;
       let user = await this.userRepository.findOne(null, {
         where: { uid }
@@ -113,8 +114,8 @@ export class UserController {
 
   async remove(request: Request, response: Response, next: NextFunction) {
     try {
-      const { accessToken } = request.body;
-      const { uid } = await admin.auth().verifyIdToken(accessToken);
+      const { token } = request.headers;
+      const { uid } = await admin.auth().verifyIdToken(token);
       const { type } = await this.userRepository.findOne({ uid });
       if (type === "admin") {
         let user = await this.userRepository.findOne(request.params.id);

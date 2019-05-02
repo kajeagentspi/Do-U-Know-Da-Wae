@@ -128,28 +128,27 @@ export class RouteController {
   }
 
   async bookmark(request: Request, response: Response, next: NextFunction) {
-    const { accessToken, routeId } = request.body;
-    const { uid } = await admin.auth().verifyIdToken(accessToken);
+    const { token } = request.headers;
+    const { routeId } = request.body;
+    const { uid } = await admin.auth().verifyIdToken(token);
     const user = await this.userRepository.findOne(null, {
       where: { uid },
       relations: ["bookmarks"]
     });
-    if (user.type !== UserType.BANNED) {
-      const route = await this.routeRepository.findOne(routeId);
-      const bookmarkedIds = user.bookmarks.map(bookmark => bookmark.id);
-      if (route.id in bookmarkedIds) {
-        return {
-          message: "Route bookmarked already",
-          color: "negative"
-        };
-      } else if (user && route) {
-        user.bookmarks.push(route);
-        this.userRepository.save(user);
-        return {
-          message: "Added to bookmarks",
-          color: "positive"
-        };
-      }
+    const route = await this.routeRepository.findOne(routeId);
+    const bookmarkedIds = user.bookmarks.map(bookmark => bookmark.id);
+    if (route.id in bookmarkedIds) {
+      return {
+        message: "Route bookmarked already",
+        color: "negative"
+      };
+    } else if (user && route) {
+      user.bookmarks.push(route);
+      this.userRepository.save(user);
+      return {
+        message: "Added to bookmarks",
+        color: "positive"
+      };
     }
     return {
       message: "Failed to add to bookmarks",
@@ -172,8 +171,9 @@ export class RouteController {
 
   async save(request: Request, response: Response, next: NextFunction) {
     try {
-      const { paths, accessToken } = request.body;
-      const { uid } = await admin.auth().verifyIdToken(accessToken);
+      const { paths } = request.body;
+      const { token } = request.headers;
+      const { uid } = await admin.auth().verifyIdToken(token);
       const user = await this.userRepository.findOne(null, { where: { uid } });
       if (user.type === "admin" || user.type === "contributor") {
         const dbPaths: Path[] = [];
