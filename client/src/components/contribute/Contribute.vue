@@ -2,15 +2,11 @@
   <q-card v-if="!drawing">
     <q-card-actions class="navbar">
       <q-btn-group flat>
-        <q-btn disabled flat icon="explore" />
-        <q-btn label="Search" @click="changeActive('search')" />
-        <q-btn label="Contribute" @click="reset" v-if="type !== 'viewer'" />
-        <q-btn label="User" @click="changeActive('user')" />
-        <q-btn
-          label="Admin"
-          v-if="type === 'admin'"
-          @click="changeActive('admin')"
-        />
+        <q-btn disabled flat icon="explore"/>
+        <q-btn label="Search" @click="changeActive('search')"/>
+        <q-btn label="Contribute" @click="changeActive('contribute')" v-if="type !== 'viewer'"/>
+        <q-btn label="User" @click="changeActive('user')"/>
+        <q-btn label="Admin" v-if="type === 'admin'" @click="changeActive('admin')"/>
       </q-btn-group>
     </q-card-actions>
     <div v-if="page === 'select' && !selectedRoute">
@@ -22,7 +18,7 @@
           @click="changePage('addroute')"
         />
       </q-card-section>
-      <q-separator />
+      <q-separator/>
       <div class="text-subtitle2 godown">Contributions</div>
       <div class="route-body">
         <route-card
@@ -35,20 +31,11 @@
         />
       </div>
     </div>
-    <add-route v-else-if="page === 'addroute'" />
+    <add-route v-else-if="page === 'addroute'"/>
     <div v-else-if="page === 'select' && selectedRoute">
       <q-card-section>
-        <q-btn
-          class="full-width godown"
-          color="dukdw"
-          @click="setRoute"
-          label="Go back"
-        />
-        <q-btn
-          class="full-width godown"
-          color="dukdw"
-          label="View full route"
-        />
+        <q-btn class="full-width godown" color="dukdw" @click="setRoute" label="Go back"/>
+        <q-btn class="full-width godown" color="dukdw" label="View full route"/>
       </q-card-section>
       <div class="path-body" v-if="selectedRoute">
         <path-card
@@ -118,6 +105,10 @@ export default {
     },
     changeActive(pageName) {
       this.active = pageName;
+      if (this.active === "contribute") {
+        this.page = "select";
+        this.drawContributions();
+      }
     },
     highlight({ routeIndex, pathIndex }) {
       if (isNaN(routeIndex) && isNaN(pathIndex)) {
@@ -217,6 +208,7 @@ export default {
         this.viewing = false;
       } else {
         this.selectedRoute = this.contributions[routeIndex];
+        console.log(this.selectedRoute)
         this.selectedRouteIndex = routeIndex;
         this.viewing = true;
       }
@@ -226,7 +218,6 @@ export default {
       this.contributions = this.removeRoutes({ routes: this.contributions });
       this.selectedRoute = null;
       this.selectedRouteIndex = null;
-      this.drawContributions();
     }
   },
   watch: {},

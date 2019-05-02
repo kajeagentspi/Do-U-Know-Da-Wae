@@ -2,15 +2,11 @@
   <q-card v-if="!drawing">
     <q-card-actions class="navbar">
       <q-btn-group flat>
-        <q-btn disabled flat icon="explore" />
-        <q-btn label="Search" @click="changeActive('search')" />
-        <q-btn
-          label="Contribute"
-          @click="changeActive('contribute')"
-          v-if="type !== 'viewer'"
-        />
-        <q-btn label="User" @click="changeActive('user')" />
-        <q-btn label="Admin" v-if="type === 'admin'" @click="reset" />
+        <q-btn disabled flat icon="explore"/>
+        <q-btn label="Search" @click="changeActive('search')"/>
+        <q-btn label="Contribute" @click="changeActive('contribute')" v-if="type !== 'viewer'"/>
+        <q-btn label="User" @click="changeActive('user')"/>
+        <q-btn label="Admin" v-if="type === 'admin'" @click="reset"/>
       </q-btn-group>
     </q-card-actions>
     <q-card-section v-if="page === 'select'">
@@ -39,8 +35,8 @@
         @click="changePage('reported')"
       />
     </q-card-section>
-    <add-building v-else-if="page === 'addbuilding'" />
-    <edit-building v-else-if="page === 'editbuilding'" />
+    <add-building v-else-if="page === 'addbuilding'"/>
+    <edit-building v-else-if="page === 'editbuilding'"/>
     <q-card-section v-else-if="page === 'changepermission'">
       <q-input
         class="full-width godown"
@@ -55,7 +51,12 @@
         :label="permissionLevel"
         @click="changePermission"
       />
-      <q-btn class="full-width godown" color="green" label="Submit" />
+      <q-btn
+        class="full-width godown"
+        color="green"
+        label="Submit"
+        @click="submitChangePermission"
+      />
     </q-card-section>
   </q-card>
 </template>
@@ -93,10 +94,19 @@ export default {
       }
     },
     async submitChangePermission() {
-      await Api.saveUser({
+      const { data } = await Api.saveUser({
         email: this.email,
-        permissionLevel: this.permissionLevel
+        type: this.permissionLevel
       });
+      if (data.message) {
+        this.$q.notify(data);
+      } else {
+        this.$q.notify({
+          message: "Successfully changed user type",
+          color: "positive",
+          position: "top"
+        });
+      }
     },
     changePage(pageName) {
       this.page = pageName;

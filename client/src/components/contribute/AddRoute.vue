@@ -12,10 +12,7 @@
       color="dukdw"
       label="Add Indoor Path"
       @click="addIndoor"
-      :disabled="
-        paths[0].destination.type !== 'Room' ||
-          paths[0].destination.type !== 'Building'
-      "
+      :disabled="paths.length > 0 && paths[0].destination.type !== 'Room' && paths[0].destination.type !== 'Building'"
     />
     <q-btn
       class="full-width godown"
@@ -31,12 +28,7 @@
       @click="addJeep"
       :disabled="paths.length > 0 && paths[0].destination.type !== 'Stop'"
     />
-    <view-path-card
-      v-for="(path, index) in paths"
-      :key="index"
-      :path="path"
-      :index="index"
-    />
+    <view-path-card v-for="(path, index) in paths" :key="index" :path="path" :index="index"/>
   </q-card-section>
   <add-indoor-path
     v-else-if="mode === 'indoor'"
@@ -88,7 +80,7 @@ export default {
         .dialog({
           title: "Confirm",
           message:
-            "Submitting a fake route would result to a permanent ban. Would you like to continue?",
+            "Submitting a fake route would result to termination of contributor status. Would you like to continue?",
           ok: {
             push: true
           },
@@ -99,8 +91,15 @@ export default {
         })
         .onOk(async () => {
           try {
+            const paths = this.paths.map(path => {
+              let { origin, destination, polyLine, ...others } = path;
+              origin = { id: origin.id, type: origin.type };
+              destination = { id: destination.id, type: destination.type };
+              console.log(polyLine);
+              return { ...others, origin, destination };
+            });
             await Api.saveRoute({
-              paths: this.paths
+              paths: paths.reverse()
             });
             this.$q.notify({
               message: "Successfully created route",

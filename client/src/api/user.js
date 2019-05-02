@@ -5,6 +5,6 @@ export const getUser = () => {
   return axios.post(`${baseURL}/api/user`);
 };
 
-export const saveUser = () => {
-  return axios.post(`${baseURL}/api/login`);
+export const saveUser = data => {
+  return axios.post(`${baseURL}/api/login`, data);
 };
