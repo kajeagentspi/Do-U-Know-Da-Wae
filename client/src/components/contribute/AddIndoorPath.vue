@@ -229,8 +229,8 @@ export default {
       }
     },
     addPath() {
-      const {marker:originMarker, ...origin} = this.origin
-      const {marker:destinationMarker, ...destination} = this.destination
+      const { marker: originMarker, ...origin } = this.origin;
+      const { marker: destinationMarker, ...destination } = this.destination;
       const path = {
         origin,
         originMarker,

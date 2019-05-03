@@ -225,11 +225,15 @@ export default {
       }
     },
     addPath() {
+      const { marker: originMarker, ...origin } = this.origin;
+      const { marker: destinationMarker, ...destination } = this.destination;
       const path = {
         duration: this.duration,
         distance: this.distance,
-        origin: this.origin,
-        destination: this.destination,
+        origin,
+        originMarker,
+        destination,
+        destinationMarker,
         latLngs: this.latLngs,
         polyLine: this.polyLine,
         type: "walking"

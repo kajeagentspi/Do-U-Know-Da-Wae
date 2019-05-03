@@ -186,12 +186,6 @@ export default {
       this.name = "";
       this.pois = [];
       this.setView();
-      if (this.origin && this.destination) {
-        const origin = { ...this.origin };
-        const destination = { ...this.destination };
-        delete origin.marker;
-        delete destination.marker;
-      }
     },
     setView() {
       if (this.origin && this.destination) {
@@ -238,10 +232,14 @@ export default {
       }
     },
     addPath() {
+      const { marker: originMarker, ...origin } = this.origin;
+      const { marker: destinationMarker, ...destination } = this.destination;
       const path = {
         id: this.id,
-        origin: this.origin,
-        destination: this.destination,
+        origin,
+        originMarker,
+        destination,
+        destinationMarker,
         latLngs: this.latLngs,
         polyLine: this.polyLine,
         type: "jeep"
