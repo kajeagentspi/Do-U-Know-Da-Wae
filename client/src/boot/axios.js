@@ -3,7 +3,11 @@ import firebase from "firebase/app";
 
 axios.interceptors.request.use(
   async config => {
-    config.headers.token = await firebase.auth().currentUser.getIdToken();
+    try {
+      config.headers.token = await firebase.auth().currentUser.getIdToken();
+    } catch (e) {
+      console.log("not logged in");
+    }
     return config;
   },
   error => {
