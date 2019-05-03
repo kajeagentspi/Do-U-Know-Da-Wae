@@ -38,7 +38,8 @@ module.exports = function(ctx) {
         "QPageSticky",
         "QIcon",
         "QExpansionItem",
-        "QDialog"
+        "QDialog",
+        "QTooltip"
       ],
 
       directives: ["Ripple", "ClosePopup"],

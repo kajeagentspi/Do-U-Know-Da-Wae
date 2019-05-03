@@ -2,19 +2,11 @@
   <q-card>
     <q-card-actions class="navbar">
       <q-btn-group flat>
-        <q-btn disabled flat icon="explore" />
-        <q-btn label="Search" @click="changeActive('search')" />
-        <q-btn
-          label="Contribute"
-          @click="changeActive('contribute')"
-          v-if="type !== 'viewer'"
-        />
-        <q-btn label="User" @click="reset" />
-        <q-btn
-          label="Admin"
-          v-if="type === 'admin'"
-          @click="changeActive('admin')"
-        />
+        <q-btn disabled flat icon="explore"/>
+        <q-btn label="Search" @click="changeActive('search')"/>
+        <q-btn label="Contribute" @click="changeActive('contribute')" v-if="type !== 'viewer'"/>
+        <q-btn label="User" @click="reset"/>
+        <q-btn label="Admin" v-if="type === 'admin'" @click="changeActive('admin')"/>
       </q-btn-group>
     </q-card-actions>
     <div v-if="!selectedRoute">
@@ -30,7 +22,7 @@
           <q-item>
             <q-item-section avatar>
               <q-avatar>
-                <img :src="profile.picture" />
+                <img :src="profile.picture">
               </q-avatar>
             </q-item-section>
             <q-item-section>{{ `Hello ${profile.given_name}` }}</q-item-section>
@@ -38,7 +30,12 @@
           </q-item>
         </q-card>
       </q-card-section>
-      <q-separator />
+      <q-separator/>
+      <q-card-section>
+        <q-item>
+          <q-item-section class="text-h6">Bookmarked Routes</q-item-section>
+        </q-item>
+      </q-card-section>
       <div class="route-body">
         <route-card
           v-for="(route, index) in bookmarks"
@@ -48,16 +45,16 @@
           @highlight="highlight"
           @setRoute="setRoute"
         />
+        <q-card-section v-if="bookmarks.length === 0">
+          <q-item>
+            <q-item-section class="text-h6">No Bookmarked Routes</q-item-section>
+          </q-item>
+        </q-card-section>
       </div>
     </div>
     <div v-else>
       <q-card-section>
-        <q-btn
-          class="full-width godown"
-          color="dukdw"
-          @click="setRoute"
-          label="Go back"
-        />
+        <q-btn class="full-width godown" color="dukdw" @click="setRoute" label="Go back"/>
         <q-btn
           class="full-width godown"
           color="dukdw"
@@ -304,7 +301,7 @@ export default {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   position: absolute;
-  top: 140px;
+  top: 195px;
   bottom: 0;
   left: 0;
   right: 0;

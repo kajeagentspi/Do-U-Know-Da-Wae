@@ -3,7 +3,7 @@
     <q-btn
       class="full-width godown"
       color="green"
-      label="Submit"
+      label="Submit Route"
       :disabled="paths.length === 0"
       @click="submit"
     />
@@ -17,27 +17,28 @@
           paths[0].destination.type !== 'Room' &&
           paths[0].destination.type !== 'Building'
       "
-    />
+    >
+      <q-tooltip>Adds text-based indoor path</q-tooltip>
+    </q-btn>
     <q-btn
       class="full-width godown"
       color="dukdw"
       label="Add Walking Path"
       @click="addWalking"
       :disabled="paths.length > 0 && paths[0].destination.type === 'Room'"
-    />
+    >
+      <q-tooltip>Adds walking path</q-tooltip>
+    </q-btn>
     <q-btn
       class="full-width godown"
       color="dukdw"
       label="Add Jeepney Path"
       @click="addJeep"
       :disabled="paths.length > 0 && paths[0].destination.type !== 'Stop'"
-    />
-    <view-path-card
-      v-for="(path, index) in paths"
-      :key="index"
-      :path="path"
-      :index="index"
-    />
+    >
+      <q-tooltip>Adds jeep path</q-tooltip>
+    </q-btn>
+    <view-path-card v-for="(path, index) in paths" :key="index" :path="path" :index="index"/>
   </q-card-section>
   <add-indoor-path
     v-else-if="mode === 'indoor'"

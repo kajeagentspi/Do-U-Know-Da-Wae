@@ -2,7 +2,7 @@
   <div v-if="page === 'select' && !selectedRoute">
     <q-card-section>
       <q-item>
-        <q-item-section class="text-h5">Reported Routes</q-item-section>
+        <q-item-section class="text-h6">Reported Routes</q-item-section>
       </q-item>
     </q-card-section>
     <div class="route-body">
@@ -14,17 +14,17 @@
         @highlight="highlight"
         @setRoute="setRoute"
       />
+      <q-card-section v-if="reportedRoutes.length === 0">
+        <q-item>
+          <q-item-section class="text-h6">No Reported Routes</q-item-section>
+        </q-item>
+      </q-card-section>
     </div>
   </div>
-  <add-route v-else-if="page === 'addroute'" />
+  <add-route v-else-if="page === 'addroute'"/>
   <div v-else-if="page === 'select' && selectedRoute">
     <q-card-section>
-      <q-btn
-        class="full-width godown"
-        color="dukdw"
-        @click="setRoute"
-        label="Go back"
-      />
+      <q-btn class="full-width godown" color="dukdw" @click="setRoute" label="Go back"/>
       <q-btn
         class="full-width godown"
         color="dukdw"
@@ -255,7 +255,7 @@ export default {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   position: absolute;
-  top: 153px;
+  top: 100px;
   bottom: 0;
   left: 0;
   right: 0;
