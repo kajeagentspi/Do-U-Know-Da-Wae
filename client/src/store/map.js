@@ -83,6 +83,15 @@ const map = {
         }
         route.color = color;
         route.paths.forEach(path => {
+          const { origin, destination } = path;
+          path.originMarker = new L.Marker({
+            lat: origin.lat,
+            lng: origin.lng
+          }).addTo(mapInstance);
+          path.destinationMarker = new L.Marker({
+            lat: destination.lat,
+            lng: destination.lng
+          }).addTo(mapInstance);
           if (path.latLngs) {
             path.polyLine = L.polyline(path.latLngs, {
               color
@@ -99,6 +108,8 @@ const map = {
       if (isArray(routes)) {
         routes.forEach(route => {
           route.paths.forEach(path => {
+            mapInstance.removeLayer(path.originMarker);
+            mapInstance.removeLayer(path.destinationMarker);
             if (path.polyLine) {
               mapInstance.removeLayer(path.polyLine);
             }

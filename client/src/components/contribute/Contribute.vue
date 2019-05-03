@@ -157,6 +157,8 @@ export default {
         });
         this.contributions.forEach(route => {
           route.paths.forEach(path => {
+            path.originMarker.setOpacity(1);
+            path.destinationMarker.setOpacity(1);
             if (path.polyLine) {
               path.polyLine.setStyle({ opacity: 1 });
             }
@@ -178,12 +180,17 @@ export default {
         for (let i = 0; i < this.contributions.length; i++) {
           if (i === routeIndex) {
             this.contributions[i].paths.forEach(path => {
+              console.log(path);
+              path.originMarker.setOpacity(1);
+              path.destinationMarker.setOpacity(1);
               if (path.polyLine) {
                 path.polyLine.setStyle({ opacity: 1 });
               }
             });
           } else {
             this.contributions[i].paths.forEach(path => {
+              path.originMarker.setOpacity(0);
+              path.destinationMarker.setOpacity(0);
               if (path.polyLine) {
                 path.polyLine.setStyle({ opacity: 0 });
               }
@@ -198,14 +205,22 @@ export default {
               if (j === pathIndex) {
                 activePath = this.contributions[i].paths[j];
                 if (this.contributions[i].paths[j].polyLine) {
+                  this.contributions[i].paths[j].originMarker.setOpacity(1);
+                  this.contributions[i].paths[j].destinationMarker.setOpacity(
+                    1
+                  );
                   this.contributions[i].paths[j].polyLine.setStyle({
                     opacity: 1
                   });
                 }
               } else {
                 if (this.contributions[i].paths[j].polyLine) {
+                  this.contributions[i].paths[j].originMarker.setOpacity(0);
+                  this.contributions[i].paths[j].destinationMarker.setOpacity(
+                    0
+                  );
                   this.contributions[i].paths[j].polyLine.setStyle({
-                    opacity: 0.5
+                    opacity: 0
                   });
                 }
               }

@@ -39,12 +39,12 @@
         </q-card>
       </q-card-section>
       <q-separator />
-      <q-card-section>
+      <q-card-section v-if="isAuthenticated">
         <q-item>
           <q-item-section class="text-h6">Bookmarked Routes</q-item-section>
         </q-item>
       </q-card-section>
-      <div class="route-body">
+      <div class="route-body" v-if="isAuthenticated">
         <route-card
           v-for="(route, index) in bookmarks"
           :key="index"
@@ -180,17 +180,19 @@ export default {
         this.changeView({
           coordinates: [
             {
-              lat: this.routes[routeIndex].origin.lat,
-              lng: this.routes[routeIndex].origin.lng
+              lat: this.bookmarks[routeIndex].origin.lat,
+              lng: this.bookmarks[routeIndex].origin.lng
             },
             {
-              lat: this.routes[routeIndex].destination.lat,
-              lng: this.routes[routeIndex].destination.lng
+              lat: this.bookmarks[routeIndex].destination.lat,
+              lng: this.bookmarks[routeIndex].destination.lng
             }
           ]
         });
-        this.routes.forEach(route => {
+        this.bookmarks.forEach(route => {
           route.paths.forEach(path => {
+            path.originMarker.setOpacity(1);
+            path.destinationMarker.setOpacity(1);
             if (path.polyLine) {
               path.polyLine.setStyle({ opacity: 1 });
             }
@@ -200,24 +202,29 @@ export default {
         this.changeView({
           coordinates: [
             {
-              lat: this.routes[routeIndex].origin.lat,
-              lng: this.routes[routeIndex].origin.lng
+              lat: this.bookmarks[routeIndex].origin.lat,
+              lng: this.bookmarks[routeIndex].origin.lng
             },
             {
-              lat: this.routes[routeIndex].destination.lat,
-              lng: this.routes[routeIndex].destination.lng
+              lat: this.bookmarks[routeIndex].destination.lat,
+              lng: this.bookmarks[routeIndex].destination.lng
             }
           ]
         });
-        for (let i = 0; i < this.routes.length; i++) {
+        for (let i = 0; i < this.bookmarks.length; i++) {
           if (i === routeIndex) {
-            this.routes[i].paths.forEach(path => {
+            this.bookmarks[i].paths.forEach(path => {
+              console.log(path);
+              path.originMarker.setOpacity(1);
+              path.destinationMarker.setOpacity(1);
               if (path.polyLine) {
                 path.polyLine.setStyle({ opacity: 1 });
               }
             });
           } else {
-            this.routes[i].paths.forEach(path => {
+            this.bookmarks[i].paths.forEach(path => {
+              path.originMarker.setOpacity(0);
+              path.destinationMarker.setOpacity(0);
               if (path.polyLine) {
                 path.polyLine.setStyle({ opacity: 0 });
               }
@@ -226,26 +233,30 @@ export default {
         }
       } else {
         let activePath;
-        for (let i = 0; i < this.routes.length; i++) {
+        for (let i = 0; i < this.bookmarks.length; i++) {
           if (i === routeIndex) {
-            for (let j = 0; j < this.routes[i].paths.length; j++) {
+            for (let j = 0; j < this.bookmarks[i].paths.length; j++) {
               if (j === pathIndex) {
-                activePath = this.routes[i].paths[j];
-                if (this.routes[i].paths[j].polyLine) {
-                  this.routes[i].paths[j].polyLine.setStyle({
+                activePath = this.bookmarks[i].paths[j];
+                if (this.bookmarks[i].paths[j].polyLine) {
+                  this.bookmarks[i].paths[j].originMarker.setOpacity(1);
+                  this.bookmarks[i].paths[j].destinationMarker.setOpacity(1);
+                  this.bookmarks[i].paths[j].polyLine.setStyle({
                     opacity: 1
                   });
                 }
               } else {
-                if (this.routes[i].paths[j].polyLine) {
-                  this.routes[i].paths[j].polyLine.setStyle({
-                    opacity: 0.5
+                if (this.bookmarks[i].paths[j].polyLine) {
+                  this.bookmarks[i].paths[j].originMarker.setOpacity(0);
+                  this.bookmarks[i].paths[j].destinationMarker.setOpacity(0);
+                  this.bookmarks[i].paths[j].polyLine.setStyle({
+                    opacity: 0
                   });
                 }
               }
             }
           } else {
-            this.routes[i].paths.forEach(path => {
+            this.bookmarks[i].paths.forEach(path => {
               if (path.polyLine) {
                 path.polyLine.setStyle({ opacity: 0 });
               }
