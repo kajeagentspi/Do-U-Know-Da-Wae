@@ -2,11 +2,19 @@
   <q-card v-if="!drawing">
     <q-card-actions class="navbar">
       <q-btn-group flat>
-        <q-btn disabled flat icon="explore"/>
-        <q-btn label="Search" @click="reset"/>
-        <q-btn label="Contribute" @click="changeActive('contribute')" v-if="type !== 'viewer'"/>
-        <q-btn label="User" @click="changeActive('user')"/>
-        <q-btn label="Admin" v-if="type === 'admin'" @click="changeActive('admin')"/>
+        <q-btn disabled flat icon="explore" />
+        <q-btn label="Search" @click="reset" />
+        <q-btn
+          label="Contribute"
+          @click="changeActive('contribute')"
+          v-if="type !== 'viewer'"
+        />
+        <q-btn label="User" @click="changeActive('user')" />
+        <q-btn
+          label="Admin"
+          v-if="type === 'admin'"
+          @click="changeActive('admin')"
+        />
       </q-btn-group>
     </q-card-actions>
     <div v-if="!selectedRoute">

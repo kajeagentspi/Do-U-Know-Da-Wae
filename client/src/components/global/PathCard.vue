@@ -18,7 +18,11 @@
     <q-card-section v-else-if="path.type === 'jeep'">
       <p class="text-h6 ">
         {{
-          `Ride a jeep from ${path.origin.name} ${caps(path.origin.direction)} Stop to ${path.destination.name} ${caps(path.destination.direction)} Stop`
+          `Ride a jeep from ${path.origin.name} ${caps(
+            path.origin.direction
+          )} Stop to ${path.destination.name} ${caps(
+            path.destination.direction
+          )} Stop`
         }}
       </p>
     </q-card-section>
@@ -26,8 +30,8 @@
 </template>
 
 <script>
-import { format } from 'quasar'
-const { capitalize } = format
+import { format } from "quasar";
+const { capitalize } = format;
 
 export default {
   name: "PathCard",
@@ -36,8 +40,8 @@ export default {
     highlight(data) {
       this.$emit("highlight", data);
     },
-    caps(text){
-      return capitalize(text)
+    caps(text) {
+      return capitalize(text);
     }
   }
 };
