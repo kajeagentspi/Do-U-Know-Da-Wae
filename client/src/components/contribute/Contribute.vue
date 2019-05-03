@@ -2,11 +2,19 @@
   <q-card v-if="!drawing">
     <q-card-actions class="navbar">
       <q-btn-group flat>
-        <q-btn disabled flat icon="explore"/>
-        <q-btn label="Search" @click="changeActive('search')"/>
-        <q-btn label="Contribute" @click="changeActive('contribute')" v-if="type !== 'viewer'"/>
-        <q-btn label="User" @click="changeActive('user')"/>
-        <q-btn label="Admin" v-if="type === 'admin'" @click="changeActive('admin')"/>
+        <q-btn disabled flat icon="explore" />
+        <q-btn label="Search" @click="changeActive('search')" />
+        <q-btn
+          label="Contribute"
+          @click="changeActive('contribute')"
+          v-if="type !== 'viewer'"
+        />
+        <q-btn label="User" @click="changeActive('user')" />
+        <q-btn
+          label="Admin"
+          v-if="type === 'admin'"
+          @click="changeActive('admin')"
+        />
       </q-btn-group>
     </q-card-actions>
     <div v-if="page === 'select' && !selectedRoute">
@@ -18,7 +26,7 @@
           @click="changePage('addroute')"
         />
       </q-card-section>
-      <q-separator/>
+      <q-separator />
       <q-card-section>
         <q-item>
           <q-item-section class="text-h6">Contributed Routes</q-item-section>
@@ -35,15 +43,22 @@
         />
         <q-card-section v-if="contributions.length === 0">
           <q-item>
-            <q-item-section class="text-h6">No Contributed Routes</q-item-section>
+            <q-item-section class="text-h6"
+              >No Contributed Routes</q-item-section
+            >
           </q-item>
         </q-card-section>
       </div>
     </div>
-    <add-route v-else-if="page === 'addroute'"/>
+    <add-route v-else-if="page === 'addroute'" />
     <div v-else-if="page === 'select' && selectedRoute">
       <q-card-section>
-        <q-btn class="full-width godown" color="dukdw" @click="setRoute" label="Go back"/>
+        <q-btn
+          class="full-width godown"
+          color="dukdw"
+          @click="setRoute"
+          label="Go back"
+        />
         <q-btn
           class="full-width godown"
           color="dukdw"

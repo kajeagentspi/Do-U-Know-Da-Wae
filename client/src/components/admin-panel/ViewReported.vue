@@ -21,10 +21,15 @@
       </q-card-section>
     </div>
   </div>
-  <add-route v-else-if="page === 'addroute'"/>
+  <add-route v-else-if="page === 'addroute'" />
   <div v-else-if="page === 'select' && selectedRoute">
     <q-card-section>
-      <q-btn class="full-width godown" color="dukdw" @click="setRoute" label="Go back"/>
+      <q-btn
+        class="full-width godown"
+        color="dukdw"
+        @click="setRoute"
+        label="Go back"
+      />
       <q-btn
         class="full-width godown"
         color="dukdw"

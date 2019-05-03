@@ -14,20 +14,9 @@ Vue.use(Vuex);
 const vuexLocal = new VuexPersistence({
   storage: window.localStorage,
   key: "dukdw",
-  reducer: state => {
-    const { bookmarks } = state.user;
-    const cleanBookmarks = bookmarks.map(bookmark => {
-      bookmark.paths.forEach(path => {
-        if (path.polyLine) {
-          delete path.polyLine;
-        }
-      });
-      return bookmark;
-    });
-    return {
-      user: { ...state.user, bookmarks: cleanBookmarks }
-    };
-  }
+  reducer: state => ({
+    user: state.user
+  })
 });
 
 const Store = new Vuex.Store({

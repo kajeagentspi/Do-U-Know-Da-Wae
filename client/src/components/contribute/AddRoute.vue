@@ -38,7 +38,12 @@
     >
       <q-tooltip>Adds jeep path</q-tooltip>
     </q-btn>
-    <view-path-card v-for="(path, index) in paths" :key="index" :path="path" :index="index"/>
+    <view-path-card
+      v-for="(path, index) in paths"
+      :key="index"
+      :path="path"
+      :index="index"
+    />
   </q-card-section>
   <add-indoor-path
     v-else-if="mode === 'indoor'"

@@ -28,7 +28,6 @@ import L from "leaflet";
 import { mapFields } from "vuex-map-fields";
 import { mapActions, mapMutations } from "vuex";
 import { CHANGE_VIEW } from "../../store/types";
-// import * as Api from "../../api";
 
 export default {
   name: "Map",
