@@ -485,9 +485,12 @@ export class RouteController {
       }
     });
     const systemGeneratedRoutes = await this.routeRepository.find({
-      origin,
-      destination,
-      contributor
+      where: {
+        origin,
+        destination,
+        contributor
+      },
+      relations: ["paths"]
     });
     systemGeneratedRoutes.forEach(route => {
       const pathSequence = JSON.parse(`[${route.pathString}]`);
@@ -710,6 +713,7 @@ export class RouteController {
           "contributor"
         ]
       });
+
       routes.forEach(route => {
         const pathSequence = JSON.parse(`[${route.pathString}]`);
         route.paths.sort((a, b) => {
@@ -724,6 +728,7 @@ export class RouteController {
 
   // room => indoor => building => walk => building => indoor => room
   async getRoomToRoomDifferentBuilding(origin: Room, destination: Room) {
+    console.log("herererere1");
     const roomToDiffBuildingRoutes = await this.getRoomToPOIRoutes(
       origin,
       destination.building
