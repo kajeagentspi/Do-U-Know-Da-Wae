@@ -17,6 +17,7 @@
       <q-input outlined label="Origin" readonly :value="path.origin.name" />
       <q-input
         outlined
+        type="textarea"
         label="Instructions"
         readonly
         v-if="path.type === 'indoor'"

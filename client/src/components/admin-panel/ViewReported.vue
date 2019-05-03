@@ -39,7 +39,7 @@
       <q-btn
         class="full-width godown"
         color="dukdw"
-        label="Delete Path and Demote Contributor"
+        label="Delete Route and Demote Contributor"
         @click="processReport(true)"
       />
       <q-btn
