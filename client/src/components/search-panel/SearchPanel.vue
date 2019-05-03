@@ -109,7 +109,7 @@
           class="full-width godown"
           color="dukdw"
           @click="highlight({ routeIndex: selectedRouteIndex })"
-          label="View full route"
+          label="View full route in map"
         />
         <q-btn
           class="full-width godown"

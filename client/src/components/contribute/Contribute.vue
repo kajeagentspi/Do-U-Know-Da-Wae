@@ -62,7 +62,7 @@
         <q-btn
           class="full-width godown"
           color="dukdw"
-          label="View full route"
+          label="View full route in map"
           @click="highlight({ routeIndex: selectedRouteIndex })"
         />
       </q-card-section>

@@ -77,7 +77,7 @@ const map = {
       let { routes } = payload;
       const colors = [];
       routes = routes.map(route => {
-        let color = randomColor().hexString();
+        let color = randomColor({ lumunosity: "dark" }).hexString();
         while (color in colors) {
           color = randomColor({ lumunosity: "dark" }).hexString();
         }
