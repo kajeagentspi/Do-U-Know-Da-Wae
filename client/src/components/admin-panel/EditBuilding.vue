@@ -14,7 +14,14 @@
         placeholder="Francisco O. Santos Hall"
         label="Enter Building Name"
         :disable="!selectedBuilding"
-      />
+      >
+        <template v-slot:append>
+          <q-avatar>
+            <q-tooltip>The name of the building</q-tooltip>
+            <q-icon name="far fa-question-circle" size="25px" />
+          </q-avatar>
+        </template>
+      </q-input>
       <q-input
         class="godown"
         outlined
@@ -22,7 +29,14 @@
         placeholder="ICS,IMSP,IC,Physci"
         label="Enter Building Alternative Names"
         :disable="!selectedBuilding || name.length === 0"
-      />
+      >
+        <template v-slot:append>
+          <q-avatar>
+            <q-tooltip>A list of comma separated alternative names</q-tooltip>
+            <q-icon name="far fa-question-circle" size="25px" />
+          </q-avatar>
+        </template>
+      </q-input>
       <q-btn
         class="full-width godown"
         color="green"
