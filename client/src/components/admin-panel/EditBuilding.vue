@@ -268,7 +268,7 @@ export default {
           alternativeNames: this.alternativeNames
         });
         this.$q.notify({
-          message: "Successfully editted building",
+          message: "Successfully edited building",
           color: "positive",
           position: "top"
         });
