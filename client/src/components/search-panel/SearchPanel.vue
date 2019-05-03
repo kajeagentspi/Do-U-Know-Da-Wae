@@ -2,19 +2,11 @@
   <q-card v-if="!drawing">
     <q-card-actions class="navbar">
       <q-btn-group flat>
-        <q-btn disabled flat icon="explore" />
-        <q-btn label="Search" @click="reset" />
-        <q-btn
-          label="Contribute"
-          @click="changeActive('contribute')"
-          v-if="type !== 'viewer'"
-        />
-        <q-btn label="User" @click="changeActive('user')" />
-        <q-btn
-          label="Admin"
-          v-if="type === 'admin'"
-          @click="changeActive('admin')"
-        />
+        <q-btn disabled flat icon="explore"/>
+        <q-btn label="Search" @click="reset"/>
+        <q-btn label="Contribute" @click="changeActive('contribute')" v-if="type !== 'viewer'"/>
+        <q-btn label="User" @click="changeActive('user')"/>
+        <q-btn label="Admin" v-if="type === 'admin'" @click="changeActive('admin')"/>
       </q-btn-group>
     </q-card-actions>
     <div v-if="!selectedRoute">
@@ -411,15 +403,7 @@ export default {
         this.mapInstance.removeLayer(this.destination.marker);
       }
       console.log(this.routes);
-      if (this.routes) {
-        this.routes.forEach(route => {
-          route.paths.forEach(path => {
-            if (path.polyLine) {
-              this.mapInstance.removeLayer(path.polyLine);
-            }
-          });
-        });
-      }
+      this.routes = this.removeRoutes({ routes: this.routes });
       this.origin = null;
       this.destination = null;
       this.selectingOrigin = false;
