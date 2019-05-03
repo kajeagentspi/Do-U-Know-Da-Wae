@@ -44,6 +44,7 @@ const map = {
         zoom: 16,
         editable: true
       });
+      new L.Control.Zoom({ position: "topright" }).addTo(state.mapInstance);
       L.mapboxGL({
         attribution:
           '<a href="https://www.maptiler.com/copyright/" target="_blank">© MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">© OpenStreetMap contributors</a>',

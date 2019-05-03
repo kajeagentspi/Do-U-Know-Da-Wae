@@ -57,6 +57,11 @@ export default {
 </script>
 
 <style>
+.leaflet-top.leaflet-right {
+  padding-top: 60px;
+  padding-right: 10px;
+}
+
 .icon {
   text-align: center;
   line-height: 20px;
