@@ -2,19 +2,11 @@
   <q-card v-if="!drawing">
     <q-card-actions class="navbar">
       <q-btn-group flat>
-        <q-btn disabled flat icon="explore" />
-        <q-btn label="Search" @click="reset" />
-        <q-btn
-          label="Contribute"
-          @click="changeActive('contribute')"
-          v-if="type !== 'viewer'"
-        />
-        <q-btn label="User" @click="changeActive('user')" />
-        <q-btn
-          label="Admin"
-          v-if="type === 'admin'"
-          @click="changeActive('admin')"
-        />
+        <q-btn disabled flat icon="explore"/>
+        <q-btn label="Search" @click="reset"/>
+        <q-btn label="Contribute" @click="changeActive('contribute')" v-if="type !== 'viewer'"/>
+        <q-btn label="User" @click="changeActive('user')"/>
+        <q-btn label="Admin" v-if="type === 'admin'" @click="changeActive('admin')"/>
       </q-btn-group>
     </q-card-actions>
     <div v-if="!selectedRoute">
@@ -303,25 +295,54 @@ export default {
     },
     highlight({ routeIndex, pathIndex }) {
       if (isNaN(routeIndex) && isNaN(pathIndex)) {
-        this.setView();
+        this.changeView({
+          coordinates: [
+            {
+              lat: this.routes[routeIndex].origin.lat,
+              lng: this.routes[routeIndex].origin.lng
+            },
+            {
+              lat: this.routes[routeIndex].destination.lat,
+              lng: this.routes[routeIndex].destination.lng
+            }
+          ]
+        });
         this.routes.forEach(route => {
           route.paths.forEach(path => {
+            path.originMarker.setOpacity(1);
+            path.destinationMarker.setOpacity(1);
             if (path.polyLine) {
               path.polyLine.setStyle({ opacity: 1 });
             }
           });
         });
       } else if (!isNaN(routeIndex) && isNaN(pathIndex)) {
-        this.setView();
+        this.changeView({
+          coordinates: [
+            {
+              lat: this.routes[routeIndex].origin.lat,
+              lng: this.routes[routeIndex].origin.lng
+            },
+            {
+              lat: this.routes[routeIndex].destination.lat,
+              lng: this.routes[routeIndex].destination.lng
+            }
+          ]
+        });
         for (let i = 0; i < this.routes.length; i++) {
           if (i === routeIndex) {
             this.routes[i].paths.forEach(path => {
+              console.log(path);
+              path.originMarker.setOpacity(1);
+              path.destinationMarker.setOpacity(1);
               if (path.polyLine) {
                 path.polyLine.setStyle({ opacity: 1 });
               }
             });
           } else {
             this.routes[i].paths.forEach(path => {
+              path.originMarker.setOpacity(0);
+              path.destinationMarker.setOpacity(0);
               if (path.polyLine) {
                 path.polyLine.setStyle({ opacity: 0 });
               }
@@ -336,27 +357,30 @@ export default {
               if (j === pathIndex) {
                 activePath = this.routes[i].paths[j];
                 if (this.routes[i].paths[j].polyLine) {
+                  this.routes[i].paths[j].originMarker.setOpacity(1);
+                  this.routes[i].paths[j].destinationMarker.setOpacity(1);
                   this.routes[i].paths[j].polyLine.setStyle({
                     opacity: 1
                   });
                 }
               } else {
                 if (this.routes[i].paths[j].polyLine) {
+                  this.routes[i].paths[j].originMarker.setOpacity(0);
+                  this.routes[i].paths[j].destinationMarker.setOpacity(0);
                   this.routes[i].paths[j].polyLine.setStyle({
-                    opacity: 0.5
+                    opacity: 0
                   });
                 }
               }
             }
           } else {
             this.routes[i].paths.forEach(path => {
-              if (path.latLngs) {
+              if (path.polyLine) {
                 path.polyLine.setStyle({ opacity: 0 });
               }
             });
           }
         }
-        console.log(activePath);
         this.changeView({
           coordinates: [
             {
