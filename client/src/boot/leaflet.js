@@ -13,4 +13,15 @@ export default () => {
     iconUrl: require("leaflet/dist/images/marker-icon.png"),
     shadowUrl: require("leaflet/dist/images/marker-shadow.png")
   });
+  L.Polyline = L.Polyline.include({
+    getDistance: function(system) {
+      // distance in meters
+      let mDistanse = 0,
+          length = this._latlngs.length;
+      for (let i = 1; i < length; i++) {
+          mDistanse += this._latlngs[i].distanceTo(this._latlngs[i - 1]);
+      }
+      return mDistanse;
+    }
+});
 };

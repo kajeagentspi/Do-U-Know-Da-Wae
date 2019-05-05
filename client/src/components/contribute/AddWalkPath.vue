@@ -251,6 +251,8 @@ export default {
     async polygon(newValue) {
       this.mapInstance.removeLayer(newValue);
       this.latLngs = newValue.getLatLngs();
+      this.distance = newValue.getDistance();
+      this.duration = this.distance / 1.4;
       this.polyLine = L.polyline(this.latLngs, {
         color: "blue"
       }).addTo(this.mapInstance);

@@ -34,7 +34,7 @@
       color="dukdw"
       label="Add Jeepney Path"
       @click="addJeep"
-      :disabled="paths.length > 0 && paths[0].destination.type !== 'Stop'"
+      :disabled="paths.length === 0 || paths[0].destination.type !== 'Stop'"
     >
       <q-tooltip>Adds jeep path</q-tooltip>
     </q-btn>
@@ -106,7 +106,6 @@ export default {
         })
         .onOk(async () => {
           try {
-            console.log(paths);
             const paths = this.paths.map(path => {
               let {
                 origin,
@@ -121,7 +120,6 @@ export default {
               console.log(polyLine, originMarker, destinationMarker);
               return { ...others, origin, destination };
             });
-            console.log(paths);
             await Api.saveRoute({
               paths: paths.reverse()
             });
@@ -143,7 +141,13 @@ export default {
     },
     reset() {
       this.paths.forEach(path => {
-        const { origin, destination, polyLine } = path;
+        const {
+          origin,
+          destination,
+          polyLine,
+          originMarker,
+          destinationMarker
+        } = path;
         if (origin && origin.marker) {
           this.mapInstance.removeLayer(origin.marker);
           delete path.origin.marker;
@@ -155,6 +159,12 @@ export default {
         if (polyLine) {
           this.mapInstance.removeLayer(polyLine);
           delete path.polyLine;
+        }
+        if (originMarker) {
+          this.mapInstance.removeLayer(originMarker);
+        }
+        if (destinationMarker) {
+          this.mapInstance.removeLayer(destinationMarker);
         }
       });
       this.paths = [];
