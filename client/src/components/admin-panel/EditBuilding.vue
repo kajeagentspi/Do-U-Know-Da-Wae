@@ -346,7 +346,7 @@ export default {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   position: absolute;
-  top: 329px;
+  top: 370px;
   bottom: 0;
   left: 0;
   right: 0;
