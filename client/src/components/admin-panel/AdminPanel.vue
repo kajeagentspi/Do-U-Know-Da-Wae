@@ -40,7 +40,10 @@
       />
     </q-card-section>
     <add-building v-else-if="page === 'addbuilding'" />
-    <edit-building v-else-if="page === 'editbuilding'" />
+    <edit-building
+      v-else-if="page === 'editbuilding'"
+      @changePage="changePage"
+    />
     <q-card-section v-else-if="page === 'changepermission'">
       <q-input
         class="full-width godown"

@@ -47,6 +47,13 @@
       <q-btn
         class="full-width godown"
         color="dukdw"
+        label="Delete Building"
+        v-if="selectedBuilding"
+        @click="enableDeleteBuildingModal"
+      />
+      <q-btn
+        class="full-width godown"
+        color="dukdw"
         label="Add Room"
         v-if="selectedBuilding"
         @click="enableAddModal"
@@ -144,6 +151,7 @@ export default {
       alternativeNames: "",
       addModal: false,
       editModal: false,
+      deleteBuildingModal: false,
       roomName: "",
       roomId: null,
       level: 1
@@ -154,6 +162,23 @@ export default {
     ...mapFields("map", ["drawing", "marker"])
   },
   methods: {
+    async enableDeleteBuildingModal() {
+      try {
+        await Api.removeBuilding(this.selectedBuilding.id);
+        this.$emit("changePage", "select");
+        this.$q.notify({
+          message: "Successfully deleted the building",
+          color: "positive",
+          position: "top"
+        });
+      } catch (error) {
+        this.$q.notify({
+          message: "An error occured",
+          color: "negative",
+          position: "top"
+        });
+      }
+    },
     async editRoom() {
       try {
         await Api.saveRoom({ id: this.roomId, name: this.roomName });
