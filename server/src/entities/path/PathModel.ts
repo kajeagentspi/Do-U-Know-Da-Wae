@@ -25,7 +25,10 @@ export class Path {
   @Column({ type: "simple-json", default: null })
   latLngs: "double"[][];
 
-  @Column({ default: null })
+  @Column({
+    type: "longtext",
+    default: null
+  })
   instructions: string;
 
   @Column({ type: "enum", enum: PathType })

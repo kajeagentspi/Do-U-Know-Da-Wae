@@ -379,6 +379,7 @@ export class RouteController {
         };
       }
     } catch (error) {
+      console.log(error)
       return {
         message: "An error occured",
         color: "negative",
