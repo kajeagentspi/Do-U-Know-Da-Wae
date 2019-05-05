@@ -106,13 +106,22 @@ export default {
         })
         .onOk(async () => {
           try {
+            console.log(paths);
             const paths = this.paths.map(path => {
-              let { origin, destination, polyLine, ...others } = path;
+              let {
+                origin,
+                destination,
+                polyLine,
+                originMarker,
+                destinationMarker,
+                ...others
+              } = path;
               origin = { id: origin.id, type: origin.type };
               destination = { id: destination.id, type: destination.type };
-              console.log(polyLine);
+              console.log(polyLine, originMarker, destinationMarker);
               return { ...others, origin, destination };
             });
+            console.log(paths);
             await Api.saveRoute({
               paths: paths.reverse()
             });
@@ -123,6 +132,7 @@ export default {
             });
             this.reset();
           } catch (error) {
+            console.log(error);
             this.$q.notify({
               message: "Create route failed",
               color: "negative",
