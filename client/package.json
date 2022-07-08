@@ -22,7 +22,7 @@
     "leaflet-editable": "^1.2.0",
     "mapbox-gl": "^0.54.0",
     "mapbox-gl-leaflet": "^0.0.5",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "quasar": "^1.0.0-beta.0",
     "random-color": "^1.0.1",
     "vue-fragment": "^1.5.1",
